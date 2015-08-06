@@ -9,10 +9,6 @@ Molo Comments
     :target: https://coveralls.io/r/praekelt/molo.comments?branch=develop
     :alt: Code Coverage
 
-Provides code to help with comments in a project using the Molo code base.
-Currently this is really just a convenience wrapper around
-``django-threadedcomments``.
-
 Installation::
 
    pip install molo.comments
@@ -20,11 +16,15 @@ Installation::
 
 Django setup::
 
-   INSTALLED_APPS = (
-      'threadedcomments',
-      'django_comments',
-      'django.contrib.sites',
+   INSTALLED_APPS = INSTALLED_APPS + (
+       'django_comments',
+       'mptt',
+       'molo.comments',
+       'django.contrib.sites',
    )
+
+   COMMENTS_APP = 'molo.comments'
+   SITE_ID = 1
 
 In your urls.py::
 

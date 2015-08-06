@@ -1,9 +1,11 @@
 from .base import INSTALLED_APPS
 
 INSTALLED_APPS = INSTALLED_APPS + (
-    'threadedcomments',
+    'mptt',
     'django_comments',
+    'molo.commenting',
     'django.contrib.sites',
 )
 
-COMMENTS_APP = 'threadedcomments'
+COMMENTS_APP = 'molo.commenting'
+SITE_ID = 1

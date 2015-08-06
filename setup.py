@@ -15,7 +15,7 @@ with open(os.path.join(here, 'requirements-dev.txt')) as f:
 with open(os.path.join(here, 'VERSION')) as f:
     version = f.read().strip()
 
-setup(name='molo.comments',
+setup(name='molo.commenting',
       version=version,
       description=('Comments helpers for sites built with Molo.'),
       long_description=readme,
