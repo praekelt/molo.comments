@@ -2,7 +2,7 @@ Molo Commenting
 ===============
 
 .. image:: https://travis-ci.org/praekelt/molo.commenting.svg?branch=develop
-    :target: https://travis-ci.org/praekelt/molo.comments
+    :target: https://travis-ci.org/praekelt/molo.commenting
     :alt: Continuous Integration
 
 .. image:: https://coveralls.io/repos/praekelt/molo.commenting/badge.png?branch=develop
