@@ -15,6 +15,7 @@ script:
   - flake8 molo
   - molo scaffold testapp --include molo.comments ^comments/
   - flake8 testapp
+  - cp test_settings.py testapp/testapp/settings/local.py
   - pip install -e testapp
   - py.test --cov=molo
 after_success:

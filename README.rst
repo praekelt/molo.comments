@@ -22,7 +22,8 @@ Django setup::
 
    INSTALLED_APPS = (
       'threadedcomments',
-      'django.contrib.comments',
+      'django_comments',
+      'django.contrib.sites',
    )
 
 In your urls.py::
