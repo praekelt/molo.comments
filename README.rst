@@ -1,33 +1,33 @@
-Molo Comments
-=============
+Molo Commenting
+===============
 
-.. image:: https://travis-ci.org/praekelt/molo.comments.svg?branch=develop
+.. image:: https://travis-ci.org/praekelt/molo.commenting.svg?branch=develop
     :target: https://travis-ci.org/praekelt/molo.comments
     :alt: Continuous Integration
 
-.. image:: https://coveralls.io/repos/praekelt/molo.comments/badge.png?branch=develop
-    :target: https://coveralls.io/r/praekelt/molo.comments?branch=develop
+.. image:: https://coveralls.io/repos/praekelt/molo.commenting/badge.png?branch=develop
+    :target: https://coveralls.io/r/praekelt/molo.commenting?branch=develop
     :alt: Code Coverage
 
 Installation::
 
-   pip install molo.comments
+   pip install molo.commenting
 
 
 Django setup::
 
    INSTALLED_APPS = INSTALLED_APPS + (
-       'django_comments',
-       'mptt',
-       'molo.comments',
-       'django.contrib.sites',
+      'mptt',
+      'django_comments',
+      'django.contrib.sites',
+      'molo.commenting'
    )
 
-   COMMENTS_APP = 'molo.comments'
+   COMMENTS_APP = 'molo.commenting'
    SITE_ID = 1
 
 In your urls.py::
 
    urlpatterns += patterns('',
-       url(r'^comments/', include('molo.comments.urls')),
+       url(r'^commenting/', include('molo.commenting.urls')),
    )
