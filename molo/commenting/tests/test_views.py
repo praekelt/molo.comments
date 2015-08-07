@@ -1,5 +1,4 @@
 from datetime import datetime
-import time
 
 from django.conf.urls import patterns, url, include
 from django.core.urlresolvers import reverse
