@@ -7,6 +7,7 @@ from django.utils.translation import ugettext as _
 
 import django_comments
 from django_comments.views.moderation import perform_flag
+from django_comments.views.comments import post_comment
 
 
 @login_required
@@ -24,3 +25,17 @@ def report(request, comment_id):
     perform_flag(request, comment)
     messages.info(request, _('The comment has been reported.'))
     return HttpResponseRedirect(next)
+
+
+@login_required
+def post_molo_comment(request, next=None, using=None):
+    """
+    Allows for posting of a Molo Comment, this allows comments to
+    be set with the "user_name" as "Anonymous"
+    """
+    data = request.POST.copy()
+    if 'submit_anonymously' in data:
+        data['name'] = _('Anonymous')
+    # replace with our changed POST data
+    request.POST = data
+    return post_comment(request, next=next, using=next)
