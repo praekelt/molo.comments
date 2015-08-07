@@ -36,8 +36,6 @@ def post_molo_comment(request, next=None, using=None):
     data = request.POST.copy()
     if 'submit_anonymously' in data:
         data['name'] = _('Anonymous')
-    else:
-        data['name'] = request.user.profile.alias
     # replace with our changed POST data
     request.POST = data
     return post_comment(request, next=next, using=next)
