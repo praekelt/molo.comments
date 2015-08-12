@@ -57,7 +57,8 @@ class GetMoloCommentsNode(template.Node):
         qs = qs.order_by("-submit_date")
         if self.limit > 0:
             qs = qs[:self.limit]
-        context[self.variable_name] = list(qs)
+        context[self.variable_name] = MoloComment.objects.filter(
+            pk__in=map(lambda r: r.pk, qs))
         return ''
 
 
@@ -97,7 +98,7 @@ class GetCommentsContentObject(template.Node):
             return ''
 
         app_label, model = form['content_type'].value().split('.')
-        object_pk = form.data['object_pk']
+        object_pk = form['object_pk'].value()
 
         content_type = ContentType.objects.get(app_label=app_label,
                                                model=model)
