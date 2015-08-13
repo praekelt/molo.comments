@@ -72,3 +72,19 @@ class ViewsTest(TestCase):
         [comment] = MoloComment.objects.filter(user=self.user)
         self.assertEqual(comment.comment, 'Foo')
         self.assertEqual(comment.user_name, 'Anonymous')
+
+    def test_molo_post_comment_without_email_address(self):
+        self.user.email = ''
+        self.user.save()
+
+        data = MoloCommentForm(self.user, {}).generate_security_data()
+        data.update({
+            'name': 'the supplied name',
+            'comment': 'Foo',
+        })
+        self.client.post(
+            reverse('molo-comments-post'), data)
+        [comment] = MoloComment.objects.filter(user=self.user)
+        self.assertEqual(comment.comment, 'Foo')
+        self.assertEqual(comment.user_name, 'the supplied name')
+        assert False
