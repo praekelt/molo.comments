@@ -53,12 +53,10 @@ class GetMoloCommentsNode(template.Node):
             return ''
 
         qs = MoloComment.objects.for_model(obj.__class__).filter(
-            object_pk=obj.pk)
-        qs = qs.order_by("-submit_date")
+            object_pk=obj.pk, parent__isnull=True)
         if self.limit > 0:
             qs = qs[:self.limit]
-        context[self.variable_name] = MoloComment.objects.filter(
-            pk__in=map(lambda r: r.pk, qs))
+        context[self.variable_name] = qs
         return ''
 
 

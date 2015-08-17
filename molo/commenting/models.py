@@ -18,4 +18,4 @@ class MoloComment(MPTTModel, Comment):
 
     class Meta:
         app_label = 'commenting'
-        ordering = ['tree_id', 'lft']
+        ordering = ['-submit_date', 'tree_id', 'lft']
