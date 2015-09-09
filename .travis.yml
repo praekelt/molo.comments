@@ -6,6 +6,7 @@ cache:
   directories:
     - $HOME/.pip-cache/
 install:
+  - pip install twine
   - pip install --upgrade pip --cache-dir $HOME/.pip-cache/
   - pip install coveralls coverage --cache-dir $HOME/.pip-cache/
   - pip install flake8 --cache-dir $HOME/.pip-cache/
@@ -13,8 +14,9 @@ install:
   - pip install -e . --cache-dir $HOME/.pip-cache/
 script:
   - flake8 molo
-  - molo scaffold testapp --include molo.comments ^comments/
+  - molo scaffold testapp --include molo.commenting ^commenting/
   - flake8 testapp
+  - cp test_settings.py testapp/testapp/settings/local.py
   - pip install -e testapp
   - py.test --cov=molo
 after_success:
@@ -23,7 +25,7 @@ deploy:
   provider: pypi
   user: Praekelt
   password:
-    secure: "NZfTwROUMymYIKN//dwrjLytb8O3iyGOTfkjwGoN88uzRZtT06op+eFalrzmfnAVWI/2fFhyIJtPzXOM5p6A0DANFcpvTz8+gwDklrmhFuKhaA3tmkD3308kQkXTLj/ZmEqEvJjbezL39T3vDWxhLaC/6M5bhKx7bK+HhFTDoSaj5WWQ0+EqPxJeANgysXsk/Iehru7+c8ZZeniaVD/iuTp+2MjaX+JL3cfx6dar9CYgBdVJ0zS3IVV1uIP9ScP8SrfleMtZYyi9EPm5X24HTj2yz78OrtnC5KP8QQSlz+KmHVLU7ZgFS1Nh9pYQsK0aPn3hzcwPOE0L6zUJCHqHo2XTDnMe7Apt5UDBIPHTeM86QYwzR6s8uGBv8s++VA0Zm2DkUfaxCzSGbRvS6ssXOIILjM9jB2rneSKwX4A1apDy9smoK7iwcbFENdwLUg8CCejhzTpyFZ7JbJXisJic/LGe7vbLtU1+TUdj1oD56SB2KeYgh6fbkUiiVUQkZ6w5OdBIVjQ+jqj2/Tau99OS8Cw+84LQxalmK0OlqjXX6EWGk3Z+oiPH5zcS53LKkFHf30Bk9X9KG3i4wbhm3FiQ2qURz1wSiU3Fpv/j00gXIG1QtoXFnzKHVE/9WnvBntwwnWpgoJ3R/A9DpMVBhxjYXd/Em0uS1HpYiLYuHwCc1ho="
+    secure: "54fJjn3MQ0nnKqaQ/6ZbJ4d3vG1HuyQg9thbfit609BqUnzLiK0hyj49w/NM7nonraDvW3LPhrLfrvfFX9pvGMav3bjlIBrTT6JjiSB16sTxgEMy6if+AKMRap4zWTt/9PUxOYqfZiuHJVMnorOPVsba4Q0fonzMoykJdcEpylXLaTaXNYKLa6Vp8+m3/3QJuDioYJ8TkmOxNY65+q/MUnZVMwRp+KDm9C2HEsQMy8UqiIOy6G7iGwFbpipOR5vnHqxtJoh+G3rPtlDKt1AmeCshxr83Fgy/aIDfZY66EpPREsxj7UoKZQhZ2zD8ey+nskvqeKKDJ4ryOWqXbnaUxn4DfMuQU3QtXet1sxBnbyv6/CTuGY/Qo1nHrothXs1nNfQ/GtXqM9NgT+fvl94iOjL/DhyEMAQgEd86ZQk97ZSGUPWtZ9zUQTSgbqZarm36PUyl16OF+l1vCNvsR921eTlv/hcNH2A/BB4sjmGC7AKLFvImtXox36w85qz1URtGSeoux26ZJAJ8rOBY3V4wIClpYXggMmJe4zSAkBAHmBFc7nY33NOsqpJKgdPdeNm/RCVv8TXvfGKoYUdIroVDX7Q91B7hBtWBxRvsSECKRLMSktBvXOzl9F8x2ewVS/mvWZpGBw91Suw2iNMjiJOmrBvHKLtYY7lmBSdYChLuMe0="
   on:
     tags: true
     all_branches: true
