@@ -17,11 +17,16 @@ class MoloCommentAdmin(CommentsAdmin):
     is_reported.admin_order_field = 'is_reported'
     is_reported.boolean = True
     
+    def get_user_display_name(self, obj):
+        if obj.name.lower().startswith('anon'):
+            return obj.user.username
+        return obj.name
+    
     def _user(self, obj):
         url = reverse('admin:auth_user_change', args=(obj.user.id,))
         return '<a href="?user=%s">%s</a>' % (
             obj.user.id,
-            obj.user
+            self.get_user_display_name(obj)
         ) + ' (<a href="%s">edit</a>)' % url
     _user.allow_tags = True
     _user.short_description = 'User'
