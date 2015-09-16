@@ -6,6 +6,7 @@ from django.contrib.sites.models import Site
 from django.test import TestCase
 
 from molo.commenting.models import MoloComment
+from django_comments.models import CommentFlag
 
 
 class MoloCommentTest(TestCase):
@@ -25,6 +26,12 @@ class MoloCommentTest(TestCase):
             comment=comment,
             submit_date=datetime.now())
 
+    def mk_comment_flag(self, comment):
+        return CommentFlag.objects.create(
+            user=self.user,
+            comment=comment,
+            flag_date=datetime.now())
+
     def test_parent(self):
         first_comment = self.mk_comment('first comment')
         second_comment = self.mk_comment('second comment')
@@ -32,3 +39,10 @@ class MoloCommentTest(TestCase):
         second_comment.save()
         [child] = first_comment.children.all()
         self.assertEqual(child, second_comment)
+
+    def test_auto_remove(self):
+        comment = self.mk_comment('first comment')
+        comment.save()
+        comment_flag = self.mk_comment_flag(comment)
+        comment_flag.save()
+        self.assertTrue(comment.is_removed)
