@@ -37,7 +37,7 @@ class ViewsTest(TestCase):
             comment=comment,
             submit_date=datetime.now())
 
-    def test_reporting(self):
+    def test_reporting_without_removal(self):
         comment = self.mk_comment('the comment')
         response = self.client.get(
             reverse('molo-comments-report', args=(comment.pk,)))
@@ -45,6 +45,20 @@ class ViewsTest(TestCase):
         [flag] = comment.flags.all()
         self.assertEqual(flag.comment, comment)
         self.assertEqual(flag.user, self.user)
+        self.assertFalse(MoloComment.objects.get(pk=comment.pk).is_removed)
+        self.assertTrue('The comment has been reported.'
+                        in response.cookies['messages'].value)
+
+    def test_reporting_with_removal(self):
+        comment = self.mk_comment('the comment')
+        with self.settings(COMMENTS_FLAG_THRESHHOLD=1):
+            response = self.client.get(
+                reverse('molo-comments-report', args=(comment.pk,)))
+        self.assertEqual(response.status_code, 302)
+        [flag] = comment.flags.all()
+        self.assertEqual(flag.comment, comment)
+        self.assertEqual(flag.user, self.user)
+        self.assertTrue(MoloComment.objects.get(pk=comment.pk).is_removed)
         self.assertTrue('The comment has been reported.'
                         in response.cookies['messages'].value)
 
