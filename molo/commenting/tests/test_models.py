@@ -7,6 +7,7 @@ from django.test import TestCase
 
 from molo.commenting.models import MoloComment
 from django_comments.models import CommentFlag
+from molo.commenting.models import remove_comment_if_flag_limit
 
 
 class MoloCommentTest(TestCase):
@@ -45,4 +46,5 @@ class MoloCommentTest(TestCase):
         comment.save()
         comment_flag = self.mk_comment_flag(comment)
         comment_flag.save()
-        self.assertTrue(comment.is_removed)
+        altered_comment = MoloComment.objects.get(pk=comment.pk)
+        self.assertTrue(altered_comment.is_removed)
