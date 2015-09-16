@@ -8,7 +8,6 @@ from django.test import TestCase
 from molo.commenting.models import MoloComment
 from django_comments.models import CommentFlag
 from django_comments import signals
-from django.conf import settings
 
 
 class MoloCommentTest(TestCase):
