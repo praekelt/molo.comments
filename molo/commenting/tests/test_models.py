@@ -61,12 +61,12 @@ class MoloCommentTest(TestCase):
         comment.save()
         comment_flag = self.mk_comment_flag(comment)
         comment_flag.save()
-        settings.COMMENTS_FLAG_THRESHHOLD = 1
-        signals.comment_was_flagged.send(
-            sender=comment.__class__,
-            comment=comment,
-            flag=CommentFlag.MODERATOR_DELETION,
-            created=True,
-        )
+        with self.settings(COMMENTS_FLAG_THRESHHOLD=1):
+            signals.comment_was_flagged.send(
+                sender=comment.__class__,
+                comment=comment,
+                flag=CommentFlag.MODERATOR_DELETION,
+                created=True,
+            )
         altered_comment = MoloComment.objects.get(pk=comment.pk)
         self.assertTrue(altered_comment.is_removed)
