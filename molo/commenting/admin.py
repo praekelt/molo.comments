@@ -35,12 +35,20 @@ class MoloCommentAdmin(CommentsAdmin):
         ) + ' (<a href="%s">edit</a>)' % url
     _user.allow_tags = True
     _user.short_description = 'User'
-    
-    def content(self, obj):
-        return '<a href="?object_pk=%s">%s</a>' % (
-            obj.object_pk,
-            obj.content_object
-        )
+
+    def content(self, obj, *args, **kwargs):
+        content_type = obj.content_type
+        if not int(obj.object_pk) in self.ct_map[content_type]:
+            content = obj
+        else:
+            content = self.ct_map[content_type][int(obj.object_pk)]
+        url = reverse('admin:%s_%s_moderate' % (
+            content_type.app_label,
+            content_type.model
+        ), args=(content.id,))
+
+        return '<a href="%s">%s</a>' % (url, content)
+
     content.allow_tags = True
     content.short_description = 'Content'
 
