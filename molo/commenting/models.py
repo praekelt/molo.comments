@@ -22,15 +22,16 @@ class MoloComment(MPTTModel, Comment):
     class Meta:
         app_label = 'commenting'
         ordering = ['-submit_date', 'tree_id', 'lft']
-        
+
+
 @receiver(comment_was_flagged, sender=MoloComment)
 def remove_comment_if_flag_limit(sender, comment, flag, created, **kwargs):
     # Auto removal is off by default
     try:
         threshold_count = settings.COMMENTS_FLAG_THRESHHOLD
-    except AttributeError: 
+    except AttributeError:
         return
-    
+
     if (comment.flags.count() >= threshold_count):
         comment.is_removed = True
         comment.save()
