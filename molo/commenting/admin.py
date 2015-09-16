@@ -6,9 +6,8 @@ from django_comments.admin import CommentsAdmin
 from django.core.urlresolvers import reverse
 
 
-
 class MoloCommentAdmin(CommentsAdmin):
-    list_display = ('comment', 'content_object', '_user', 'is_removed', 'is_reported', 'submit_date')
+    list_display = ('comment', 'content', '_user', 'is_removed', 'is_reported', 'submit_date')
     
     def is_reported(self, obj):
         if (obj.flags.count()>0):
@@ -30,7 +29,14 @@ class MoloCommentAdmin(CommentsAdmin):
         ) + ' (<a href="%s">edit</a>)' % url
     _user.allow_tags = True
     _user.short_description = 'User'
-
-
+    
+    def content(self, obj):
+        return '<a href="?object_pk=%s">%s</a>' % (
+            obj.object_pk,
+            obj.content_object
+        )
+    content.allow_tags = True
+    content.short_description = 'Content'
+    
 admin.site.register(MoloComment, MoloCommentAdmin)
 admin.site.register(CommentFlag)
