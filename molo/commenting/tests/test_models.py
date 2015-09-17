@@ -27,11 +27,12 @@ class MoloCommentTest(TestCase):
             comment=comment,
             submit_date=datetime.now())
 
-    def mk_comment_flag(self, comment):
+    def mk_comment_flag(self, comment, flag):
         return CommentFlag.objects.create(
             user=self.user,
             comment=comment,
-            flag_date=datetime.now())
+            flag_date=datetime.now(),
+            flag=flag)
 
     def test_parent(self):
         first_comment = self.mk_comment('first comment')
@@ -44,12 +45,13 @@ class MoloCommentTest(TestCase):
     def test_auto_remove_off(self):
         comment = self.mk_comment('first comment')
         comment.save()
-        comment_flag = self.mk_comment_flag(comment)
+        comment_flag = self.mk_comment_flag(comment,
+                                            CommentFlag.SUGGEST_REMOVAL)
         comment_flag.save()
         signals.comment_was_flagged.send(
             sender=comment.__class__,
             comment=comment,
-            flag=CommentFlag.MODERATOR_DELETION,
+            flag=comment_flag,
             created=True,
         )
         altered_comment = MoloComment.objects.get(pk=comment.pk)
@@ -58,14 +60,53 @@ class MoloCommentTest(TestCase):
     def test_auto_remove_on(self):
         comment = self.mk_comment('first comment')
         comment.save()
-        comment_flag = self.mk_comment_flag(comment)
+        comment_flag = self.mk_comment_flag(comment,
+                                            CommentFlag.SUGGEST_REMOVAL)
         comment_flag.save()
         with self.settings(COMMENTS_FLAG_THRESHHOLD=1):
             signals.comment_was_flagged.send(
                 sender=comment.__class__,
                 comment=comment,
-                flag=CommentFlag.MODERATOR_DELETION,
+                flag=comment_flag,
                 created=True,
             )
         altered_comment = MoloComment.objects.get(pk=comment.pk)
         self.assertTrue(altered_comment.is_removed)
+
+    def test_auto_remove_approved_comment(self):
+        comment = self.mk_comment('first comment')
+        comment.save()
+        comment_approved_flag = self.mk_comment_flag(
+            comment,
+            CommentFlag.MODERATOR_APPROVAL)
+        comment_approved_flag.save()
+        comment_reported_flag = self.mk_comment_flag(
+            comment,
+            CommentFlag.SUGGEST_REMOVAL)
+        comment_reported_flag.save()
+        with self.settings(COMMENTS_FLAG_THRESHHOLD=1):
+            signals.comment_was_flagged.send(
+                sender=comment.__class__,
+                comment=comment,
+                flag=comment_reported_flag,
+                created=True,
+            )
+        altered_comment = MoloComment.objects.get(pk=comment.pk)
+        self.assertFalse(altered_comment.is_removed)
+
+    def test_auto_remove_for_non_remove_flag(self):
+        comment = self.mk_comment('first comment')
+        comment.save()
+        comment_approved_flag = self.mk_comment_flag(
+            comment,
+            CommentFlag.MODERATOR_APPROVAL)
+        comment_approved_flag.save()
+        with self.settings(COMMENTS_FLAG_THRESHHOLD=1):
+            signals.comment_was_flagged.send(
+                sender=comment.__class__,
+                comment=comment,
+                flag=comment_approved_flag,
+                created=True,
+            )
+        altered_comment = MoloComment.objects.get(pk=comment.pk)
+        self.assertFalse(altered_comment.is_removed)

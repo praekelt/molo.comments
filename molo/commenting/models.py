@@ -1,4 +1,5 @@
 from django_comments.models import Comment
+from django_comments.models import CommentFlag
 from django.dispatch import receiver
 from django_comments.signals import comment_was_flagged
 from django.conf import settings
@@ -30,6 +31,12 @@ def remove_comment_if_flag_limit(sender, comment, flag, created, **kwargs):
     try:
         threshold_count = settings.COMMENTS_FLAG_THRESHHOLD
     except AttributeError:
+        return
+
+    if flag.flag != CommentFlag.SUGGEST_REMOVAL:
+        return
+    # Don't remove comments that have been approved by a moderator
+    if (comment.flags.filter(flag=CommentFlag.MODERATOR_APPROVAL).count() > 0):
         return
 
     if (comment.flags.count() >= threshold_count):
