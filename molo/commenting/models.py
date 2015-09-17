@@ -27,6 +27,7 @@ class MoloComment(MPTTModel, Comment):
     def flag_count(self, flag):
         return self.flags.filter(flag=flag).count()
 
+
 @receiver(comment_was_flagged, sender=MoloComment)
 def remove_comment_if_flag_limit(sender, comment, flag, created, **kwargs):
     # Auto removal is off by default
