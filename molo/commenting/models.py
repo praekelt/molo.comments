@@ -24,6 +24,9 @@ class MoloComment(MPTTModel, Comment):
         app_label = 'commenting'
         ordering = ['-submit_date', 'tree_id', 'lft']
 
+    def flag_count(self, flag):
+        return self.flags.filter(flag=flag).count()
+
 
 @receiver(comment_was_flagged, sender=MoloComment)
 def remove_comment_if_flag_limit(sender, comment, flag, created, **kwargs):
@@ -36,9 +39,9 @@ def remove_comment_if_flag_limit(sender, comment, flag, created, **kwargs):
     if flag.flag != CommentFlag.SUGGEST_REMOVAL:
         return
     # Don't remove comments that have been approved by a moderator
-    if (comment.flags.filter(flag=CommentFlag.MODERATOR_APPROVAL).count() > 0):
+    if (comment.flag_count(CommentFlag.MODERATOR_APPROVAL) > 0):
         return
 
-    if (comment.flags.count() >= threshold_count):
+    if (comment.flag_count(CommentFlag.SUGGEST_REMOVAL) >= threshold_count):
         comment.is_removed = True
         comment.save()
