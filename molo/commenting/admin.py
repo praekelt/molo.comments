@@ -18,7 +18,7 @@ class MoloCommentAdmin(CommentsAdmin):
         'submit_date')
 
     def is_reported(self, obj):
-        if (obj.flags.count() > 0):
+        if (obj.flag_count(CommentFlag.SUGGEST_REMOVAL) > 0):
             return True
         return False
     is_reported.admin_order_field = 'is_reported'
