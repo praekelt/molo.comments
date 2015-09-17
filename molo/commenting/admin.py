@@ -13,20 +13,22 @@ from django.contrib.contenttypes.models import ContentType
 
 
 class MoloCommentAdmin(CommentsAdmin):
-    list_display = ('comment', 'content', '_user', 'is_removed', 'is_reported', 'submit_date')
-    
+    list_display = (
+        'comment', 'content', '_user', 'is_removed', 'is_reported',
+        'submit_date')
+
     def is_reported(self, obj):
-        if (obj.flags.count()>0):
+        if (obj.flags.count() > 0):
             return True
         return False
     is_reported.admin_order_field = 'is_reported'
     is_reported.boolean = True
-    
+
     def get_user_display_name(self, obj):
         if obj.name.lower().startswith('anon'):
             return obj.user.username
         return obj.name
-    
+
     def _user(self, obj):
         url = reverse('admin:auth_user_change', args=(obj.user.id,))
         return '<a href="?user=%s">%s</a>' % (
@@ -91,8 +93,10 @@ class MoloCommentAdmin(CommentsAdmin):
                 for obj in results:
                     if obj.content_type not in ct_map:
                         ct_map.setdefault(obj.content_type, {})
-                        for content_obj in obj.content_type.model_class()._default_manager.filter(pk__in=object_pks):
-                            ct_map[obj.content_type][content_obj.id] = content_obj
+                        for content_obj in obj.content_type.model_class()\
+                                ._default_manager.filter(pk__in=object_pks):
+                            ct_map[
+                                obj.content_type][content_obj.id] = content_obj
                 self.model_admin.ct_map = ct_map
 
         return ModeratorChangeList
@@ -152,7 +156,8 @@ class AdminModeratorMixin(admin.ModelAdmin):
         obj = get_object_or_404(model, pk=unquote(object_id))
         request.obj = obj
         view.change_list_template = self.change_list_template or [
-            'admin/%s/%s/moderate.html' % (app_label, opts.object_name.lower()),
+            'admin/%s/%s/moderate.html' % (
+                app_label, opts.object_name.lower()),
             'admin/%s/moderate.html' % app_label,
             'admin/moderate.html'
         ]
