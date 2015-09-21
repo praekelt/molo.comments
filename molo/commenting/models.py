@@ -3,6 +3,8 @@ from django_comments.models import CommentFlag
 from django.dispatch import receiver
 from django_comments.signals import comment_was_flagged
 from django.conf import settings
+from django_comments.moderation import CommentModerator, moderator
+from molo.core.models import ArticlePage
 
 from mptt.models import MPTTModel, TreeForeignKey
 
@@ -26,6 +28,13 @@ class MoloComment(MPTTModel, Comment):
 
     def flag_count(self, flag):
         return self.flags.filter(flag=flag).count()
+
+
+class ArticleModerator(CommentModerator):
+    enable_field = 'featured_in_latest'
+
+
+moderator.register(ArticlePage, ArticleModerator)
 
 
 @receiver(comment_was_flagged, sender=MoloComment)
