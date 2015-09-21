@@ -41,6 +41,14 @@ class ArticleModerator(CommentModerator):
                 close_comments = getattr(content_object, 'close_commenting')
                 now = datetime.now().time()
                 return open_comments < now < close_comments
+            if (commenting_state == 'closed'):
+                # Allow automated reopening of commenting at a specified time
+                reopen_comments = getattr(content_object, 'reopen_commenting')
+                if (reopen_comments):
+                    now = datetime.now().time()
+                    if reopen_comments < now:
+                        content_object.commenting_state = 'open'
+                        return True
             return False
         return True
 
