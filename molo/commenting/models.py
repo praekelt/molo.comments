@@ -32,6 +32,11 @@ class MoloComment(MPTTModel, Comment):
 
 class ArticleModerator(CommentModerator):
     enable_field = 'featured_in_latest'
+    
+    def allow(self, comment, content_object, request):
+        response = super(ArticleModerator, self).allow(comment, content_object, request)
+        print "pls work"
+        return response
 
 
 moderator.register(ArticlePage, ArticleModerator)
