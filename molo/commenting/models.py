@@ -1,3 +1,4 @@
+import datetime
 from django_comments.models import Comment
 from django_comments.models import CommentFlag
 from django.dispatch import receiver
@@ -34,6 +35,12 @@ class ArticleModerator(CommentModerator):
     def allow(self, comment, content_object, request):
         commenting_state = getattr(content_object, 'commenting_state')
         if (commenting_state != 'open'):
+            # Allow commenting between specified hours
+            if (commenting_state == 'timestamped'):
+                open_comments = getattr(content_object, 'open_commenting')
+                close_comments = getattr(content_object, 'close_commenting')
+                now = datetime.now().time()
+                return open_comments < now < close_comments
             return False
         return True
 
