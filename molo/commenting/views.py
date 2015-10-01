@@ -63,6 +63,6 @@ def view_more_article_comments(request, page_id):
         comments = paginator.page(paginator.num_pages)
 
     return render(request, 'comments/comments.html', {
-        "self": article,
-        "comments": comments
-        })
+                  "self": article,
+                  "comments": comments
+                  })
