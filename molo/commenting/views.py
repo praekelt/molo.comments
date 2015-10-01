@@ -62,4 +62,7 @@ def view_more_article_comments(request, page_id):
     except EmptyPage:
         comments = paginator.page(paginator.num_pages)
 
-    return render(request, 'comments/comments.html', {"self": article, "comments": comments})
+    return render(request, 'comments/comments.html', {
+        "self": article,
+        "comments": comments
+        })
