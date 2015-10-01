@@ -2,12 +2,16 @@ from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.http import HttpResponseRedirect
-from django.shortcuts import get_object_or_404
+from django.shortcuts import get_object_or_404, render
 from django.utils.translation import ugettext as _
 
 import django_comments
 from django_comments.views.moderation import perform_flag
 from django_comments.views.comments import post_comment
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+
+from molo.core.models import ArticlePage
+from molo.commenting.models import MoloComment
 
 
 @login_required
@@ -43,3 +47,19 @@ def post_molo_comment(request, next=None, using=None):
 
     request.POST = data
     return post_comment(request, next=next, using=next)
+
+
+def view_more_article_comments(request, page_id):
+    article = get_object_or_404(ArticlePage, id=page_id)
+    qs = MoloComment.objects.for_model(ArticlePage).filter(
+        object_pk=page_id, parent__isnull=True)
+    paginator = Paginator(qs, 20)
+    page = request.GET.get('p', 1)
+    try:
+        comments = paginator.page(page)
+    except PageNotAnInteger:
+        comments = paginator.page(1)
+    except EmptyPage:
+        comments = paginator.page(paginator.num_pages)
+
+    return render(request, 'comments/comments.html', {"self": article, "comments": comments})
