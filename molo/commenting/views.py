@@ -53,7 +53,13 @@ def view_more_article_comments(request, page_id):
     article = get_object_or_404(ArticlePage, id=page_id)
     qs = MoloComment.objects.for_model(ArticlePage).filter(
         object_pk=page_id, parent__isnull=True)
-    paginator = Paginator(qs, 20)
+
+    try:
+        comments_per_page = settings.COMMENTS_PER_PAGE
+    except AttributeError:
+        comments_per_page = 20
+
+    paginator = Paginator(qs, comments_per_page)
     page = request.GET.get('p', 1)
     try:
         comments = paginator.page(page)
