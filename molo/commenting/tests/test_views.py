@@ -106,7 +106,8 @@ class ViewsTest(TestCase):
         self.assertEqual(comment.user_email, 'blank@email.com')
 
 
-class ViewMoreCommentsTest(TestCase):
+@override_settings(ROOT_URLCONF='molo.commenting.tests.test_views')
+class ViewMoreArticleCommentsTest(TestCase):
 
     def setUp(self):
         self.user = User.objects.create_user(
@@ -129,19 +130,19 @@ class ViewMoreCommentsTest(TestCase):
     def test(self):
         client = Client()
         response = client.get(
-            reverse('molo.commenting:more-comments', args=[self.id, ],))
+            reverse('more-comments', args=[self.article.pk, ],))
         self.assertContains(response, 'Page 1 of 3')
         self.assertContains(response, '&rarr;')
         self.assertNotContains(response, '&larr;')
 
         response = client.get(
-            reverse('molo.commenting:more-comments', args=[self.id, ],))
+            '%s?p=2' % (reverse('more-comments', args=[self.article.pk, ],),))
         self.assertContains(response, 'Page 2 of 3')
         self.assertContains(response, '&rarr;')
         self.assertContains(response, '&larr;')
 
         response = client.get(
-            reverse('molo.commenting:more-comments', args=[self.id, ],))
+            '%s?p=3' % (reverse('more-comments', args=[self.article.pk, ],),))
         self.assertContains(response, 'Page 3 of 3')
         self.assertNotContains(response, '&rarr;')
         self.assertContains(response, '&larr;')
