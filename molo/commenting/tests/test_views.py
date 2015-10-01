@@ -9,6 +9,7 @@ from django.test import TestCase, Client, override_settings
 
 from molo.commenting.models import MoloComment
 from molo.commenting.forms import MoloCommentForm
+from molo.core.models import ArticlePage
 
 
 urlpatterns = patterns(
@@ -103,3 +104,45 @@ class ViewsTest(TestCase):
         self.assertEqual(comment.comment, 'Foo')
         self.assertEqual(comment.user_name, 'the supplied name')
         self.assertEqual(comment.user_email, 'blank@email.com')
+
+
+@override_settings(ROOT_URLCONF='molo.commenting.tests.test_views')
+class ViewMoreArticleCommentsTest(TestCase):
+
+    def setUp(self):
+        self.user = User.objects.create_user(
+            'test', 'test@example.org', 'test')
+        self.article = ArticlePage.objects.create(
+            title='article 1', depth=1,
+            subtitle='article 1 subtitle',
+            slug='article-1', path=[1])
+
+        for i in range(50):
+            MoloComment.objects.create(
+                content_type=ContentType.objects.get_for_model(self.article),
+                object_pk=self.article.pk,
+                content_object=self.article,
+                site=Site.objects.get_current(),
+                user=self.user,
+                comment='comment %s' % (i,),
+                submit_date=datetime.now())
+
+    def test(self):
+        client = Client()
+        response = client.get(
+            reverse('more-comments', args=[self.article.pk, ],))
+        self.assertContains(response, 'Page 1 of 3')
+        self.assertContains(response, '&rarr;')
+        self.assertNotContains(response, '&larr;')
+
+        response = client.get(
+            '%s?p=2' % (reverse('more-comments', args=[self.article.pk, ],),))
+        self.assertContains(response, 'Page 2 of 3')
+        self.assertContains(response, '&rarr;')
+        self.assertContains(response, '&larr;')
+
+        response = client.get(
+            '%s?p=3' % (reverse('more-comments', args=[self.article.pk, ],),))
+        self.assertContains(response, 'Page 3 of 3')
+        self.assertNotContains(response, '&rarr;')
+        self.assertContains(response, '&larr;')
