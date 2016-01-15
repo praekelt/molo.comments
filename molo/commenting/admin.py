@@ -54,6 +54,10 @@ class MoloCommentAdmin(CommentsAdmin):
     content.allow_tags = True
     content.short_description = 'Content'
 
+    def flag_comments(self, request, queryset):
+        super(MoloCommentAdmin, self).flag_comments(self, request, queryset)
+    flag_comments.short_description = "Report selected comments"
+
     def get_changelist(self, request):
         class ModeratorChangeList(ChangeList):
             def get_queryset(self, request):
