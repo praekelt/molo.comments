@@ -15,15 +15,18 @@ from django.contrib.contenttypes.models import ContentType
 class MoloCommentAdmin(CommentsAdmin):
     list_display = (
         'comment', 'content', '_user', 'is_removed', 'is_reported',
-        'submit_date')
+        'reported_count', 'submit_date')
     list_filter = ('submit_date', 'site', 'is_removed')
 
     def is_reported(self, obj):
         if (obj.flag_count(CommentFlag.SUGGEST_REMOVAL) > 0):
             return True
         return False
-    is_reported.admin_order_field = 'is_reported'
     is_reported.boolean = True
+
+    def reported_count(self, obj):
+        return obj.flag_count(CommentFlag.SUGGEST_REMOVAL)
+    reported_count.short_description = 'Times reported'
 
     def get_user_display_name(self, obj):
         if obj.name.lower().startswith('anon'):
