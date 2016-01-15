@@ -16,6 +16,7 @@ class MoloCommentAdmin(CommentsAdmin):
     list_display = (
         'comment', 'content', '_user', 'is_removed', 'is_reported',
         'submit_date')
+    list_filter = ('submit_date', 'site', 'is_removed')
 
     def is_reported(self, obj):
         if (obj.flag_count(CommentFlag.SUGGEST_REMOVAL) > 0):
