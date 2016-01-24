@@ -5,7 +5,7 @@
     <p>{% trans "This comment has been removed by the community. Please read our platform rules." %}</p>
   {% else %}
     <p>{{node.comment}}</p>
-    <p><a href="{% url 'molo.commenting:molo-comments-report' node.pk %}?next={% url 'molo.commenting:report_response' node.pk %}" class="report">{% trans "Report" %}</a></p>
+    <p><a href="{% url 'molo-comments-report' node.pk %}?next={% url 'report_response' node.pk %}" class="report">{% trans "Report" %}</a></p>
   {% endif %}
 </div>
 <hr>
