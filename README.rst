@@ -17,13 +17,12 @@ Installation::
 Django setup::
 
    INSTALLED_APPS = INSTALLED_APPS + (
-      'mptt',
       'django_comments',
-      'django.contrib.sites',
       'molo.commenting'
    )
-
    COMMENTS_APP = 'molo.commenting'
+   COMMENTS_FLAG_THRESHHOLD = 3
+   COMMENTS_HIDE_REMOVED = False
    SITE_ID = 1
 
 In your urls.py::
@@ -31,3 +30,9 @@ In your urls.py::
    urlpatterns += patterns('',
        url(r'^commenting/', include('molo.commenting.urls')),
    )
+
+In your article_page.html::
+
+   {% block content %}
+    {% include "comments/comment_block.html" %}
+   {% endblock %}
