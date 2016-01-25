@@ -105,9 +105,62 @@ class ViewsTest(TestCase):
         self.assertEqual(comment.user_name, 'the supplied name')
         self.assertEqual(comment.user_email, 'blank@email.com')
 
+    def test_report_response(self):
+        article = ArticlePage.objects.create(
+            title='article 1', depth=1,
+            subtitle='article 1 subtitle',
+            slug='article-1', path=[1])
+        comment = MoloComment.objects.create(
+            content_object=article, object_pk=article.id,
+            content_type=ContentType.objects.get_for_model(article),
+            site=Site.objects.get_current(), user=self.user,
+            comment='comment 1', submit_date=datetime.now())
+        response = self.client.get(reverse('report_response',
+                                   args=(comment.id,)))
+        self.assertContains(
+            response,
+            "This comment has been reported."
+        )
+
+    def test_commenting_closed(self):
+        article = ArticlePage.objects.create(
+            title='article 1', depth=1,
+            subtitle='article 1 subtitle',
+            slug='article-1', path=[1], commenting_state='C')
+        article.save()
+        initial = {
+            'object_pk': article.id,
+            'content_type': "core.articlepage"
+        }
+        data = MoloCommentForm(article, {},
+                               initial=initial).generate_security_data()
+        data.update({
+            'comment': "This is another comment"
+        })
+        response = self.client.post(reverse('molo-comments-post'), data)
+        self.assertEqual(response.status_code, 302)
+
+    def test_commenting_open(self):
+        article = ArticlePage.objects.create(
+            title='article 1', depth=1,
+            subtitle='article 1 subtitle',
+            slug='article-1', path=[1], commenting_state='O')
+        article.save()
+        initial = {
+            'object_pk': article.id,
+            'content_type': "core.articlepage"
+        }
+        data = MoloCommentForm(article, {},
+                               initial=initial).generate_security_data()
+        data.update({
+            'comment': "This is a second comment",
+        })
+        response = self.client.post(reverse('molo-comments-post'), data)
+        self.assertEqual(response.status_code, 302)
+
 
 @override_settings(ROOT_URLCONF='molo.commenting.tests.test_views')
-class ViewMoreArticleCommentsTest(TestCase):
+class ViewMoreCommentsTest(TestCase):
 
     def setUp(self):
         self.user = User.objects.create_user(
@@ -127,7 +180,7 @@ class ViewMoreArticleCommentsTest(TestCase):
                 comment='comment %s' % (i,),
                 submit_date=datetime.now())
 
-    def test(self):
+    def test_view_more_comments(self):
         client = Client()
         response = client.get(
             reverse('more-comments', args=[self.article.pk, ],))
