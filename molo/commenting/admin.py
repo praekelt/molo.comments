@@ -1,22 +1,39 @@
 from django.contrib import admin
 
 from molo.commenting.models import MoloComment
+from molo.commenting.views import ReplyView
 from molo.core.models import ArticlePage
 from django_comments.models import CommentFlag
 from django_comments.admin import CommentsAdmin
 from django.core.urlresolvers import reverse
 from django.core.exceptions import PermissionDenied
+from django.conf.urls import patterns, url
 from django.contrib.admin.views.main import ChangeList
 from django.shortcuts import get_object_or_404
 from django.contrib.admin.utils import unquote
 from django.contrib.contenttypes.models import ContentType
+from mptt.admin import MPTTModelAdmin
 
 
-class MoloCommentAdmin(CommentsAdmin):
+class MoloCommentAdmin(MPTTModelAdmin, CommentsAdmin):
     list_display = (
-        'comment', 'content', '_user', 'is_removed', 'is_reported',
+        'comment_', 'content', '_user', 'is_removed', 'is_reported',
         'reported_count', 'submit_date')
     list_filter = ('submit_date', 'site', 'is_removed')
+    mptt_indent_field = "comment_"
+    # This will ensure that MPTT can order the comments in a tree form
+    ordering = ()
+
+    def get_urls(self):
+        urls = super(MoloCommentAdmin, self).get_urls()
+        my_urls = patterns(
+            '',
+            url(
+                r'(?P<parent>\d+)/reply/$',
+                self.admin_site.admin_view(ReplyView.as_view()),
+                name="commenting_molocomment_reply")
+        )
+        return my_urls + urls
 
     def is_reported(self, obj):
         if (obj.flag_count(CommentFlag.SUGGEST_REMOVAL) > 0):
@@ -27,6 +44,16 @@ class MoloCommentAdmin(CommentsAdmin):
     def reported_count(self, obj):
         return obj.flag_count(CommentFlag.SUGGEST_REMOVAL)
     reported_count.short_description = 'Times reported'
+
+    def comment_(self, obj):
+        # We only want to reply to root comments
+        if obj.parent is None:
+            reply_url = reverse(
+                'admin:commenting_molocomment_reply', args=(obj.id,))
+            return obj.comment + ' <a href="%s">(reply)</a>' % (reply_url)
+        else:
+            return obj.comment
+    comment_.allow_tags = True
 
     def get_user_display_name(self, obj):
         if obj.name.lower().startswith('anon'):
