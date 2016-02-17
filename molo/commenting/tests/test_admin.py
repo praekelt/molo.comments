@@ -1,3 +1,4 @@
+from bs4 import BeautifulSoup
 from datetime import datetime
 from django.contrib.auth.models import User
 from django.contrib.contenttypes.models import ContentType
@@ -6,76 +7,112 @@ from django.core.urlresolvers import reverse
 from django.test import TestCase, Client
 
 from molo.commenting.models import MoloComment
+from molo.core.models import ArticlePage
 
 
 class CommentingAdminTest(TestCase):
     def setUp(self):
         self.user = User.objects.create_superuser(
-            'admin', 'admin@example.org', 'admin')
-        self.content_type = ContentType.objects.get_for_model(self.user)
+            'testadmin', 'testadmin@example.org', 'testadmin')
+        self.article = ArticlePage.objects.create(depth=5)
+        self.content_type = ContentType.objects.get_for_model(self.article)
         self.client = Client()
-        self.client.login(username='admin', password='admin')
+        self.client.login(username='testadmin', password='testadmin')
 
-    def mk_comment(self, comment):
+    def mk_comment(self, comment, parent=None):
         return MoloComment.objects.create(
             content_type=self.content_type,
-            object_pk=self.user.pk,
-            content_object=self.user,
+            object_pk=self.article.pk,
+            content_object=self.article,
             site=Site.objects.get_current(),
             user=self.user,
             comment=comment,
+            parent=parent,
             submit_date=datetime.now())
 
     def test_reply_link_on_comment(self):
         '''Every root comment should have the (reply) text that has a link to
         the reply view for that comment.'''
-        comment = self.mk_comment('comment')
-        print comment
+        comment = self.mk_comment('comment text')
         changelist = self.client.get(
             reverse('admin:commenting_molocomment_changelist'))
-        print changelist
+        self.assertContains(
+            changelist,
+            '<a href="%s">(reply)</a>' % reverse(
+                'admin:commenting_molocomment_reply',
+                kwargs={'parent': comment.pk}),
+            html=True)
 
     def test_nested_replies(self):
         '''Replies to comments should be indented and ordered right under
         the parent comment.'''
-        comment = self.mk_comment('comment')
-        reply = self.mk_comment('reply')
-        reply.parent = comment
-        reply.save()
-        print comment, reply
+        comment = self.mk_comment('comment text')
+        reply = self.mk_comment('reply text', parent=comment)
         changelist = self.client.get(
             reverse('admin:commenting_molocomment_changelist'))
-        print changelist
 
-    def test_comments_reverse_chronological_order(self):
+        html = BeautifulSoup(changelist.content, 'html.parser')
+        table = html.find(id='result_list')
+        [commentrow, replyrow] = table.tbody.find_all('tr')
+        self.assertTrue(comment.comment in commentrow.prettify())
+        self.assertEqual(
+            len(commentrow.find_all(style='padding-left:5px')), 1)
+        self.assertTrue(reply.comment in replyrow.prettify())
+        self.assertEqual(
+            len(replyrow.find_all(style='padding-left:15px')), 1)
+
+    def test_comments_chronological_order(self):
         '''The admin changelist view should display comments in reverse
         chronological order.'''
         comment1 = self.mk_comment('comment1')
         comment2 = self.mk_comment('comment2')
         comment3 = self.mk_comment('comment3')
-        print comment1, comment2, comment3
         changelist = self.client.get(
             reverse('admin:commenting_molocomment_changelist'))
-        print changelist
+
+        html = BeautifulSoup(changelist.content, 'html.parser')
+        table = html.find(id='result_list')
+        [c1, c2, c3] = table.tbody.find_all('tr')
+        self.assertTrue(comment1.comment in c1.prettify())
+        self.assertTrue(comment2.comment in c2.prettify())
+        self.assertTrue(comment3.comment in c3.prettify())
 
     def test_reply_to_comment_view(self):
         '''A get request on the comment reply view should return a form that
         allows the user to make a comment in reply to another comment.'''
         comment = self.mk_comment('comment')
-        print comment
         formview = self.client.get(
             reverse('admin:commenting_molocomment_reply', kwargs={
-                'parent': comment,
+                'parent': comment.pk,
             }))
-        print formview
+        self.assertTemplateUsed(formview, 'admin/reply.html')
 
     def test_reply_to_comment(self):
         '''A valid form should create a new comment that is a reply to an
         existing comment.'''
         comment = self.mk_comment('comment')
-        print comment
+        formview = self.client.get(
+            reverse('admin:commenting_molocomment_reply', kwargs={
+                'parent': comment.pk,
+            }))
+
+        html = BeautifulSoup(formview.content, 'html.parser')
+        data = {
+            i.get('name'): i.get('value') or ''
+            for i in html.form.find_all('input')
+        }
+        data.pop(None)
+        data['comment'] = 'test reply text'
+
         response = self.client.post(
             reverse('admin:commenting_molocomment_reply', kwargs={
-                'parent': comment,
-            }), data={})
-        print response
+                'parent': comment.pk,
+            }), data=data)
+        comment = MoloComment.objects.get(pk=comment.pk)
+        [reply] = comment.get_children()
+        self.assertEqual(reply.comment, 'test reply text')
+        self.assertRedirects(
+            response, '%s?c=%d' % (
+                reverse('admin:commenting_molocomment_changelist'),
+                reply.pk),
+            target_status_code=302)
