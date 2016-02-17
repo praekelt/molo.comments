@@ -1,10 +1,7 @@
-from django.contrib import admin
-
-from molo.commenting.models import MoloComment
-from molo.commenting.views import ReplyView
-from molo.core.models import ArticlePage
 from django_comments.models import CommentFlag
 from django_comments.admin import CommentsAdmin
+from django.contrib import admin
+from django.contrib.admin.templatetags.admin_static import static
 from django.core.urlresolvers import reverse
 from django.core.exceptions import PermissionDenied
 from django.conf.urls import patterns, url
@@ -14,13 +11,17 @@ from django.contrib.admin.utils import unquote
 from django.contrib.contenttypes.models import ContentType
 from mptt.admin import MPTTModelAdmin
 
+from molo.commenting.models import MoloComment
+from molo.commenting.views import ReplyView
+from molo.core.models import ArticlePage
+
 
 class MoloCommentAdmin(MPTTModelAdmin, CommentsAdmin):
     list_display = (
-        'comment_', 'content', '_user', 'is_removed', 'is_reported',
-        'reported_count', 'submit_date')
+        'comment', 'moderator_reply', 'content', '_user', 'is_removed',
+        'is_reported', 'reported_count', 'submit_date')
     list_filter = ('submit_date', 'site', 'is_removed')
-    mptt_indent_field = "comment_"
+    mptt_indent_field = "comment"
     # This will ensure that MPTT can order the comments in a tree form
     ordering = ()
 
@@ -45,15 +46,17 @@ class MoloCommentAdmin(MPTTModelAdmin, CommentsAdmin):
         return obj.flag_count(CommentFlag.SUGGEST_REMOVAL)
     reported_count.short_description = 'Times reported'
 
-    def comment_(self, obj):
+    def moderator_reply(self, obj):
         # We only want to reply to root comments
         if obj.parent is None:
             reply_url = reverse(
                 'admin:commenting_molocomment_reply', args=(obj.id,))
-            return obj.comment + ' <a href="%s">(reply)</a>' % (reply_url)
+            image_url = static('admin/img/icon_addlink.gif')
+            return '<img src="%s" alt="add" /> <a href="%s">Add reply</a>' % (
+                image_url, reply_url)
         else:
-            return obj.comment
-    comment_.allow_tags = True
+            return ''
+    moderator_reply.allow_tags = True
 
     def get_user_display_name(self, obj):
         if obj.name.lower().startswith('anon'):

@@ -1,5 +1,6 @@
 from bs4 import BeautifulSoup
 from datetime import datetime
+from django.contrib.admin.templatetags.admin_static import static
 from django.contrib.auth.models import User
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.sites.models import Site
@@ -31,16 +32,22 @@ class CommentingAdminTest(TestCase):
             submit_date=datetime.now())
 
     def test_reply_link_on_comment(self):
-        '''Every root comment should have the (reply) text that has a link to
-        the reply view for that comment.'''
+        '''Every root comment should have the "Add reply" text and icon that
+        has a link to the reply view for that comment.'''
         comment = self.mk_comment('comment text')
         changelist = self.client.get(
             reverse('admin:commenting_molocomment_changelist'))
         self.assertContains(
             changelist,
-            '<a href="%s">(reply)</a>' % reverse(
-                'admin:commenting_molocomment_reply',
-                kwargs={'parent': comment.pk}),
+            '<img src="%s" alt="add" />' % (
+                static('admin/img/icon_addlink.gif')),
+            html=True)
+        self.assertContains(
+            changelist,
+            '<a href="%s">Add reply</a>' % (
+                reverse(
+                    'admin:commenting_molocomment_reply',
+                    kwargs={'parent': comment.pk})),
             html=True)
 
     def test_nested_replies(self):
