@@ -129,9 +129,8 @@ class CommentingAdminTest(TestCase):
         html = BeautifulSoup(formview.content, 'html.parser')
         data = {
             i.get('name'): i.get('value') or ''
-            for i in html.form.find_all('input')
+            for i in html.form.find_all('input') if i.get('name')
         }
-        data.pop(None)
         data['comment'] = 'test reply text'
         data['name'] = 'foo'
         data['url'] = 'http://bar.org'
