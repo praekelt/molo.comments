@@ -116,3 +116,34 @@ class CommentingAdminTest(TestCase):
                 reverse('admin:commenting_molocomment_changelist'),
                 reply.pk),
             target_status_code=302)
+
+    def test_reply_to_comment_ignore_fields(self):
+        '''The form for replying to the comment should ignore certain fields
+        in the request, and instead set them using user information.'''
+        comment = self.mk_comment('comment')
+        formview = self.client.get(
+            reverse('admin:commenting_molocomment_reply', kwargs={
+                'parent': comment.pk,
+            }))
+
+        html = BeautifulSoup(formview.content, 'html.parser')
+        data = {
+            i.get('name'): i.get('value') or ''
+            for i in html.form.find_all('input')
+        }
+        data.pop(None)
+        data['comment'] = 'test reply text'
+        data['name'] = 'foo'
+        data['url'] = 'http://bar.org'
+        data['email'] = 'foo@bar.org'
+
+        self.client.post(
+            reverse('admin:commenting_molocomment_reply', kwargs={
+                'parent': comment.pk,
+            }), data=data)
+        comment = MoloComment.objects.get(pk=comment.pk)
+        [reply] = comment.get_children()
+
+        self.assertEqual(reply.user_name, 'testadmin')
+        self.assertEqual(reply.user_email, 'testadmin@example.org')
+        self.assertEqual(reply.user_url, '')
