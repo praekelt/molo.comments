@@ -1,9 +1,11 @@
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
+from django.core.urlresolvers import reverse_lazy
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render
 from django.utils.translation import ugettext as _
+from django.views.generic import FormView
 
 import django_comments
 from django_comments.views.moderation import perform_flag
@@ -11,6 +13,7 @@ from django_comments.views.comments import post_comment
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 from molo.core.models import ArticlePage
+from molo.commenting.forms import MoloCommentReplyForm
 from molo.commenting.models import MoloComment
 
 
@@ -68,10 +71,13 @@ def view_more_article_comments(request, page_id):
     except EmptyPage:
         comments = paginator.page(paginator.num_pages)
 
-    return render(request, 'comments/comments.html', {
-                  "self": article,
-                  "comments": comments
-                  })
+    return render(
+        request, 'comments/comments.html', {
+            "self": article,
+            "page": comments,
+            "comments": [
+                c.get_descendants(include_self=True) for c in comments],
+        })
 
 
 def report_response(request, comment_pk):
@@ -80,3 +86,24 @@ def report_response(request, comment_pk):
     return render(request, 'comments/report_response.html', {
         'article': comment.content_object,
     })
+
+
+class ReplyView(FormView):
+    form_class = MoloCommentReplyForm
+    template_name = 'admin/reply.html'
+    success_url = reverse_lazy('admin:commenting_molocomment_changelist')
+
+    def get_form_kwargs(self):
+        kwargs = super(ReplyView, self).get_form_kwargs()
+        kwargs['parent'] = self.kwargs['parent']
+        return kwargs
+
+    def form_valid(self, form):
+        self.request.POST = self.request.POST.copy()
+        self.request.POST['name'] = ''
+        self.request.POST['url'] = ''
+        self.request.POST['email'] = ''
+        self.request.POST['parent'] = self.kwargs['parent']
+        reply = post_comment(self.request, next=self.success_url)
+        messages.success(self.request, _('Reply successfully created.'))
+        return reply

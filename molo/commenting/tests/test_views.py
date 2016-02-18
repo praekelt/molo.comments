@@ -1,3 +1,4 @@
+from bs4 import BeautifulSoup
 from datetime import datetime
 
 from django.conf.urls import patterns, url, include
@@ -170,32 +171,67 @@ class ViewMoreCommentsTest(TestCase):
             subtitle='article 1 subtitle',
             slug='article-1', path=[1])
 
-        for i in range(50):
-            MoloComment.objects.create(
-                content_type=ContentType.objects.get_for_model(self.article),
-                object_pk=self.article.pk,
-                content_object=self.article,
-                site=Site.objects.get_current(),
-                user=self.user,
-                comment='comment %s' % (i,),
-                submit_date=datetime.now())
+        self.client = Client()
+
+    def create_comment(self, comment, parent=None):
+        return MoloComment.objects.create(
+            content_type=ContentType.objects.get_for_model(self.article),
+            object_pk=self.article.pk,
+            content_object=self.article,
+            site=Site.objects.get_current(),
+            user=self.user,
+            comment=comment,
+            parent=parent,
+            submit_date=datetime.now())
 
     def test_view_more_comments(self):
-        client = Client()
-        response = client.get(
+        for i in range(50):
+            self.create_comment('comment %d' % i)
+        response = self.client.get(
             reverse('more-comments', args=[self.article.pk, ],))
         self.assertContains(response, 'Page 1 of 3')
         self.assertContains(response, '&rarr;')
         self.assertNotContains(response, '&larr;')
 
-        response = client.get(
+        response = self.client.get(
             '%s?p=2' % (reverse('more-comments', args=[self.article.pk, ],),))
         self.assertContains(response, 'Page 2 of 3')
         self.assertContains(response, '&rarr;')
         self.assertContains(response, '&larr;')
 
-        response = client.get(
+        response = self.client.get(
             '%s?p=3' % (reverse('more-comments', args=[self.article.pk, ],),))
         self.assertContains(response, 'Page 3 of 3')
         self.assertNotContains(response, '&rarr;')
         self.assertContains(response, '&larr;')
+
+    def test_view_page_not_integer(self):
+        '''If the requested page number is not an integer, the first page
+        should be returned.'''
+        response = self.client.get(
+            '%s?p=foo' % reverse('more-comments', args=(self.article.pk,)))
+        self.assertContains(response, 'Page 1 of 1')
+
+    def test_view_empty_page(self):
+        '''If the requested page number is too large, it should show the
+        last page.'''
+        for i in range(40):
+            self.create_comment('comment %d' % i)
+        response = self.client.get(
+            '%s?p=3' % reverse('more-comments', args=(self.article.pk,)))
+        self.assertContains(response, 'Page 2 of 2')
+
+    def test_view_nested_comments(self):
+        comment1 = self.create_comment('test comment1 text')
+        comment2 = self.create_comment('test comment2 text')
+        comment3 = self.create_comment('test comment3 text')
+        reply = self.create_comment('test reply text', parent=comment2)
+        response = self.client.get(
+            reverse('more-comments', args=(self.article.pk,)))
+
+        html = BeautifulSoup(response.content, 'html.parser')
+        [c3row, c2row, replyrow, c1row] = html.find_all(class_='comment')
+        self.assertTrue(comment3.comment in c3row.prettify())
+        self.assertTrue(comment2.comment in c2row.prettify())
+        self.assertTrue(reply.comment in replyrow.prettify())
+        self.assertTrue(comment1.comment in c1row.prettify())
