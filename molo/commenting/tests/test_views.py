@@ -235,3 +235,19 @@ class ViewMoreCommentsTest(TestCase):
         self.assertTrue(comment2.comment in c2row.prettify())
         self.assertTrue(reply.comment in replyrow.prettify())
         self.assertTrue(comment1.comment in c1row.prettify())
+
+    def test_view_nested_comments_no_report(self):
+        '''You shouldn't be able to report comment replies, as they are only
+        created by moderators.'''
+        comment = self.create_comment('test comment1 text')
+        reply = self.create_comment('test reply text', parent=comment)
+
+        response = self.client.get(
+            reverse('more-comments', args=(self.article.pk,)))
+
+        html = BeautifulSoup(response.content, 'html.parser')
+        [c1row, replyrow] = html.find_all(class_='comment')
+        self.assertTrue(comment.comment in c1row.prettify())
+        self.assertTrue('report' in c1row.prettify())
+        self.assertTrue(reply.comment in replyrow.prettify())
+        self.assertFalse('report' in replyrow.prettify())
