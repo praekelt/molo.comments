@@ -20,3 +20,22 @@ class MoloCommentForm(CommentForm):
         data = super(MoloCommentForm, self).get_comment_create_data()
         data['parent'] = self.cleaned_data['parent']
         return data
+
+
+class MoloCommentReplyForm(CommentForm):
+    parent = forms.ModelChoiceField(
+        queryset=MoloComment.objects.all(), widget=forms.HiddenInput,
+        required=False)
+    email = forms.EmailField(
+        label=_("Email address"), required=False, widget=forms.HiddenInput)
+    url = forms.URLField(
+        label=_("URL"), required=False, widget=forms.HiddenInput)
+    name = forms.CharField(
+        label=_("Name"), required=False, widget=forms.HiddenInput)
+    honeypot = forms.CharField(
+        required=False, widget=forms.HiddenInput)
+
+    def __init__(self, *args, **kwargs):
+        parent = MoloComment.objects.get(pk=kwargs.pop('parent'))
+        return super(MoloCommentReplyForm, self).__init__(
+            parent.content_object, *args, **kwargs)
