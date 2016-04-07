@@ -5,28 +5,6 @@ from django_comments.forms import CommentForm
 from molo.commenting.models import MoloComment, CannedResponse
 
 
-class ReplyCommentForm(CommentForm):
-    """
-    Overriding to remove dupe comment check
-    """
-    def get_comment_object(self):
-        """
-        Return a new (unsaved) comment object based on the information in this
-        form. Assumes that the form is already validated and will throw a
-        ValueError if not.
-
-        Does not set any of the fields that would come from a Request object
-        (i.e. ``user`` or ``ip_address``).
-        """
-        if not self.is_valid():
-            raise ValueError("get_comment_object may only be called on valid forms")
-
-        CommentModel = self.get_comment_model()
-        new = CommentModel(**self.get_comment_create_data())
-
-        return new
-
-
 class MoloCommentForm(CommentForm):
     email = forms.EmailField(label=_("Email address"), required=False)
     parent = forms.ModelChoiceField(
@@ -43,6 +21,27 @@ class MoloCommentForm(CommentForm):
         data['parent'] = self.cleaned_data['parent']
         return data
 
+    def get_comment_object(self):
+        """
+        NB: Overridden to remove dupe comment check (necessary for canned
+            responses)
+
+        Return a new (unsaved) comment object based on the information in this
+        form. Assumes that the form is already validated and will throw a
+        ValueError if not.
+
+        Does not set any of the fields that would come from a Request object
+        (i.e. ``user`` or ``ip_address``).
+        """
+        if not self.is_valid():
+            raise ValueError(
+                "get_comment_object may only be called on valid forms")
+
+        CommentModel = self.get_comment_model()
+        new = CommentModel(**self.get_comment_create_data())
+
+        return new
+
 
 def get_canned_choices():
     canned_choices = [('', '---------')]
@@ -54,7 +53,7 @@ def get_canned_choices():
     return canned_choices
 
 
-class MoloCommentReplyForm(ReplyCommentForm):
+class MoloCommentReplyForm(MoloCommentForm):
     parent = forms.ModelChoiceField(
         queryset=MoloComment.objects.all(), widget=forms.HiddenInput,
         required=False)
