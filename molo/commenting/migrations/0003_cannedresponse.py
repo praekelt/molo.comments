@@ -21,7 +21,7 @@ class Migration(migrations.Migration):
             ],
             options={
                 'ordering': ['response_header', 'response'],
-                'verbose_name_plural': 'Canned replies',
+                'verbose_name_plural': 'Canned responses',
             },
         ),
     ]
