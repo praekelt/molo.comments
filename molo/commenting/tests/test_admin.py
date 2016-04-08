@@ -174,7 +174,10 @@ class CommentingAdminTest(TestCase):
 
         self.assertEqual('canned_response', selects[0].get('name'))
 
-        # TODO: assert that there is an option for the canned response in
-        # the select
+        options = selects[0].find_all('option')
 
+        self.assertEqual(2, len(options))
+        self.assertEqual(canned_response.response_header,
+                         options[1].contents[0])
+        self.assertEqual(canned_response.response, options[1]['value'])
 
