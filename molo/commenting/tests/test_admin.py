@@ -157,8 +157,8 @@ class CommentingAdminTest(TestCase):
         comment = self.mk_comment('comment')
 
         canned_response = CannedResponse.objects.create(
-            response_header = 'Test Canned Response',
-            response = 'Canned response text'
+            response_header='Test Canned Response',
+            response='Canned response text'
         )
 
         formview = self.client.get(
@@ -180,4 +180,3 @@ class CommentingAdminTest(TestCase):
         self.assertEqual(canned_response.response_header,
                          options[1].contents[0])
         self.assertEqual(canned_response.response, options[1]['value'])
-
