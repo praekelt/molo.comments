@@ -7,7 +7,7 @@ from django.contrib.sites.models import Site
 from django.core.urlresolvers import reverse
 from django.test import TestCase, Client
 
-from molo.commenting.models import MoloComment
+from molo.commenting.models import MoloComment, CannedResponse
 from molo.core.models import ArticlePage
 
 
@@ -63,10 +63,10 @@ class CommentingAdminTest(TestCase):
         [commentrow, replyrow] = table.tbody.find_all('tr')
         self.assertTrue(comment.comment in commentrow.prettify())
         self.assertEqual(
-            len(commentrow.find_all(style='padding-left:5px')), 1)
+            len(commentrow.find_all(style='padding-left:8px')), 1)
         self.assertTrue(reply.comment in replyrow.prettify())
         self.assertEqual(
-            len(replyrow.find_all(style='padding-left:15px')), 1)
+            len(replyrow.find_all(style='padding-left:18px')), 1)
 
     def test_comments_chronological_order(self):
         '''The admin changelist view should display comments in reverse
@@ -152,3 +152,31 @@ class CommentingAdminTest(TestCase):
         self.assertEqual(reply.user_name, 'testadmin')
         self.assertEqual(reply.user_email, 'testadmin@example.org')
         self.assertEqual(reply.user_url, '')
+
+    def test_canned_response_appears_in_reply_template(self):
+        comment = self.mk_comment('comment')
+
+        canned_response = CannedResponse.objects.create(
+            response_header='Test Canned Response',
+            response='Canned response text'
+        )
+
+        formview = self.client.get(
+            reverse('admin:commenting_molocomment_reply', kwargs={
+                'parent': comment.pk,
+            }))
+
+        html = BeautifulSoup(formview.content, 'html.parser')
+
+        selects = html.form.find_all('select')
+
+        self.assertEqual(1, len(selects))
+
+        self.assertEqual('canned_response', selects[0].get('name'))
+
+        options = selects[0].find_all('option')
+
+        self.assertEqual(2, len(options))
+        self.assertEqual(canned_response.response_header,
+                         options[1].contents[0])
+        self.assertEqual(canned_response.response, options[1]['value'])

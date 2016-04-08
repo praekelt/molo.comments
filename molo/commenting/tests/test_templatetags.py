@@ -29,9 +29,13 @@ class GetMoloCommentsTest(TestCase):
 
     def test_template_tags_default(self):
         template = Template("""
-        {% load molo_commenting_tags %}
+        {% load molo_commenting_tags mptt_tags %}
         {% get_molo_comments for object as comments %}
-        {% for comment in comments %}{{ comment.comment }}
+        {% for comment in comments %}
+            {% recursetree comment %}
+                {{ node.comment }}
+                {{ children }}
+            {% endrecursetree %}
         {% endfor %}
         """)
         output = template.render(Context({
@@ -43,9 +47,13 @@ class GetMoloCommentsTest(TestCase):
 
     def test_template_tags_limits(self):
         template = Template("""
-        {% load molo_commenting_tags %}
+        {% load molo_commenting_tags mptt_tags %}
         {% get_molo_comments for object as comments limit 2 %}
-        {% for comment in comments %}{{ comment.comment }}
+        {% for comment in comments %}
+            {% recursetree comment %}
+                {{ node.comment }}
+                {{ children }}
+            {% endrecursetree %}
         {% endfor %}
         """)
         output = template.render(Context({
@@ -58,9 +66,13 @@ class GetMoloCommentsTest(TestCase):
 
     def test_template_tags_unlimited(self):
         template = Template("""
-        {% load molo_commenting_tags %}
+        {% load molo_commenting_tags mptt_tags %}
         {% get_molo_comments for object as comments limit -1 %}
-        {% for comment in comments %}{{ comment.comment }}
+        {% for comment in comments %}
+            {% recursetree comment %}
+                {{ node.comment }}
+                {{ children }}
+            {% endrecursetree %}
         {% endfor %}
         """)
         output = template.render(Context({

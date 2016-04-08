@@ -56,6 +56,7 @@ class GetMoloCommentsNode(template.Node):
             object_pk=obj.pk, parent__isnull=True)
         if self.limit > 0:
             qs = qs[:self.limit]
+        qs = [c.get_descendants(include_self=True) for c in qs]
         context[self.variable_name] = qs
         return ''
 
