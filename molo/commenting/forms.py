@@ -1,5 +1,5 @@
 from django import forms
-from django.db import OperationalError
+from django.forms import ModelChoiceField
 from django.utils.translation import ugettext_lazy as _
 from django_comments.forms import CommentForm
 from molo.commenting.models import MoloComment, CannedResponse
@@ -43,16 +43,6 @@ class MoloCommentForm(CommentForm):
         return new
 
 
-def get_canned_choices():
-    canned_choices = [('', '---------')]
-    try:
-        canned_choices += ([(canned.response, canned.response_header) for canned in CannedResponse.objects.all()])
-    except OperationalError:
-        canned_choices = []
-
-    return canned_choices
-
-
 class MoloCommentReplyForm(MoloCommentForm):
     parent = forms.ModelChoiceField(
         queryset=MoloComment.objects.all(), widget=forms.HiddenInput,
@@ -66,8 +56,13 @@ class MoloCommentReplyForm(MoloCommentForm):
     honeypot = forms.CharField(
         required=False, widget=forms.HiddenInput)
 
+    canned_response = ModelChoiceField(queryset=CannedResponse.objects.all(),
+                                       label="Or add a canned response",
+                                       to_field_name="response",
+                                       required=False)
+
     def __init__(self, *args, **kwargs):
         parent = MoloComment.objects.get(pk=kwargs.pop('parent'))
-        super(MoloCommentReplyForm, self).__init__(parent.content_object, *args, **kwargs)
-        self.fields['canned_select'] = forms.ChoiceField(choices=get_canned_choices(),
-                                                         label="Or add a Canned response", required=False)
+        super(MoloCommentReplyForm, self).__init__(
+            parent.content_object, *args, **kwargs
+        )

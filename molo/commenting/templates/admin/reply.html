@@ -14,15 +14,15 @@
 {% block content %}
 <form action="" method="post">
     {% csrf_token %}
-    {{ form }}
+    {{ form.as_p }}
     <input type="submit" value="Reply" />
 </form>
 
 <script>
-var cannedSelect = document.getElementById("id_canned_select");
-document.getElementsByTagName("form")[0].setAttribute("onchange", "commentReply()");
-function commentReply() {
-    document.getElementById('id_comment').innerHTML = (cannedSelect[cannedSelect.selectedIndex].value);
+var cannedSelect = document.getElementById("id_canned_response");
+cannedSelect.setAttribute("onchange", "setCannedResponse()");
+function setCannedResponse() {
+    document.getElementById('id_comment').innerHTML = cannedSelect[cannedSelect.selectedIndex].value;
 }
 </script>
 

@@ -54,9 +54,9 @@ class CannedResponse(models.Model):
     date_added = models.DateTimeField(auto_now_add=True)
 
     def __unicode__(self):
-        return self.response
+        return self.response_header
 
     class Meta:
-        verbose_name_plural = 'Canned replies'
+        verbose_name_plural = 'Canned responses'
         app_label = 'commenting'
         ordering = ['response_header', 'response']
