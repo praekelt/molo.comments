@@ -64,13 +64,13 @@ class CommentingAdminTest(TestCase):
         [commentrow, reply1row, reply2row] = table.tbody.find_all('tr')
         self.assertTrue(comment.comment in commentrow.prettify())
         self.assertEqual(
-            len(commentrow.find_all(style='padding-left:5px')), 1)
+            len(commentrow.find_all(style='padding-left:8px')), 1)
         self.assertTrue(reply1.comment in reply1row.prettify())
         self.assertTrue(reply2.comment in reply2row.prettify())
         self.assertEqual(
-            len(reply1row.find_all(style='padding-left:15px')), 1)
+            len(reply1row.find_all(style='padding-left:18px')), 1)
         self.assertEqual(
-            len(reply2row.find_all(style='padding-left:15px')), 1)
+            len(reply2row.find_all(style='padding-left:18px')), 1)
 
     def test_comments_reverse_chronological_order(self):
         '''The admin changelist view should display comments in reverse
