@@ -12,7 +12,7 @@ from django.contrib.contenttypes.models import ContentType
 from mptt.admin import MPTTModelAdmin
 
 from molo.commenting.models import MoloComment, CannedResponse
-from molo.commenting.views import ReplyView
+from molo.commenting.views import AdminCommentReplyView
 from molo.core.models import ArticlePage
 
 
@@ -31,7 +31,7 @@ class MoloCommentAdmin(MPTTModelAdmin, CommentsAdmin):
             '',
             url(
                 r'(?P<parent>\d+)/reply/$',
-                self.admin_site.admin_view(ReplyView.as_view()),
+                self.admin_site.admin_view(AdminCommentReplyView.as_view()),
                 name="commenting_molocomment_reply")
         )
         return my_urls + urls
