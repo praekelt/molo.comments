@@ -1,8 +1,9 @@
-from django_comments.models import Comment
+from django_comments.models import Comment, COMMENT_MAX_LENGTH
 from django_comments.models import CommentFlag
 from django.dispatch import receiver
 from django_comments.signals import comment_was_flagged
 from django.conf import settings
+from django.db import models
 
 from mptt.models import MPTTModel, TreeForeignKey
 
@@ -45,3 +46,17 @@ def remove_comment_if_flag_limit(sender, comment, flag, created, **kwargs):
     if (comment.flag_count(CommentFlag.SUGGEST_REMOVAL) >= threshold_count):
         comment.is_removed = True
         comment.save()
+
+
+class CannedResponse(models.Model):
+    response_header = models.CharField(max_length=500, blank=False)
+    response = models.TextField(max_length=COMMENT_MAX_LENGTH, blank=False)
+    date_added = models.DateTimeField(auto_now_add=True)
+
+    def __unicode__(self):
+        return self.response_header
+
+    class Meta:
+        verbose_name_plural = 'Canned responses'
+        app_label = 'commenting'
+        ordering = ['response_header', 'response']

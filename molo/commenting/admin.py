@@ -11,7 +11,7 @@ from django.contrib.admin.utils import unquote
 from django.contrib.contenttypes.models import ContentType
 from mptt.admin import MPTTModelAdmin
 
-from molo.commenting.models import MoloComment
+from molo.commenting.models import MoloComment, CannedResponse
 from molo.commenting.views import ReplyView
 from molo.core.models import ArticlePage
 
@@ -213,6 +213,14 @@ class AdminModeratorMixin(admin.ModelAdmin):
 class ModeratedPageAdmin(AdminModeratorMixin, admin.ModelAdmin):
     pass
 
+
+class CannedResponseModelAdmin(AdminModeratorMixin, admin.ModelAdmin):
+    readonly_fields = ['date_added']
+
+    list_display = ('response_header', 'response', 'date_added')
+
+
 admin.site.register(MoloComment, MoloCommentAdmin)
 admin.site.register(CommentFlag)
 admin.site.register(ArticlePage, ModeratedPageAdmin)
+admin.site.register(CannedResponse, CannedResponseModelAdmin)
