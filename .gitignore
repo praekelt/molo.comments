@@ -7,4 +7,9 @@ build
 
 /testapp/
 htmlcov/
-.coverage*
+.coverage
+.cache
+.DS_Store
+
+# PyCharm / IntelliJ
+.idea/
