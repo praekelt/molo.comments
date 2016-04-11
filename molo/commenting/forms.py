@@ -43,7 +43,7 @@ class MoloCommentForm(CommentForm):
         return new
 
 
-class MoloCommentReplyForm(MoloCommentForm):
+class AdminMoloCommentReplyForm(MoloCommentForm):
     parent = forms.ModelChoiceField(
         queryset=MoloComment.objects.all(), widget=forms.HiddenInput,
         required=False)
@@ -63,6 +63,6 @@ class MoloCommentReplyForm(MoloCommentForm):
 
     def __init__(self, *args, **kwargs):
         parent = MoloComment.objects.get(pk=kwargs.pop('parent'))
-        super(MoloCommentReplyForm, self).__init__(
+        super(AdminMoloCommentReplyForm, self).__init__(
             parent.content_object, *args, **kwargs
         )
