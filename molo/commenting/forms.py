@@ -1,8 +1,8 @@
 from django import forms
-from django_comments.forms import CommentForm
+from django.forms import ModelChoiceField
 from django.utils.translation import ugettext_lazy as _
-
-from molo.commenting.models import MoloComment
+from django_comments.forms import CommentForm
+from molo.commenting.models import MoloComment, CannedResponse
 
 
 class MoloCommentForm(CommentForm):
@@ -21,8 +21,29 @@ class MoloCommentForm(CommentForm):
         data['parent'] = self.cleaned_data['parent']
         return data
 
+    def get_comment_object(self):
+        """
+        NB: Overridden to remove dupe comment check (necessary for canned
+            responses)
 
-class MoloCommentReplyForm(CommentForm):
+        Return a new (unsaved) comment object based on the information in this
+        form. Assumes that the form is already validated and will throw a
+        ValueError if not.
+
+        Does not set any of the fields that would come from a Request object
+        (i.e. ``user`` or ``ip_address``).
+        """
+        if not self.is_valid():
+            raise ValueError(
+                "get_comment_object may only be called on valid forms")
+
+        CommentModel = self.get_comment_model()
+        new = CommentModel(**self.get_comment_create_data())
+
+        return new
+
+
+class AdminMoloCommentReplyForm(MoloCommentForm):
     parent = forms.ModelChoiceField(
         queryset=MoloComment.objects.all(), widget=forms.HiddenInput,
         required=False)
@@ -35,7 +56,13 @@ class MoloCommentReplyForm(CommentForm):
     honeypot = forms.CharField(
         required=False, widget=forms.HiddenInput)
 
+    canned_response = ModelChoiceField(queryset=CannedResponse.objects.all(),
+                                       label="Or add a canned response",
+                                       to_field_name="response",
+                                       required=False)
+
     def __init__(self, *args, **kwargs):
         parent = MoloComment.objects.get(pk=kwargs.pop('parent'))
-        return super(MoloCommentReplyForm, self).__init__(
-            parent.content_object, *args, **kwargs)
+        super(AdminMoloCommentReplyForm, self).__init__(
+            parent.content_object, *args, **kwargs
+        )

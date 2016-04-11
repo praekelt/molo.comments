@@ -11,8 +11,8 @@ from django.contrib.admin.utils import unquote
 from django.contrib.contenttypes.models import ContentType
 from mptt.admin import MPTTModelAdmin
 
-from molo.commenting.models import MoloComment
-from molo.commenting.views import ReplyView
+from molo.commenting.models import MoloComment, CannedResponse
+from molo.commenting.views import AdminCommentReplyView
 from molo.core.models import ArticlePage
 
 
@@ -23,7 +23,7 @@ class MoloCommentAdmin(MPTTModelAdmin, CommentsAdmin):
     list_filter = ('submit_date', 'site', 'is_removed')
     mptt_indent_field = "comment"
     # This will ensure that MPTT can order the comments in a tree form
-    ordering = ()
+    ordering = ('-tree_id', "submit_date")
 
     def get_urls(self):
         urls = super(MoloCommentAdmin, self).get_urls()
@@ -31,7 +31,7 @@ class MoloCommentAdmin(MPTTModelAdmin, CommentsAdmin):
             '',
             url(
                 r'(?P<parent>\d+)/reply/$',
-                self.admin_site.admin_view(ReplyView.as_view()),
+                self.admin_site.admin_view(AdminCommentReplyView.as_view()),
                 name="commenting_molocomment_reply")
         )
         return my_urls + urls
@@ -213,6 +213,14 @@ class AdminModeratorMixin(admin.ModelAdmin):
 class ModeratedPageAdmin(AdminModeratorMixin, admin.ModelAdmin):
     pass
 
+
+class CannedResponseModelAdmin(AdminModeratorMixin, admin.ModelAdmin):
+    readonly_fields = ['date_added']
+
+    list_display = ('response_header', 'response', 'date_added')
+
+
 admin.site.register(MoloComment, MoloCommentAdmin)
 admin.site.register(CommentFlag)
 admin.site.register(ArticlePage, ModeratedPageAdmin)
+admin.site.register(CannedResponse, CannedResponseModelAdmin)

@@ -7,7 +7,7 @@ from django.contrib.sites.models import Site
 from django.core.urlresolvers import reverse
 from django.test import TestCase, Client
 
-from molo.commenting.models import MoloComment
+from molo.commenting.models import MoloComment, CannedResponse
 from molo.core.models import ArticlePage
 
 
@@ -51,24 +51,28 @@ class CommentingAdminTest(TestCase):
             html=True)
 
     def test_nested_replies(self):
-        '''Replies to comments should be indented and ordered right under
-        the parent comment.'''
+        '''Replies to comments should be indented and ordered chronologically
+        directly under the parent comment.'''
         comment = self.mk_comment('comment text')
-        reply = self.mk_comment('reply text', parent=comment)
+        reply1 = self.mk_comment('reply 1 text', parent=comment)
+        reply2 = self.mk_comment('reply 2 text', parent=comment)
         changelist = self.client.get(
             reverse('admin:commenting_molocomment_changelist'))
 
         html = BeautifulSoup(changelist.content, 'html.parser')
         table = html.find(id='result_list')
-        [commentrow, replyrow] = table.tbody.find_all('tr')
+        [commentrow, reply1row, reply2row] = table.tbody.find_all('tr')
         self.assertTrue(comment.comment in commentrow.prettify())
         self.assertEqual(
             len(commentrow.find_all(style='padding-left:8px')), 1)
-        self.assertTrue(reply.comment in replyrow.prettify())
+        self.assertTrue(reply1.comment in reply1row.prettify())
+        self.assertTrue(reply2.comment in reply2row.prettify())
         self.assertEqual(
-            len(replyrow.find_all(style='padding-left:18px')), 1)
+            len(reply1row.find_all(style='padding-left:18px')), 1)
+        self.assertEqual(
+            len(reply2row.find_all(style='padding-left:18px')), 1)
 
-    def test_comments_chronological_order(self):
+    def test_comments_reverse_chronological_order(self):
         '''The admin changelist view should display comments in reverse
         chronological order.'''
         comment1 = self.mk_comment('comment1')
@@ -79,10 +83,10 @@ class CommentingAdminTest(TestCase):
 
         html = BeautifulSoup(changelist.content, 'html.parser')
         table = html.find(id='result_list')
-        [c1, c2, c3] = table.tbody.find_all('tr')
-        self.assertTrue(comment1.comment in c1.prettify())
-        self.assertTrue(comment2.comment in c2.prettify())
+        [c3, c2, c1] = table.tbody.find_all('tr')
         self.assertTrue(comment3.comment in c3.prettify())
+        self.assertTrue(comment2.comment in c2.prettify())
+        self.assertTrue(comment1.comment in c1.prettify())
 
     def test_reply_to_comment_view(self):
         '''A get request on the comment reply view should return a form that
@@ -152,3 +156,31 @@ class CommentingAdminTest(TestCase):
         self.assertEqual(reply.user_name, 'testadmin')
         self.assertEqual(reply.user_email, 'testadmin@example.org')
         self.assertEqual(reply.user_url, '')
+
+    def test_canned_response_appears_in_reply_template(self):
+        comment = self.mk_comment('comment')
+
+        canned_response = CannedResponse.objects.create(
+            response_header='Test Canned Response',
+            response='Canned response text'
+        )
+
+        formview = self.client.get(
+            reverse('admin:commenting_molocomment_reply', kwargs={
+                'parent': comment.pk,
+            }))
+
+        html = BeautifulSoup(formview.content, 'html.parser')
+
+        selects = html.form.find_all('select')
+
+        self.assertEqual(1, len(selects))
+
+        self.assertEqual('canned_response', selects[0].get('name'))
+
+        options = selects[0].find_all('option')
+
+        self.assertEqual(2, len(options))
+        self.assertEqual(canned_response.response_header,
+                         options[1].contents[0])
+        self.assertEqual(canned_response.response, options[1]['value'])

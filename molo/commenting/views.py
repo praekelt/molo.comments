@@ -5,7 +5,7 @@ from django.core.urlresolvers import reverse_lazy
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render
 from django.utils.translation import ugettext as _
-from django.views.generic import FormView
+from django.views.generic import FormView, TemplateView
 
 import django_comments
 from django_comments.views.moderation import perform_flag
@@ -13,7 +13,7 @@ from django_comments.views.comments import post_comment
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 from molo.core.models import ArticlePage
-from molo.commenting.forms import MoloCommentReplyForm
+from molo.commenting.forms import AdminMoloCommentReplyForm, MoloCommentForm
 from molo.commenting.models import MoloComment
 
 
@@ -91,13 +91,13 @@ def report_response(request, comment_pk):
     })
 
 
-class ReplyView(FormView):
-    form_class = MoloCommentReplyForm
+class AdminCommentReplyView(FormView):
+    form_class = AdminMoloCommentReplyForm
     template_name = 'admin/reply.html'
     success_url = reverse_lazy('admin:commenting_molocomment_changelist')
 
     def get_form_kwargs(self):
-        kwargs = super(ReplyView, self).get_form_kwargs()
+        kwargs = super(AdminCommentReplyView, self).get_form_kwargs()
         kwargs['parent'] = self.kwargs['parent']
         return kwargs
 
@@ -110,3 +110,23 @@ class ReplyView(FormView):
         reply = post_comment(self.request, next=self.success_url)
         messages.success(self.request, _('Reply successfully created.'))
         return reply
+
+
+class CommentReplyView(TemplateView):
+    form_class = MoloCommentForm
+    template_name = 'comments/reply.html'
+
+    def get(self, request, parent_comment_pk):
+        comment = get_object_or_404(
+            django_comments.get_model(), pk=parent_comment_pk,
+            site__pk=settings.SITE_ID)
+        form = MoloCommentForm(comment.content_object, initial={
+            'content_type': '%s.%s' % (
+                comment.content_type.app_label,
+                comment.content_type.model),
+            'object_pk': comment.object_pk,
+        })
+        return self.render_to_response({
+            'form': form,
+            'comment': comment,
+        })
