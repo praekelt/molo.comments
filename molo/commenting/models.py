@@ -23,7 +23,7 @@ class MoloComment(MPTTModel, Comment):
 
     class Meta:
         app_label = 'commenting'
-        ordering = ['-submit_date', 'tree_id', 'lft']
+        ordering = ['-tree_id', 'submit_date']
 
     def flag_count(self, flag):
         return self.flags.filter(flag=flag).count()

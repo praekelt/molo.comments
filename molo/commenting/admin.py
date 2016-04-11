@@ -23,7 +23,7 @@ class MoloCommentAdmin(MPTTModelAdmin, CommentsAdmin):
     list_filter = ('submit_date', 'site', 'is_removed')
     mptt_indent_field = "comment"
     # This will ensure that MPTT can order the comments in a tree form
-    ordering = ()
+    ordering = ('-tree_id', "submit_date")
 
     def get_urls(self):
         urls = super(MoloCommentAdmin, self).get_urls()

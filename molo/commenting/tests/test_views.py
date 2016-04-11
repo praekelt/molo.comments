@@ -225,15 +225,18 @@ class ViewMoreCommentsTest(TestCase):
         comment1 = self.create_comment('test comment1 text')
         comment2 = self.create_comment('test comment2 text')
         comment3 = self.create_comment('test comment3 text')
-        reply = self.create_comment('test reply text', parent=comment2)
+        reply1 = self.create_comment('test reply1 text', parent=comment2)
+        reply2 = self.create_comment('test reply2 text', parent=comment2)
         response = self.client.get(
             reverse('more-comments', args=(self.article.pk,)))
 
         html = BeautifulSoup(response.content, 'html.parser')
-        [c3row, c2row, replyrow, c1row] = html.find_all(class_='comment')
+        [c3row, c2row, reply1row, reply2row, c1row] = html.find_all(
+            class_='comment')
         self.assertTrue(comment3.comment in c3row.prettify())
         self.assertTrue(comment2.comment in c2row.prettify())
-        self.assertTrue(reply.comment in replyrow.prettify())
+        self.assertTrue(reply1.comment in reply1row.prettify())
+        self.assertTrue(reply2.comment in reply2row.prettify())
         self.assertTrue(comment1.comment in c1row.prettify())
 
     def test_view_replies_report(self):
