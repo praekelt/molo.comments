@@ -1,5 +1,8 @@
 CHANGELOG
 =========
+0.3.1
+-----
+- Order comments from newest to oldest unless they are replies.
 0.3
 ---
 - Add canned responses
