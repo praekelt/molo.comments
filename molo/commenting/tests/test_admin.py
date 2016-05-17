@@ -15,7 +15,10 @@ class CommentingAdminTest(TestCase):
     def setUp(self):
         self.user = User.objects.create_superuser(
             'testadmin', 'testadmin@example.org', 'testadmin')
-        self.article = ArticlePage.objects.create(depth=5)
+        self.article = ArticlePage.objects.create(
+            title='article 1', depth=1,
+            subtitle='article 1 subtitle',
+            slug='article-1', path=[1])
         self.content_type = ContentType.objects.get_for_model(self.article)
         self.client = Client()
         self.client.login(username='testadmin', password='testadmin')
