@@ -1,6 +1,10 @@
 CHANGELOG
 =========
 
+0.4.0
+-----
+- Now compatible with Django 1.9 (removed model import in __init__.py)
+
 0.3.2
 -----
 - Added canned response.
