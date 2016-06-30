@@ -40,6 +40,9 @@ class MoloCommentForm(CommentForm):
         CommentModel = self.get_comment_model()
         new = CommentModel(**self.get_comment_create_data())
 
+        if new.parent is None:
+            new = self.check_for_duplicate_comment(new)
+
         return new
 
 
