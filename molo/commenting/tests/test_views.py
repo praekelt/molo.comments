@@ -8,10 +8,10 @@ from django.contrib.contenttypes.models import ContentType
 from django.contrib.sites.models import Site
 from django.test import TestCase, Client, override_settings
 
-from molo.commenting.models import MoloComment
+from molo.commenting.models import MoloComment, CannedResponse
 from molo.commenting.forms import MoloCommentForm
 from molo.core.models import ArticlePage
-
+from molo.core.tests.base import MoloTestCaseMixin
 
 urlpatterns = patterns(
     '',
@@ -254,3 +254,72 @@ class ViewMoreCommentsTest(TestCase):
         self.assertTrue('report' in crow.prettify())
         self.assertTrue(reply.comment in replyrow.prettify())
         self.assertFalse('report' in replyrow.prettify())
+
+
+class TestCommentsWagtailAdminUserView(TestCase, MoloTestCaseMixin):
+    def setUp(self):
+        self.mk_main()
+
+        self.user = User.objects.create_user(
+            'test', 'test@example.org', 'test')
+        self.content_type = ContentType.objects.get_for_model(self.user)
+
+        self.superuser = User.objects.create_superuser(
+            username='superuser',
+            email='admin@example.com',
+            password='0000',
+            is_staff=True)
+
+        self.client = Client()
+        self.client.login(username='superuser', password='0000')
+
+        self.article = ArticlePage.objects.create(
+                    title='article 1', depth=1,
+                    subtitle='article 1 subtitle',
+                    slug='article-1', path=[1])
+
+    def mk_comment(self, comment):
+        return MoloComment.objects.create(
+            content_type=self.content_type,
+            object_pk=self.user.pk,
+            content_object=self.article,
+            site=Site.objects.get_current(),
+            user=self.user,
+            comment=comment,
+            submit_date=datetime.now())
+
+    def test_wagtail_admin_comments_view(self):
+        comment = self.mk_comment('the comment')
+
+        response = self.client.get(
+            '/admin/modeladmin/commenting/molocomment/'
+        )
+
+        self.assertContains(response, comment.comment)
+
+    def test_wagtail_admin_canned_responses_view(self):
+        canned_response = CannedResponse.objects.create(
+                    response_header='Test Canned Response',
+                    response='Canned response text'
+                )
+
+        response = self.client.get(
+            '/admin/modeladmin/commenting/cannedresponse/'
+        )
+
+        self.assertContains(response, canned_response.response_header)
+
+    def test_export_csv(self):
+        self.mk_comment('export comment')
+
+        response = self.client.post('/admin/modeladmin/commenting/molocomment/')
+
+        expected_output = (
+            'user_name,user_email,comment,submit_date,is_public,'
+            'is_removed,parent\r\n'
+            ',,export comment,'
+        )
+
+        print(response)
+
+        self.assertContains(response, expected_output)

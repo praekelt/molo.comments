@@ -3,7 +3,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.core.urlresolvers import reverse_lazy
 from django.http import HttpResponseRedirect
-from django.shortcuts import get_object_or_404, render
+from django.shortcuts import get_object_or_404, render, redirect
 from django.utils.translation import ugettext as _
 from django.views.generic import FormView, TemplateView
 
@@ -130,3 +130,24 @@ class CommentReplyView(TemplateView):
             'form': form,
             'comment': comment,
         })
+
+
+class WagtailCommentReplyView(FormView):
+    form_class = AdminMoloCommentReplyForm
+    template_name = 'admin/wagtail_admin_reply.html'
+
+    def get_form_kwargs(self):
+        kwargs = super(WagtailCommentReplyView, self).get_form_kwargs()
+        kwargs['parent'] = self.kwargs['parent']
+        return kwargs
+
+    def form_valid(self, form):
+        self.request.POST = self.request.POST.copy()
+        self.request.POST['name'] = ''
+        self.request.POST['url'] = ''
+        self.request.POST['email'] = ''
+        self.request.POST['parent'] = self.kwargs['parent']
+        post_comment(self.request)
+        messages.success(self.request, _('Reply successfully created.'))
+
+        return redirect('/admin/modeladmin/commenting/molocomment/')
