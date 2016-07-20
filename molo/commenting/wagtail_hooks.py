@@ -79,8 +79,8 @@ class MoloCommentsModelAdmin(ModelAdmin, MoloCommentAdmin):
     def content(self, obj, *args, **kwargs):
         if obj.content_object and obj.parent is None:
             return (
-                '<a href="/admin/pages/{0}/edit/">{1}</a>'
-                .format(obj.content_object.pk, obj.content_object.title))
+                '<a href="{0}" target="_blank">{1}</a>'
+                .format(obj.content_object.url, obj.content_object.title))
         return
 
     content.allow_tags = True
