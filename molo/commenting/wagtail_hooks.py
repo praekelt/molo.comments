@@ -22,7 +22,7 @@ def register_admin_reply_url():
 
 
 class DateFilter(DateRangeFilter):
-    template = 'admin/date_range_filter.html'
+    template = 'admin/comments_date_range_filter.html'
 
 
 class CommentsResource(resources.ModelResource):
@@ -36,14 +36,14 @@ class CommentsResource(resources.ModelResource):
 class ModelAdminTemplate(IndexView):
     def post(self, request, *args, **kwargs):
 
-        submit_date__gte = request.GET.get('submit_date__gte')
-        submit_date__lt = request.GET.get('submit_date__lt')
+        drf__submit_date__gte = request.GET.get('drf__submit_date__gte')
+        drf__submit_date__lte = request.GET.get('drf__submit_date__lte')
         is_removed__exact = request.GET.get('is_removed__exact')
 
         filter_list = {
-            'submit_date__range': (submit_date__gte,
-                                   submit_date__lt) if
-            submit_date__gte and submit_date__lt else None,
+            'submit_date__range': (drf__submit_date__gte,
+                                   drf__submit_date__lte) if
+            drf__submit_date__gte and drf__submit_date__lte else None,
             'is_removed': is_removed__exact
         }
 
