@@ -200,7 +200,7 @@ class CommentingAdminTest(TestCase):
         data = {
             i.get('name'): i.get('value') or ''
             for i in html.form.find_all('input') if i.get('name')
-            }
+        }
         data['comment'] = 'test duplication'
 
         self.client.post(
