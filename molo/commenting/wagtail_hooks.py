@@ -1,3 +1,4 @@
+from daterange_filter.filter import DateRangeFilter
 from django.conf.urls import url
 from django.core.urlresolvers import reverse
 from django.http import HttpResponse
@@ -18,6 +19,10 @@ def register_admin_reply_url():
             WagtailCommentReplyView.as_view(),
             name='wagtail-molo-comment-reply'),
     ]
+
+
+class DateFilter(DateRangeFilter):
+    template = 'admin/date_range_filter.html'
 
 
 class CommentsResource(resources.ModelResource):
@@ -72,7 +77,7 @@ class MoloCommentsModelAdmin(ModelAdmin, MoloCommentAdmin):
         'comment', 'moderator_reply', 'content', '_user', 'is_removed',
         'is_reported', 'reported_count', 'submit_date',)
 
-    list_filter = ('submit_date', 'site', 'is_removed',)
+    list_filter = (('submit_date', DateFilter), 'site', 'is_removed',)
 
     search_fields = ('comment',)
 

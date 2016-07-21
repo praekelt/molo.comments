@@ -3,3 +3,4 @@ django-contrib-comments==1.7.1
 django-mptt
 django-import-export
 wagtailmodeladmin
+django-daterange-filter
