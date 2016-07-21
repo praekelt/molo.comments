@@ -187,3 +187,33 @@ class CommentingAdminTest(TestCase):
         self.assertEqual(canned_response.response_header,
                          options[1].contents[0])
         self.assertEqual(canned_response.response, options[1]['value'])
+
+    def test_admin_can_duplicate_replies(self):
+        comment = self.mk_comment('comment')
+
+        formview = self.client.get(
+            reverse('admin:commenting_molocomment_reply', kwargs={
+                'parent': comment.pk,
+            }))
+
+        html = BeautifulSoup(formview.content, 'html.parser')
+        data = {
+            i.get('name'): i.get('value') or ''
+            for i in html.form.find_all('input') if i.get('name')
+        }
+        data['comment'] = 'test duplication'
+
+        self.client.post(
+            reverse('admin:commenting_molocomment_reply', kwargs={
+                'parent': comment.pk,
+            }), data=data)
+
+        self.client.post(
+            reverse('admin:commenting_molocomment_reply', kwargs={
+                'parent': comment.pk,
+            }), data=data)
+
+        changelist = self.client.get(
+            reverse('admin:commenting_molocomment_changelist'))
+
+        self.assertContains(changelist, 'test duplication', count=2)
