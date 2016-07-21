@@ -24,7 +24,8 @@ class MoloCommentForm(CommentForm):
 
     def get_comment_object(self):
         """
-        NB: Overridden to remove dupe comment check for admins
+        NB: Overridden to remove dupe comment check for admins (necessary for
+        canned responses)
 
         Return a new (unsaved) comment object based on the information in this
         form. Assumes that the form is already validated and will throw a
