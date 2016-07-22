@@ -274,9 +274,10 @@ class TestCommentsWagtailAdminUserView(TestCase, MoloTestCaseMixin):
         self.client.login(username='superuser', password='0000')
 
         self.article = ArticlePage.objects.create(
-                    title='article 1', depth=1,
-                    subtitle='article 1 subtitle',
-                    slug='article-1', path=[1])
+            title='article 1', depth=1,
+            subtitle='article 1 subtitle',
+            slug='article-1', path=[1]
+        )
 
     def mk_comment(self, comment):
         return MoloComment.objects.create(
@@ -299,9 +300,9 @@ class TestCommentsWagtailAdminUserView(TestCase, MoloTestCaseMixin):
 
     def test_wagtail_admin_canned_responses_view(self):
         canned_response = CannedResponse.objects.create(
-                    response_header='Test Canned Response',
-                    response='Canned response text'
-                )
+            response_header='Test Canned Response',
+            response='Canned response text'
+        )
 
         response = self.client.get(
             '/admin/modeladmin/commenting/cannedresponse/'
@@ -312,7 +313,9 @@ class TestCommentsWagtailAdminUserView(TestCase, MoloTestCaseMixin):
     def test_export_csv(self):
         self.mk_comment('export comment')
 
-        response = self.client.post('/admin/modeladmin/commenting/molocomment/')
+        response = self.client.post(
+            '/admin/modeladmin/commenting/molocomment/'
+        )
 
         expected_output = (
             'user_name,user_email,comment,submit_date,is_public,'
