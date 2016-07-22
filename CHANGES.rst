@@ -1,6 +1,16 @@
 CHANGELOG
 =========
 
+0.4.2
+-----
+- add missing migration
+- only allow admin users to post duplicate comments
+
+0.4.1
+-----
+- Removed `{% load url from future %}`
+- Use user's alias when posting a comment
+
 0.4.0
 -----
 - Now compatible with Django 1.9 (removed model import in __init__.py)
