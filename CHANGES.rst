@@ -1,6 +1,11 @@
 CHANGELOG
 =========
 
+0.4.2
+-----
+- add missing migration
+- only allow admin users to post duplicate comments
+
 0.4.1
 -----
 - Removed `{% load url from future %}`
