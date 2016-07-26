@@ -256,11 +256,9 @@ class MoloCommentsModelAdmin(WagtailModelAdmin, MoloCommentAdmin):
     def content(self, obj, *args, **kwargs):
         if obj.content_object and obj.parent is None:
             return '<a href="{0}" target="_blank">{1}</a> ' \
-                   '(<a href="/admin/pages/{2}/edit/">edit</a>)'.format(
-                obj.content_object.url,
-                obj.content_object.title,
-                obj.content_object.pk
-            )
+                   '(<a href="/admin/pages/{2}/edit/">edit</a>)'\
+                .format(obj.content_object.url, obj.content_object.title,
+                        obj.content_object.pk)
 
         return
 
