@@ -12,7 +12,6 @@ from django.utils.translation import ugettext as _
 
 class MoloCommentsAdminView(IndexView):
     def post(self, request, *args, **kwargs):
-
         drf__submit_date__gte = request.GET.get('drf__submit_date__gte')
         drf__submit_date__lte = request.GET.get('drf__submit_date__lte')
         is_removed__exact = request.GET.get('is_removed__exact')
@@ -34,9 +33,9 @@ class MoloCommentsAdminView(IndexView):
             MoloComment.objects.filter(**arguments)
         )
 
-        response = HttpResponse(dataset.csv, content_type="csv")
+        response = HttpResponse(dataset.csv, content_type="text/csv")
         response['Content-Disposition'] = \
-            'attachment; filename=comments.csv'
+            'attachment;filename=comments.csv'
         return response
 
     def get_template_names(self):
