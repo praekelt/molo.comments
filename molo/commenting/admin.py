@@ -255,13 +255,17 @@ class MoloCommentsModelAdmin(WagtailModelAdmin, MoloCommentAdmin):
 
     def content(self, obj, *args, **kwargs):
         if obj.content_object and obj.parent is None:
-            return (
-                '<a href="{0}" target="_blank">{1}</a>'
-                .format(obj.content_object.url, obj.content_object.title))
+            return '<a href="{0}" target="_blank">{1}</a> ' \
+                   '(<a href="/admin/pages/{2}/edit/">edit</a>)'.format(
+                obj.content_object.url,
+                obj.content_object.title,
+                obj.content_object.pk
+            )
+
         return
 
     content.allow_tags = True
-    content.short_description = ''
+    content.short_description = 'Content'
 
     def moderator_reply(self, obj):
         if obj.parent is None:
