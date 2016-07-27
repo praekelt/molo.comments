@@ -293,6 +293,8 @@ class TestMoloCommentsAdminViews(TestCase, MoloTestCaseMixin):
                                   'datetime',
                                   response.content)
 
+        # not sure why user_name, user_email & article_full_url are blank
+        # under test - they're in the export when testing manually
         expected_output = (
             'submit_date,user_name,user_email,comment,parent,article_title,'
             'article_subtitle,article_full_url,is_public,is_removed\r\n'
