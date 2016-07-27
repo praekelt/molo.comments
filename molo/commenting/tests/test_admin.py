@@ -1,3 +1,5 @@
+import re
+
 from bs4 import BeautifulSoup
 from datetime import datetime
 from django.contrib.admin.templatetags.admin_static import static
@@ -9,6 +11,7 @@ from django.test import TestCase, Client
 
 from molo.commenting.models import MoloComment, CannedResponse
 from molo.core.models import ArticlePage
+from molo.core.tests.base import MoloTestCaseMixin
 
 
 class CommentingAdminTest(TestCase):
@@ -217,3 +220,83 @@ class CommentingAdminTest(TestCase):
             reverse('admin:commenting_molocomment_changelist'))
 
         self.assertContains(changelist, 'test duplication', count=2)
+
+
+class TestMoloCommentsAdminViews(TestCase, MoloTestCaseMixin):
+    def setUp(self):
+        self.mk_main()
+
+        self.user = User.objects.create_user(
+            'test', 'test@example.org', 'test'
+        )
+
+        self.superuser = User.objects.create_superuser(
+            username='superuser',
+            email='admin@example.com',
+            password='0000',
+            is_staff=True
+        )
+
+        self.client = Client()
+        self.client.login(username='superuser', password='0000')
+
+        self.article = ArticlePage.objects.create(
+            title='article 1', depth=1,
+            subtitle='article 1 subtitle',
+            slug='article-1', path=[1]
+        )
+
+        self.content_type = ContentType.objects.get_for_model(self.article)
+
+    def mk_comment(self, comment, parent=None):
+        return MoloComment.objects.create(
+            content_type=self.content_type,
+            object_pk=self.article.pk,
+            content_object=self.article,
+            site=Site.objects.get_current(),
+            user=self.user,
+            comment=comment,
+            parent=parent,
+            submit_date=datetime.now())
+
+    def test_comment_appears_in_admin_view(self):
+        comment = self.mk_comment('the comment')
+
+        response = self.client.get(
+            '/admin/modeladmin/commenting/molocomment/'
+        )
+
+        self.assertContains(response, comment.comment)
+
+    def test_canned_response_appears_in_canned_responses_admin_view(self):
+        canned_response = CannedResponse.objects.create(
+            response_header='Test Canned Response',
+            response='Canned response text'
+        )
+
+        response = self.client.get(
+            '/admin/modeladmin/commenting/cannedresponse/'
+        )
+
+        self.assertContains(response, canned_response.response_header)
+
+    def test_export_csv(self):
+        self.mk_comment('export comment')
+
+        response = self.client.post(
+            '/admin/modeladmin/commenting/molocomment/'
+        )
+
+        # substitute the datetime component to avoid intermittent test failures
+        # due to crossing a second boundary
+        response.content = re.sub('\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}',
+                                  'datetime',
+                                  response.content)
+
+        expected_output = (
+            'submit_date,user_name,user_email,comment,parent,article_title,'
+            'article_subtitle,article_full_url,is_public,is_removed\r\n'
+            'datetime,,,export comment,,article 1,article 1 subtitle,,1,0\r\n'
+        )
+
+        self.assertContains(response, expected_output)
