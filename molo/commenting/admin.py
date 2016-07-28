@@ -18,7 +18,8 @@ from molo.core.models import ArticlePage
 
 from daterange_filter.filter import DateRangeFilter
 
-from wagtailmodeladmin.options import ModelAdmin, ModelAdminGroup
+from wagtailmodeladmin.options import ModelAdmin as WagtailModelAdmin, \
+    ModelAdminGroup
 
 
 class MoloCommentAdmin(MPTTModelAdmin, CommentsAdmin):
@@ -231,11 +232,12 @@ admin.site.register(ArticlePage, ModeratedPageAdmin)
 admin.site.register(CannedResponse, CannedResponseModelAdmin)
 
 
+# Below here is for Wagtail Admin
 class MoloCommentsDateRangeFilter(DateRangeFilter):
     template = 'admin/molo_comments_date_range_filter.html'
 
 
-class MoloCommentsModelAdmin(ModelAdmin, MoloCommentAdmin):
+class MoloCommentsModelAdmin(WagtailModelAdmin, MoloCommentAdmin):
     model = MoloComment
     menu_label = 'Comments'
     menu_icon = 'edit'
@@ -253,13 +255,15 @@ class MoloCommentsModelAdmin(ModelAdmin, MoloCommentAdmin):
 
     def content(self, obj, *args, **kwargs):
         if obj.content_object and obj.parent is None:
-            return (
-                '<a href="{0}" target="_blank">{1}</a>'
-                .format(obj.content_object.url, obj.content_object.title))
+            return '<a href="{0}" target="_blank">{1}</a> ' \
+                   '(<a href="/admin/pages/{2}/edit/">edit</a>)'\
+                .format(obj.content_object.url, obj.content_object.title,
+                        obj.content_object.pk)
+
         return
 
     content.allow_tags = True
-    content.short_description = ''
+    content.short_description = 'Content'
 
     def moderator_reply(self, obj):
         if obj.parent is None:
@@ -271,7 +275,8 @@ class MoloCommentsModelAdmin(ModelAdmin, MoloCommentAdmin):
     moderator_reply.allow_tags = True
 
 
-class MoloCannedResponsesModelAdmin(ModelAdmin, CannedResponseModelAdmin):
+class MoloCannedResponsesModelAdmin(WagtailModelAdmin,
+                                    CannedResponseModelAdmin):
     model = CannedResponse
     menu_label = 'Canned Responses'
     menu_icon = 'openquote'
