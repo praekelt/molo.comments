@@ -1,6 +1,10 @@
 CHANGELOG
 =========
 
+0.5.0
+-----
+- Added Comments view to Wagtail Admin
+
 0.4.2
 -----
 - add missing migration
