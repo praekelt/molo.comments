@@ -1,4 +1,5 @@
 from django import forms
+from django.contrib.auth import get_user_model
 from django.forms import ModelChoiceField
 from django.utils.translation import ugettext_lazy as _
 from django_comments.forms import CommentForm
@@ -23,8 +24,8 @@ class MoloCommentForm(CommentForm):
 
     def get_comment_object(self):
         """
-        NB: Overridden to remove dupe comment check (necessary for canned
-            responses)
+        NB: Overridden to remove dupe comment check for admins (necessary for
+        canned responses)
 
         Return a new (unsaved) comment object based on the information in this
         form. Assumes that the form is already validated and will throw a
@@ -39,6 +40,15 @@ class MoloCommentForm(CommentForm):
 
         CommentModel = self.get_comment_model()
         new = CommentModel(**self.get_comment_create_data())
+
+        user_model = get_user_model()
+        try:
+            user = user_model.objects.get(username=new.user_name)
+            if not user.is_staff:
+                new = self.check_for_duplicate_comment(new)
+        except user_model.DoesNotExist:
+            # post_molo_comment may have set the username to 'Anonymous'
+            new = self.check_for_duplicate_comment(new)
 
         return new
 

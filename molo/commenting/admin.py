@@ -9,11 +9,17 @@ from django.contrib.admin.views.main import ChangeList
 from django.shortcuts import get_object_or_404
 from django.contrib.admin.utils import unquote
 from django.contrib.contenttypes.models import ContentType
+from molo.commenting.admin_views import MoloCommentsAdminView
 from mptt.admin import MPTTModelAdmin
 
 from molo.commenting.models import MoloComment, CannedResponse
 from molo.commenting.views import AdminCommentReplyView
 from molo.core.models import ArticlePage
+
+from daterange_filter.filter import DateRangeFilter
+
+from wagtailmodeladmin.options import ModelAdmin as WagtailModelAdmin, \
+    ModelAdminGroup
 
 
 class MoloCommentAdmin(MPTTModelAdmin, CommentsAdmin):
@@ -64,6 +70,9 @@ class MoloCommentAdmin(MPTTModelAdmin, CommentsAdmin):
         return obj.name
 
     def _user(self, obj):
+        if not obj.user:
+            return ""
+
         url = reverse('admin:auth_user_change', args=(obj.user.id,))
         return '<a href="?user=%s">%s</a>' % (
             obj.user.id,
@@ -224,3 +233,65 @@ admin.site.register(MoloComment, MoloCommentAdmin)
 admin.site.register(CommentFlag)
 admin.site.register(ArticlePage, ModeratedPageAdmin)
 admin.site.register(CannedResponse, CannedResponseModelAdmin)
+
+
+# Below here is for Wagtail Admin
+class MoloCommentsDateRangeFilter(DateRangeFilter):
+    template = 'admin/molo_comments_date_range_filter.html'
+
+
+class MoloCommentsModelAdmin(WagtailModelAdmin, MoloCommentAdmin):
+    model = MoloComment
+    menu_label = 'Comments'
+    menu_icon = 'edit'
+    menu_order = 100
+    index_view_class = MoloCommentsAdminView
+    add_to_settings_menu = False
+    list_display = (
+        'comment', 'moderator_reply', 'content', '_user', 'is_removed',
+        'is_reported', 'reported_count', 'submit_date',)
+
+    list_filter = (('submit_date', MoloCommentsDateRangeFilter), 'site',
+                   'is_removed',)
+
+    search_fields = ('comment',)
+
+    def content(self, obj, *args, **kwargs):
+        if obj.content_object and obj.parent is None:
+            return '<a href="{0}" target="_blank">{1}</a> ' \
+                   '(<a href="/admin/pages/{2}/edit/">edit</a>)'\
+                .format(obj.content_object.url, obj.content_object.title,
+                        obj.content_object.pk)
+
+        return
+
+    content.allow_tags = True
+    content.short_description = 'Content'
+
+    def moderator_reply(self, obj):
+        if obj.parent is None:
+            reply_url = reverse(
+                'molo-comments-admin-reply', args=(obj.id,))
+            return '<a href="%s">Add reply</a>' % reply_url
+        else:
+            return ''
+    moderator_reply.allow_tags = True
+
+
+class MoloCannedResponsesModelAdmin(WagtailModelAdmin,
+                                    CannedResponseModelAdmin):
+    model = CannedResponse
+    menu_label = 'Canned Responses'
+    menu_icon = 'openquote'
+    menu_order = 200
+
+    list_display = ('response_header', 'response', 'date_added')
+
+    search_fields = ('response_header',)
+
+
+class CommentingModelAdminGroup(ModelAdminGroup):
+    menu_label = 'Commenting'
+    menu_icon = 'edit'
+    menu_order = 300
+    items = (MoloCommentsModelAdmin, MoloCannedResponsesModelAdmin)

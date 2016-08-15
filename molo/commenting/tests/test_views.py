@@ -12,7 +12,6 @@ from molo.commenting.models import MoloComment
 from molo.commenting.forms import MoloCommentForm
 from molo.core.models import ArticlePage
 
-
 urlpatterns = patterns(
     '',
     url(r'^commenting/', include('molo.commenting.urls')),

@@ -1,6 +1,19 @@
 CHANGELOG
 =========
 
+0.5.1
+-----
+- Return None if there is no user
+
+0.5.0
+-----
+- Added Comments view to Wagtail Admin
+
+0.4.2
+-----
+- add missing migration
+- only allow admin users to post duplicate comments
+
 0.4.1
 -----
 - Removed `{% load url from future %}`
