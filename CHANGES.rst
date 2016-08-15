@@ -1,6 +1,10 @@
 CHANGELOG
 =========
 
+0.5.1
+-----
+- Return None if there is no user
+
 0.5.0
 -----
 - Added Comments view to Wagtail Admin
