@@ -1,6 +1,10 @@
 CHANGELOG
 =========
 
+0.5.2
+-----
+- Convert unicode to encoded text for article title
+
 0.5.1
 -----
 - Return None if there is no user
