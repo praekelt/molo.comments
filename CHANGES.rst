@@ -1,6 +1,11 @@
 CHANGELOG
 =========
 
+0.5.4
+-----
+- Pin pytest to 2.9
+- Pin django-mptt to 0.8.5
+
 0.5.3
 -----
 - Change extended template for reply.html

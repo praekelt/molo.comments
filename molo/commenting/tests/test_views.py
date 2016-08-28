@@ -11,6 +11,7 @@ from django.test import TestCase, Client, override_settings
 from molo.commenting.models import MoloComment
 from molo.commenting.forms import MoloCommentForm
 from molo.core.models import ArticlePage
+from molo.core.tests.base import MoloTestCaseMixin
 
 urlpatterns = patterns(
     '',
@@ -19,9 +20,11 @@ urlpatterns = patterns(
 
 
 @override_settings(ROOT_URLCONF='molo.commenting.tests.test_views')
-class ViewsTest(TestCase):
+class ViewsTest(TestCase, MoloTestCaseMixin):
 
     def setUp(self):
+        # Creates main page
+        self.mk_main()
         self.user = User.objects.create_user(
             'test', 'test@example.org', 'test')
         self.content_type = ContentType.objects.get_for_model(self.user)
@@ -160,9 +163,11 @@ class ViewsTest(TestCase):
 
 
 @override_settings(ROOT_URLCONF='molo.commenting.tests.test_views')
-class ViewMoreCommentsTest(TestCase):
+class ViewMoreCommentsTest(TestCase, MoloTestCaseMixin):
 
     def setUp(self):
+        # Creates main page
+        self.mk_main()
         self.user = User.objects.create_user(
             'test', 'test@example.org', 'test')
         self.article = ArticlePage.objects.create(
