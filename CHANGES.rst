@@ -1,6 +1,10 @@
 CHANGELOG
 =========
 
+0.5.3
+-----
+- Change extended template for reply.html
+
 0.5.2
 -----
 - Convert unicode to encoded text for article title
