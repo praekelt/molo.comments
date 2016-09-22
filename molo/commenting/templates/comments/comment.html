@@ -1,7 +1,6 @@
 {% load i18n molo_commenting_tags %}
-<div class="comment {{self.get_parent_section.get_effective_extra_style_hints}} {% if node.user.is_staff %}staff{% endif %}">
-  <p class="by">
-    <strong>
+<div class="comment comment{{self.get_parent_section.get_effective_extra_style_hints}} {% if node.user.is_staff %}staff{% endif %}">
+  <h4 class="comment__author">
     {% if node.user_name.lower == 'anonymous' %}
       {{node.user_name}}
     {% else %}
@@ -11,16 +10,17 @@
         {{node.user.profile.alias}}
       {% endif %}
     {% endif %}
-    </strong>
-  </p>
+  </h4>
   {% if node.is_removed %}
-    <p>{% trans "This comment has been removed by the community. Please read our platform rules." %}</p>
+    <h5 class="heading heading--comment__description">
+    {% trans "This comment has been removed by the community. Please read our platform rules." %}</h5>
   {% else %}
-    <p>{{node.comment}}</p>
+  <p>{{node.comment}}</p>
     {% if node.parent == None %}
-        <p><a href="{% url 'molo-comments-report' node.pk %}?next={% url 'report_response' node.pk %}" class="report">{% trans "Report" %}</a></p>
+        <a href="{% url 'molo-comments-report' node.pk %}?next={% url 'report_response' node.pk %}" class="call-to-action__nav-item call-to-action__nav-item--response">
+        {% trans "Report" %}</a>
         {% if request.user|is_in_group:'Expert' and not node.user|is_in_group:'Expert' %}
-            <p><a href="{% url 'molo-comments-reply' node.pk %}" class="report">{% trans "Reply"%}</a></p>
+          <a href="{% url 'molo-comments-reply' node.pk %}" class="call-to-action__nav-item call-to-action__nav-item--response">{% trans "Reply"%}</a>
         {% endif %}
     {% endif %}
   {% endif %}
