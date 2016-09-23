@@ -3,7 +3,7 @@
 
 {% block content %}
 
-<div class="comment comment{{self.get_parent_section.get_effective_extra_style_hints}}">
+<div class="comments comments{{self.get_parent_section.get_effective_extra_style_hints}}">
     <h1 class="heading heading--comment">{% trans "Comments" %}</h6>
     <div id="comment__list">
       {% for node in comments %}

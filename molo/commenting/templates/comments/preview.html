@@ -3,7 +3,7 @@
 {% block content %}
 {% get_comments_content_object for form as self %}
 
-<div class="comment comment{{self.get_parent_section.get_effective_extra_style_hints}}">
+<div class="comments comments{{self.get_parent_section.get_effective_extra_style_hints}}">
 
   {% with parent_section=self.get_parent_section ancestor=self.get_parent_section.get_ancestors.last %}
       {% if self.image %}
@@ -27,7 +27,7 @@
   </ul>
   {% endif %}
 
-  <div class="post-comment">
+  <div class="comments__post-message">
     {% if request.user.is_authenticated %}
       {% include "comments/form.html" with node=comment %}
     {% else %}
