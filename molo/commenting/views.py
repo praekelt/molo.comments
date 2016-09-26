@@ -90,13 +90,6 @@ def report_response(request, comment_pk):
         'article': comment.content_object,
     })
 
-def posted_response(request, comment_pk):
-    comment = MoloComment.objects.get(pk=comment_pk)
-
-    return render(request, 'comments/comment_block.html', {
-        'article': comment.content_object,
-    })
-
 
 class AdminCommentReplyView(FormView):
     form_class = AdminMoloCommentReplyForm

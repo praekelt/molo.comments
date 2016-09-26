@@ -14,7 +14,6 @@ urlpatterns = patterns(
         name='molo-comments-reply'),
 
     url(r'molo/post/$', views.post_molo_comment, name='molo-comments-post'),
-    url(r'molo/post/(\d+)/$', views.posted_response, name='molo-comments-done'),
     url(
         r'molo/(?P<page_id>\d+)/comments/$',
         views.view_more_article_comments,
