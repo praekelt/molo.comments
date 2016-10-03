@@ -15,7 +15,8 @@ from molo.core.tests.base import MoloTestCaseMixin
 
 urlpatterns = patterns(
     '',
-    url(r'^commenting/', include('molo.commenting.urls')),
+    url(r'^commenting/',
+        include('molo.commenting.urls', namespace='molo.commenting')),
 )
 
 
@@ -232,11 +233,11 @@ class ViewMoreCommentsTest(TestCase, MoloTestCaseMixin):
         reply1 = self.create_comment('test reply1 text', parent=comment2)
         reply2 = self.create_comment('test reply2 text', parent=comment2)
         response = self.client.get(
-            reverse('more-comments', args=(self.article.pk,)))
+            reverse('molo.commenting:more-comments', args=(self.article.pk,)))
 
         html = BeautifulSoup(response.content, 'html.parser')
         [c3row, c2row, reply1row, reply2row, c1row] = html.find_all(
-            class_='comment')
+            class_='comment__message')
         self.assertTrue(comment3.comment in c3row.prettify())
         self.assertTrue(comment2.comment in c2row.prettify())
         self.assertTrue(reply1.comment in reply1row.prettify())
