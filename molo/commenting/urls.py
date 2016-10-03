@@ -18,5 +18,5 @@ urlpatterns = patterns(
         r'molo/(?P<page_id>\d+)/comments/$',
         views.view_more_article_comments,
         name='more-comments'),
-    url(r'', include('django_comments.urls')),
+
 )

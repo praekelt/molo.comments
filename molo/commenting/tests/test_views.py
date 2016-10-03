@@ -17,6 +17,7 @@ urlpatterns = patterns(
     '',
     url(r'^commenting/',
         include('molo.commenting.urls', namespace='molo.commenting')),
+    url(r'', include('django_comments.urls')),
 )
 
 
