@@ -45,7 +45,8 @@ class ViewsTest(TestCase, MoloTestCaseMixin):
     def test_reporting_without_removal(self):
         comment = self.mk_comment('the comment')
         response = self.client.get(
-            reverse('molo-comments-report', args=(comment.pk,)))
+            reverse('molo.commenting:molo-comments-report',
+                    args=(comment.pk,)))
         self.assertEqual(response.status_code, 302)
         [flag] = comment.flags.all()
         self.assertEqual(flag.comment, comment)
@@ -58,7 +59,8 @@ class ViewsTest(TestCase, MoloTestCaseMixin):
         comment = self.mk_comment('the comment')
         with self.settings(COMMENTS_FLAG_THRESHHOLD=1):
             response = self.client.get(
-                reverse('molo-comments-report', args=(comment.pk,)))
+                reverse('molo.commenting:molo-comments-report',
+                        args=(comment.pk,)))
         self.assertEqual(response.status_code, 302)
         [flag] = comment.flags.all()
         self.assertEqual(flag.comment, comment)
@@ -74,7 +76,7 @@ class ViewsTest(TestCase, MoloTestCaseMixin):
             'comment': 'Foo',
         })
         self.client.post(
-            reverse('molo-comments-post'), data)
+            reverse('molo.commenting:molo-comments-post'), data)
         [comment] = MoloComment.objects.filter(user=self.user)
         self.assertEqual(comment.comment, 'Foo')
         self.assertEqual(comment.user_name, 'the supplied name')
@@ -87,7 +89,7 @@ class ViewsTest(TestCase, MoloTestCaseMixin):
             'submit_anonymously': '1',
         })
         self.client.post(
-            reverse('molo-comments-post'), data)
+            reverse('molo.commenting:molo-comments-post'), data)
         [comment] = MoloComment.objects.filter(user=self.user)
         self.assertEqual(comment.comment, 'Foo')
         self.assertEqual(comment.user_name, 'Anonymous')
@@ -103,7 +105,7 @@ class ViewsTest(TestCase, MoloTestCaseMixin):
             'comment': 'Foo',
         })
         self.client.post(
-            reverse('molo-comments-post'), data)
+            reverse('molo.commenting:molo-comments-post'), data)
         [comment] = MoloComment.objects.filter(user=self.user)
         self.assertEqual(comment.comment, 'Foo')
         self.assertEqual(comment.user_name, 'the supplied name')
@@ -119,7 +121,7 @@ class ViewsTest(TestCase, MoloTestCaseMixin):
             content_type=ContentType.objects.get_for_model(article),
             site=Site.objects.get_current(), user=self.user,
             comment='comment 1', submit_date=datetime.now())
-        response = self.client.get(reverse('report_response',
+        response = self.client.get(reverse('molo.commenting:report_response',
                                    args=(comment.id,)))
         self.assertContains(
             response,
@@ -141,7 +143,8 @@ class ViewsTest(TestCase, MoloTestCaseMixin):
         data.update({
             'comment': "This is another comment"
         })
-        response = self.client.post(reverse('molo-comments-post'), data)
+        response = self.client.post(
+            reverse('molo.commenting:molo-comments-post'), data)
         self.assertEqual(response.status_code, 302)
 
     def test_commenting_open(self):
@@ -159,7 +162,8 @@ class ViewsTest(TestCase, MoloTestCaseMixin):
         data.update({
             'comment': "This is a second comment",
         })
-        response = self.client.post(reverse('molo-comments-post'), data)
+        response = self.client.post(
+            reverse('molo.commenting:molo-comments-post'), data)
         self.assertEqual(response.status_code, 302)
 
 
@@ -193,19 +197,20 @@ class ViewMoreCommentsTest(TestCase, MoloTestCaseMixin):
         for i in range(50):
             self.create_comment('comment %d' % i)
         response = self.client.get(
-            reverse('more-comments', args=[self.article.pk, ],))
+            reverse('molo.commenting:more-comments',
+                    args=[self.article.pk, ],))
         self.assertContains(response, 'Page 1 of 3')
         self.assertContains(response, '&rarr;')
         self.assertNotContains(response, '&larr;')
 
-        response = self.client.get(
-            '%s?p=2' % (reverse('more-comments', args=[self.article.pk, ],),))
+        response = self.client.get('%s?p=2' % (reverse(
+            'molo.commenting:more-comments', args=[self.article.pk, ],),))
         self.assertContains(response, 'Page 2 of 3')
         self.assertContains(response, '&rarr;')
         self.assertContains(response, '&larr;')
 
-        response = self.client.get(
-            '%s?p=3' % (reverse('more-comments', args=[self.article.pk, ],),))
+        response = self.client.get('%s?p=3' % (reverse(
+            'molo.commenting:more-comments', args=[self.article.pk, ],),))
         self.assertContains(response, 'Page 3 of 3')
         self.assertNotContains(response, '&rarr;')
         self.assertContains(response, '&larr;')
@@ -213,8 +218,8 @@ class ViewMoreCommentsTest(TestCase, MoloTestCaseMixin):
     def test_view_page_not_integer(self):
         '''If the requested page number is not an integer, the first page
         should be returned.'''
-        response = self.client.get(
-            '%s?p=foo' % reverse('more-comments', args=(self.article.pk,)))
+        response = self.client.get('%s?p=foo' % reverse(
+            'molo.commenting:more-comments', args=(self.article.pk,)))
         self.assertContains(response, 'Page 1 of 1')
 
     def test_view_empty_page(self):
@@ -222,8 +227,8 @@ class ViewMoreCommentsTest(TestCase, MoloTestCaseMixin):
         last page.'''
         for i in range(40):
             self.create_comment('comment %d' % i)
-        response = self.client.get(
-            '%s?p=3' % reverse('more-comments', args=(self.article.pk,)))
+        response = self.client.get('%s?p=3' % reverse(
+            'molo.commenting:more-comments', args=(self.article.pk,)))
         self.assertContains(response, 'Page 2 of 2')
 
     def test_view_nested_comments(self):
@@ -251,10 +256,10 @@ class ViewMoreCommentsTest(TestCase, MoloTestCaseMixin):
         reply = self.create_comment('test reply text', parent=comment)
 
         response = self.client.get(
-            reverse('more-comments', args=(self.article.pk,)))
+            reverse('molo.commenting:more-comments', args=(self.article.pk,)))
 
         html = BeautifulSoup(response.content, 'html.parser')
-        [crow, replyrow] = html.find_all(class_='comment')
+        [crow, replyrow] = html.find_all(class_='comment__message')
         self.assertTrue(comment.comment in crow.prettify())
         self.assertTrue('report' in crow.prettify())
         self.assertTrue(reply.comment in replyrow.prettify())
