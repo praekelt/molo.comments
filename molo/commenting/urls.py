@@ -1,4 +1,4 @@
-from django.conf.urls import patterns, include, url
+from django.conf.urls import patterns, url
 
 from molo.commenting import views
 from molo.commenting.views import CommentReplyView
