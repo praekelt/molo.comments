@@ -12,8 +12,8 @@
     {% endif %}
   </h4>
   {% if node.is_removed %}
-    <h5 class="comment__description">
-    {% trans "This comment has been removed by the community. Please read our platform rules." %}</h5>
+    <h6 class="comment__description">
+    {% trans "This comment has been removed by the community. Please read our platform rules." %}</h6>
   {% else %}
   <p>{{node.comment}}</p>
     {% if node.parent == None %}

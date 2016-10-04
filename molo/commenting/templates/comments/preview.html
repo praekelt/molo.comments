@@ -27,7 +27,7 @@
   </ul>
   {% endif %}
 
-  <div class="comments__post-message">
+  <div class="comment__post-message">
     {% if request.user.is_authenticated %}
       {% include "comments/form.html" with node=comment %}
     {% else %}
