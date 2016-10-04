@@ -4,7 +4,6 @@
 {% get_comments_content_object for form as self %}
 
 <div class="comments comments{{self.get_parent_section.get_effective_extra_style_hints}}">
-
   {% with parent_section=self.get_parent_section ancestor=self.get_parent_section.get_ancestors.last %}
       {% if self.image %}
         {% image self.image width-98 %}
@@ -20,7 +19,7 @@
   {% if messages %}
   <ul class="comment-message">
       {% for message in messages %}
-        <li class="comment-message__items {% if message.tags %}{{ message.tags }}{% endif %} ">
+        <li class="comment-message__item {% if message.tags %}{{ message.tags }}{% endif %} ">
           {{ message }}
         </li>
       {% endfor %}
