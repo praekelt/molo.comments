@@ -3,10 +3,8 @@
 {% block content %}
 {% get_comments_content_object for form as self %}
 
-<div class="title {{self.get_parent_section.get_effective_extra_style_hints}}">
-
+<div class="comments comments{{self.get_parent_section.get_effective_extra_style_hints}}">
   {% with parent_section=self.get_parent_section ancestor=self.get_parent_section.get_ancestors.last %}
-    <div class="icon">
       {% if self.image %}
         {% image self.image width-98 %}
       {% elif parent_section.image %}
@@ -14,28 +12,30 @@
       {% else %}
         {% image ancestor.sectionpage.image width-98 %}
       {% endif %}
-    </div>
-    <h6>{{ancestor.sectionpage.title}}</h6>
-    <h6>{{parent_section.title}}</h6>
+      <h1 class="heading heading--comment-ancestor">{{ancestor.sectionpage.title}}</h1>
+      <h1 class="heading heading--comment-parent">{{parent_section.title}}</h1>
   {% endwith %}
-</div>
 
-<div class="block {{self.get_parent_section.get_effective_extra_style_hints}}">
   {% if messages %}
-  <ul class="messages">
+  <ul class="comment-message">
       {% for message in messages %}
-      <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+        <li class="comment-message__item {% if message.tags %}{{ message.tags }}{% endif %} ">
+          {{ message }}
+        </li>
       {% endfor %}
   </ul>
   {% endif %}
-  <div class="article-copy">
-    <div class="post-comment">
-      {% if request.user.is_authenticated %}
-        {% include "comments/form.html" with node=comment %}
-      {% else %}
-        <p>{% trans "Please " %}<a href="{% url 'molo.profiles:auth_login' %}">{% trans "log in" %}</a>{% trans " to leave a comment." %}</p>
-      {% endif %}
-		</div>
+
+  <div class="comment__post-message">
+    {% if request.user.is_authenticated %}
+      {% include "comments/form.html" with node=comment %}
+    {% else %}
+      <h6 class="comment__text">{% trans "Please " %}
+      <a href="{% url 'molo.profiles:auth_login' %}" class="call-to-action__nav-item call-to-action__nav-item--login">
+        {% trans "log in" %}</a>
+      {% trans " to leave a comment." %}</h6>
+    {% endif %}
   </div>
+
 </div>
 {% endblock %}
