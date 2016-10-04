@@ -13,8 +13,8 @@
       {% else %}
         {% image ancestor.sectionpage.image width-98 %}
       {% endif %}
-      <h1 class="heading heading--comment">{{ancestor.sectionpage.title}}</h1>
-      <h1 class="heading heading--comment">{{parent_section.title}}</h1>
+      <h1 class="heading heading--comment-ancestor">{{ancestor.sectionpage.title}}</h1>
+      <h1 class="heading heading--comment-parent">{{parent_section.title}}</h1>
   {% endwith %}
 
   {% if messages %}

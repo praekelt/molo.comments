@@ -11,7 +11,7 @@
       {% trans "comment" %}{{comment_count|pluralize}}</span>
     {% endif %}
 
-    <div class="comments__post-message">
+    <div class="comment__post-message">
       {% if request.user.is_authenticated %}
         {% render_comment_form for self %}
       {% else %}
