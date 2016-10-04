@@ -16,13 +16,13 @@
 
     <div class="pagination">
     {% if page.has_previous %}
-        <a href="?p={{ page.previous_page_number }}" class="pagination__items pagination__items--prev">&larr;</a>
+        <a href="?p={{ page.previous_page_number }}" class="pagination__item pagination__item--prev">&larr;</a>
     {% endif %}
-    <span class="pagination__items pagination__items--current">
+    <span class="pagination__item pagination__item--current">
         Page {{ page.number }} of {{ page.paginator.num_pages }}
     </span>
     {% if page.has_next %}
-        <a href="?p={{ page.next_page_number }}" class="pagination__items pagination__items--next">&rarr;</a>
+        <a href="?p={{ page.next_page_number }}" class="pagination__item pagination__item--next">&rarr;</a>
     {% endif %}
     <a href="{% pageurl self %}" class="call-to-action__nav-item call-to-action__nav-item--back">
     {% trans "Back to article" %}</a>

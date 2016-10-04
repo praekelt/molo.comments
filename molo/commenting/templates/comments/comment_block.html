@@ -35,7 +35,7 @@
         {% endfor %}
     {% if comment_count > 5 %}
       <div class="pagination">
-        <a href="{% url 'molo.commenting:more-comments' self.pk %}" class="pagination__items">{% trans "view more comments" %}</a>
+        <a href="{% url 'molo.commenting:more-comments' self.pk %}" class="pagination__item">{% trans "view more comments" %}</a>
       </div>
     {% endif %}
   </div>
