@@ -1,5 +1,5 @@
 {% load i18n molo_commenting_tags %}
-<div class="comment__message{% if node.user.is_staff %}staff{% endif %}">
+<div class="comment-list__item {% if node.user.is_staff %}staff{% endif %}">
   <h4 class="comment__author">
     {% if node.user_name.lower == 'anonymous' %}
       {{node.user_name}}
@@ -12,8 +12,8 @@
     {% endif %}
   </h4>
   {% if node.is_removed %}
-    <h5 class="heading heading--comment__description">
-    {% trans "This comment has been removed by the community. Please read our platform rules." %}</h5>
+    <h6 class="comment__description">
+    {% trans "This comment has been removed by the community. Please read our platform rules." %}</h6>
   {% else %}
   <p>{{node.comment}}</p>
     {% if node.parent == None %}

@@ -10,7 +10,7 @@
     <h6 class="comment__text">{{comment.comment}}</h6>
   </div>
 
-  <div class="comments__post-message">
+  <div class="comment__post-message">
     {% if request.user.is_authenticated %}
       {% include "comments/form.html" with node=comment %}
     {% else %}
