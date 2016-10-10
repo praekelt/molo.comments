@@ -243,7 +243,7 @@ class ViewMoreCommentsTest(TestCase, MoloTestCaseMixin):
 
         html = BeautifulSoup(response.content, 'html.parser')
         [c3row, c2row, reply1row, reply2row, c1row] = html.find_all(
-            class_='comment__message')
+            class_='comment-list__item')
         self.assertTrue(comment3.comment in c3row.prettify())
         self.assertTrue(comment2.comment in c2row.prettify())
         self.assertTrue(reply1.comment in reply1row.prettify())
@@ -260,7 +260,7 @@ class ViewMoreCommentsTest(TestCase, MoloTestCaseMixin):
             reverse('molo.commenting:more-comments', args=(self.article.pk,)))
 
         html = BeautifulSoup(response.content, 'html.parser')
-        [crow, replyrow] = html.find_all(class_='comment__message')
+        [crow, replyrow] = html.find_all(class_='comment-list__item')
         self.assertTrue(comment.comment in crow.prettify())
         self.assertTrue('report' in crow.prettify())
         self.assertTrue(reply.comment in replyrow.prettify())
