@@ -1,31 +1,10 @@
+{% extends "base.html" %}
 {% load wagtailcore_tags wagtailimages_tags comments mptt_tags molo_commenting_tags i18n %}
 
 {% block content %}
 {% get_comments_content_object for form as self %}
 
 <div class="comments comments{{self.get_parent_section.get_effective_extra_style_hints}}">
-
-  {% with parent_section=self.get_parent_section ancestor=self.get_parent_section.get_ancestors.last %}
-      {% if self.image %}
-        {% image self.image width-98 %}
-      {% elif parent_section.image %}
-        {% image parent_section.image width-98 %}
-      {% else %}
-        {% image ancestor.sectionpage.image width-98 %}
-      {% endif %}
-      <h1 class="heading heading--comment">{{ancestor.sectionpage.title}}</h1>
-      <h1 class="heading heading--comment">{{parent_section.title}}</h1>
-  {% endwith %}
-
-  {% if messages %}
-  <ul class="comment-message">
-      {% for message in messages %}
-        <li class="comment-message__items {% if message.tags %}{{ message.tags }}{% endif %} ">
-          {{ message }}
-        </li>
-      {% endfor %}
-  </ul>
-  {% endif %}
 
   <div class="comments__post-message">
     {% if request.user.is_authenticated %}
