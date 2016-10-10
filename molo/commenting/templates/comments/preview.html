@@ -1,30 +1,35 @@
+{% extends "core/article_page.html" %}
 {% load wagtailcore_tags wagtailimages_tags comments mptt_tags molo_commenting_tags i18n %}
 
 {% block content %}
+
 {% get_comments_content_object for form as self %}
+{% if self.image %}
+  {% image self.image width-320 class="article__image" %}
+{% endif %}
+<ul class="section-list-nav section-list-nav{{self.get_parent_section.get_effective_extra_style_hints}}">
+  <li class="section-list-nav__item section-list-nav__item--arrow-right"><a href="/">{% trans "Home" %}</a></li>
+    {% if self.get_parent_section.get_parent_section %}
+    {% with section=self.get_parent_section.get_parent_section %}
+    <li class="section-list-nav__item  section-list-nav__item--arrow-right">
+      <a href="{% pageurl self %}">{{section.title}}</a>
+      {% with sub_section=self.get_parent_section %}
+        <li class="section-list-nav__item">
+          <a href="{% pageurl section %}">{{sub_section.title}}</a>
+        </li>
+      {% endwith %}
+      </li>
+    {% endwith %}
+    {% else %}
+    {% with section=self.get_parent_section %}
+    <li class="section-list-nav__item">
+      <a href="{% pageurl section %}">{{section.title}}</a>
+    </li>
+    {% endwith %}
+    {% endif %}
+</ul>
 
 <div class="comments comments{{self.get_parent_section.get_effective_extra_style_hints}}">
-  {% with parent_section=self.get_parent_section ancestor=self.get_parent_section.get_ancestors.last %}
-      {% if self.image %}
-        {% image self.image width-98 %}
-      {% elif parent_section.image %}
-        {% image parent_section.image width-98 %}
-      {% else %}
-        {% image ancestor.sectionpage.image width-98 %}
-      {% endif %}
-      <h1 class="heading heading--comment-ancestor">{{ancestor.sectionpage.title}}</h1>
-      <h1 class="heading heading--comment-parent">{{parent_section.title}}</h1>
-  {% endwith %}
-
-  {% if messages %}
-  <ul class="comment-message">
-      {% for message in messages %}
-        <li class="comment-message__item {% if message.tags %}{{ message.tags }}{% endif %} ">
-          {{ message }}
-        </li>
-      {% endfor %}
-  </ul>
-  {% endif %}
 
   <div class="comment__post-message">
     {% if request.user.is_authenticated %}
@@ -36,6 +41,8 @@
       {% trans " to leave a comment." %}</h6>
     {% endif %}
   </div>
-
+  <a href="{% pageurl self %}" class="call-to-action__nav-item call-to-action__nav-item--back">
+    {% trans "Back to article" %}
+  </a>
 </div>
 {% endblock %}
