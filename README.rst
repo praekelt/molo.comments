@@ -28,7 +28,8 @@ Django setup::
 In your urls.py::
 
    urlpatterns += patterns('',
-       url(r'^commenting/', include('molo.commenting.urls')),
+       url(r'^commenting/',include('molo.commenting.urls', namespace='molo.commenting', app_name='molo.commenting')),
+       url(r'', include('django_comments.urls')),
    )
 
 In your article_page.html::

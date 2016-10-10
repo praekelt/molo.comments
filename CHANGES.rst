@@ -1,6 +1,13 @@
 CHANGELOG
 =========
 
+1.0.0
+-----
+- Add BEM template naming convention
+- Add namespace to commenting URLs in the temolates
+- Remove `url(r'', include('django_comments.urls'))` from commenting URLs
+Note: If you are using this release you need to add the `url(r'', include('django_comments.urls'))` to your app's urls.py 
+
 0.5.4
 -----
 - Pin pytest to 2.9
