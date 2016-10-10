@@ -4,7 +4,8 @@
     {% csrf_token %}
     {% if form.errors %}
       <h6 class="comment__text">
-        {% blocktrans count counter=form.errors|length %}Please correct the error below
+        {% blocktrans count counter=form.errors|length %}
+        Please correct the error below
       </h6>
       </h6 class="comment__text comment__text--plural">
         {% plural %}Please correct the errors below{% endblocktrans %}
