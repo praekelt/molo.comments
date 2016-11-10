@@ -39,12 +39,14 @@ class Migration(migrations.Migration):
 
         add_cannedresponse = Permission.objects.get(
             codename='add_cannedresponse')
+        change_cannedresponse = Permission.objects.get(
+            codename='change_cannedresponse')
         add_molocomment = Permission.objects.get(
             codename='add_molocomment')
         delete_molocomment = Permission.objects.get(
             codename='delete_molocomment')
-        moderator_group.permissions.add(add_cannedresponse, add_molocomment,
-            delete_molocomment)
+        moderator_group.permissions.add(add_cannedresponse,
+            change_cannedresponse, add_molocomment, delete_molocomment)
 
         # <- Comment Moderator ->
         comment_moderator_group = Group.objects.create(name='Comment Moderator')
