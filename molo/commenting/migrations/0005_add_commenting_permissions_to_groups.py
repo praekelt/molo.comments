@@ -59,7 +59,6 @@ class Migration(migrations.Migration):
         expert_group, _created = Group.objects.get_or_create(name='Expert')
         expert_group.permissions.all().delete()
         expert_group.permissions.add(access_admin)
-        add_molocomment = Permission.objects.get(codename='add_molocomment')
         expert_group.permissions.add(add_molocomment)
 
     dependencies = [
