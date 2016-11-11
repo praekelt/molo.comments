@@ -24,6 +24,12 @@ class Migration(migrations.Migration):
         Permission = apps.get_model('auth.Permission')
         GroupPagePermission = apps.get_model('wagtailcore.GroupPagePermission')
 
+        if Group.objects.all().filter(name='Comment Moderator'):
+            Group.objects.get(name='Comment Moderator').delete()
+
+        if Group.objects.all().filter(name='Expert'):
+            Group.objects.get(name='Expert').delete()
+
 
         # Create groups
 
@@ -48,7 +54,6 @@ class Migration(migrations.Migration):
 
         # <- Comment Moderator ->
         comment_moderator_group, _created = Group.objects.get_or_create(name='Comment Moderator')
-        comment_moderator_group.permissions.all().delete()
         comment_moderator_group.permissions.add(access_admin)
         change_user = Permission.objects.get(
             codename='change_user')
@@ -57,7 +62,6 @@ class Migration(migrations.Migration):
 
         # <- Expert ->
         expert_group, _created = Group.objects.get_or_create(name='Expert')
-        expert_group.permissions.all().delete()
         expert_group.permissions.add(access_admin)
         expert_group.permissions.add(add_molocomment)
 
