@@ -1,6 +1,10 @@
 CHANGELOG
 =========
 
+1.0.2
+-----
+- Fix a bug in permissions migration
+
 1.0.1
 -----
 - Add commenting permissions to groups
