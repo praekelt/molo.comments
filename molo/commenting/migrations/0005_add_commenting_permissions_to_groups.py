@@ -52,12 +52,6 @@ class Migration(migrations.Migration):
         comment_moderator_group.permissions.add(access_admin)
         change_user = Permission.objects.get(
             codename='change_user')
-        add_cannedresponse = Permission.objects.get(
-            codename='add_cannedresponse')
-        add_molocomment = Permission.objects.get(
-            codename='add_molocomment')
-        delete_molocomment = Permission.objects.get(
-            codename='delete_molocomment')
         comment_moderator_group.permissions.add(change_user,
             add_cannedresponse, add_molocomment, delete_molocomment)
 
@@ -73,6 +67,10 @@ class Migration(migrations.Migration):
         ('core', '0047_add_core_permissions_to_groups'),
         ('contenttypes', '__latest__'),
         ('sites', '__latest__'),
+        ('auth', '__latest__'),
+        ('wagtailcore', '__latest__'),
+        ('wagtailadmin', '__latest__'),
+        ('wagtailusers', '__latest__'),
     ]
 
     operations = [
