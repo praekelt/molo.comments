@@ -1,6 +1,10 @@
 CHANGELOG
 =========
 
+1.0.4
+-----
+- Delete Comment Moderator and Expert group and recreate them again
+
 1.0.3
 -----
 - Remove a duplicate line in migration
