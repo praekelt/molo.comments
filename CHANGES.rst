@@ -1,6 +1,10 @@
 CHANGELOG
 =========
 
+1.0.3
+-----
+- Remove a duplicate line in migration
+
 1.0.2
 -----
 - Fix a bug in permissions migration
