@@ -6,7 +6,7 @@ from django_comments.views.comments import post_comment
 from molo.commenting.admin_import_export import MoloCommentsResource
 from molo.commenting.forms import AdminMoloCommentReplyForm
 from molo.commenting.models import MoloComment
-from wagtailmodeladmin.views import IndexView
+from wagtail.contrib.modeladmin.views import IndexView
 from django.utils.translation import ugettext as _
 
 

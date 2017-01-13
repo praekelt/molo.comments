@@ -18,7 +18,7 @@ from molo.core.models import ArticlePage
 
 from daterange_filter.filter import DateRangeFilter
 
-from wagtailmodeladmin.options import ModelAdmin as WagtailModelAdmin, \
+from wagtail.contrib.modeladmin.options import ModelAdmin as WagtailModelAdmin, \
     ModelAdminGroup
 
 
