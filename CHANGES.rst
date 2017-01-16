@@ -1,12 +1,39 @@
 CHANGELOG
 =========
 
+2.0.0
+-----
+- Removed dependency on wagtailmodeladmin
+
+Backwards incompatible changes
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+- Removed use of ``wagtailmodeladmin``: use ``wagtail.contrib.modeladmin`` instead
+- ``{% load wagtailmodeladmin_tags %}`` has been replaced by ``{% load modeladmin_tags %}``
+
+NOTE: This release is not compatible with molo versions that are less than 4.0
+
+1.0.4
+-----
+- Delete Comment Moderator and Expert group and recreate them again
+
+1.0.3
+-----
+- Remove a duplicate line in migration
+
+1.0.2
+-----
+- Fix a bug in permissions migration
+
+1.0.1
+-----
+- Add commenting permissions to groups
+
 1.0.0
 -----
 - Add BEM template naming convention
 - Add namespace to commenting URLs in the temolates
 - Remove `url(r'', include('django_comments.urls'))` from commenting URLs
-Note: If you are using this release you need to add the `url(r'', include('django_comments.urls'))` to your app's urls.py 
+Note: If you are using this release you need to add the `url(r'', include('django_comments.urls'))` to your app's urls.py
 
 0.5.4
 -----

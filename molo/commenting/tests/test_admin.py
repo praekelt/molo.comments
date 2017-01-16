@@ -263,7 +263,7 @@ class TestMoloCommentsAdminViews(TestCase, MoloTestCaseMixin):
         comment = self.mk_comment('the comment')
 
         response = self.client.get(
-            '/admin/modeladmin/commenting/molocomment/'
+            '/admin/commenting/molocomment/'
         )
 
         self.assertContains(response, comment.comment)
@@ -275,7 +275,7 @@ class TestMoloCommentsAdminViews(TestCase, MoloTestCaseMixin):
         )
 
         response = self.client.get(
-            '/admin/modeladmin/commenting/cannedresponse/'
+            '/admin/commenting/cannedresponse/'
         )
 
         self.assertContains(response, canned_response.response_header)
@@ -284,7 +284,7 @@ class TestMoloCommentsAdminViews(TestCase, MoloTestCaseMixin):
         self.mk_comment('export comment')
 
         response = self.client.post(
-            '/admin/modeladmin/commenting/molocomment/'
+            '/admin/commenting/molocomment/'
         )
 
         # substitute the datetime component to avoid intermittent test failures

@@ -18,8 +18,8 @@ from molo.core.models import ArticlePage
 
 from daterange_filter.filter import DateRangeFilter
 
-from wagtailmodeladmin.options import ModelAdmin as WagtailModelAdmin, \
-    ModelAdminGroup
+from wagtail.contrib.modeladmin.options import ModelAdmin \
+    as WagtailModelAdmin, ModelAdminGroup
 
 
 class MoloCommentAdmin(MPTTModelAdmin, CommentsAdmin):
