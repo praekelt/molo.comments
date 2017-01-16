@@ -13,4 +13,5 @@ def register_molo_comments_admin_reply_url():
             name='molo-comments-admin-reply'),
     ]
 
+
 modeladmin_register(CommentingModelAdminGroup)
