@@ -59,9 +59,5 @@ class MoloCommentsAdminReplyView(FormView):
         self.request.POST['parent'] = self.kwargs['parent']
         post_comment(self.request)
         messages.success(self.request, _('Reply successfully created.'))
-        # need user making the comment
-        # need user whose comment you have posted on
-        # need the original comment
-
 
         return redirect('/admin/modeladmin/commenting/molocomment/')

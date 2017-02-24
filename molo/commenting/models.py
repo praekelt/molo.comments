@@ -12,6 +12,7 @@ from mptt.models import MPTTModel, TreeForeignKey
 
 from notifications.signals import notify
 
+
 class MoloComment(MPTTModel, Comment):
     """
     Threaded comments - Add support for the parent comment store
@@ -59,9 +60,6 @@ def create_notification_for_comment_reply(sender, comment, request, **kwargs):
 
         user_replying = request.user
         user_being_replied_to = comment.get_ancestors().first().user
-
-        print("user_replying: " + str(request.user))
-        print("user_being_replied_to: " + str(comment.get_ancestors().first().user))
 
         notify.send(
             user_replying,
