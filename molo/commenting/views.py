@@ -138,7 +138,7 @@ def reply_list(request):
     read_notifications = request.user.notifications.read()
 
     for notification in unread_notifications:
-        notification.unread = True
+        notification.unread = False
         notification.save()
 
     number_unread_notifications = len(unread_notifications)
