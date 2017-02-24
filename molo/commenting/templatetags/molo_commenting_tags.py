@@ -124,17 +124,16 @@ def is_in_group(user, group_name):
     'notifications/tags/notification_banner.html',
     takes_context=True)
 def display_unread_notifications(context):
-    locale = context.get('locale_code')
     user = context['request'].user
 
-    # print(type(context))
-    # for thing in dir(context):
-    #     print thing
+    number_unread_notifications = 0
 
-    num_unread = len(user.notifications.unread())
+    if user.is_authenticated():
+        number_unread_notifications = len(user.notifications.unread())
+
     return {
-        'locale_code': locale,
-        'num_unread': num_unread,
+        'user': user,
+        'number_unread_notifications': number_unread_notifications,
     }
 
 
