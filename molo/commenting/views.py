@@ -130,3 +130,12 @@ class CommentReplyView(TemplateView):
             'form': form,
             'comment': comment,
         })
+
+
+@login_required
+def reply_list(request):
+    notifications = request.user.notifications.all()
+
+    return render(request, 'notifications/reply_list.html', {
+        'notifications': notifications,
+    })

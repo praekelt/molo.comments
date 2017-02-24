@@ -1,10 +1,13 @@
-{% load notifications_tags %}
+{% extends "base.html" %}
+{% load notifications_tags i18n %}
 
+{% block content %}
 {% notifications_unread as unread_count %}
-  <h1>You have {{ unread_count }} unread notification</h1>
+  <h1>{% trans "You have" %} {{ unread_count }} {% trans "replies" %}</h1>
 
 <ul class="notifications">
   {% for notice in notifications %}
     {% include 'notifications/notice.html' %}
   {% endfor %}
 </ul>
+{% endblock %}
