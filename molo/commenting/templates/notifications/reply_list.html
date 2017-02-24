@@ -2,19 +2,24 @@
 {% load i18n %}
 
 {% block content %}
-<h1>{% trans "You have" %} {{ number_unread_notifications }} {% trans "replies" %}</h1>
 
-<h2>Unread</h2>
-<ul class="notifications unread_notification">
-  {% for notice in unread_notifications %}
-    {% include 'notifications/notice.html' %}
-  {% endfor %}
-</ul>
+<h1>{% trans "You have" %} {{ number_unread_notifications }} {% trans "unread replies" %}</h1>
 
-<h2>Read</h2>
-<ul class="notifications">
-  {% for notice in read_notifications %}
-    {% include 'notifications/notice.html' %}
-  {% endfor %}
-</ul>
+{% if unread_notifications %}
+  <h2><b>Unread</b></h2>
+  <ul class="notifications unread_notification">
+    {% for notice in unread_notifications %}
+      {% include 'notifications/notice.html' %}
+    {% endfor %}
+  </ul>
+{% endif %}
+
+{% if read_notifications %}
+  <h2><b>Read</b></h2>
+  <ul class="notifications">
+    {% for notice in read_notifications %}
+      {% include 'notifications/notice.html' %}
+    {% endfor %}
+  </ul>
+{% endif %}
 {% endblock %}

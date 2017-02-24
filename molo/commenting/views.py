@@ -134,8 +134,8 @@ class CommentReplyView(TemplateView):
 
 @login_required
 def reply_list(request):
-    unread_notifications = request.user.notifications.unread()
-    read_notifications = request.user.notifications.read()
+    unread_notifications = list(request.user.notifications.unread())
+    read_notifications = list(request.user.notifications.read())
 
     for notification in unread_notifications:
         notification.unread = False

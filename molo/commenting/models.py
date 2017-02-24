@@ -59,7 +59,9 @@ def create_notification_for_comment_reply(sender, comment, request, **kwargs):
     if comment.get_ancestors():
 
         user_replying = request.user
-        user_being_replied_to = comment.get_ancestors().first().user
+        parent_comment = comment.get_ancestors().first()
+        user_being_replied_to = parent_comment.user
+        article = parent_comment.content_object
 
         notify.send(
             user_replying,
@@ -67,7 +69,8 @@ def create_notification_for_comment_reply(sender, comment, request, **kwargs):
             verb=u'replied',
             action_object=comment,
             description=comment.comment,
-            target=comment.content_object)
+            target=article
+        )
 
 
 class CannedResponse(models.Model):

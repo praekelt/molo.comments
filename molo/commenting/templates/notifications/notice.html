@@ -1,24 +1,16 @@
-<div class="alert alert-block alert-{{ notice.level }}">
-  <a class="close pull-right" href="{% url 'notifications:mark_as_read' notice.slug %}">
-    Mark as read
-  </a>
+{% load wagtailcore_tags i18n %}
+<div class="notification-block">
+    <p>---------------------</p>
+    <p>
+      {% with notice.target as article %}
+        {{ notice.actor }} {% trans "replied to your comment on" %}
+        <a href="{% pageurl article %}">{{ article.title }}</a>
+        {{ notice.timesince }} {% trans "ago" %}
+      {% endwith %}
+    </p>
+    <h2>Your Comment:</h2>
+    <p>{{ notice.action_object.parent.comment }}</p>
 
-  <h4>
-    <i class="icon-mail{% if notice.unread %}-alt{% endif %}"></i>
-    {{ notice.actor }}
-    {{ notice.verb }}
-    {% if notice.target %}
-      of {{ notice.target }}
-    {% endif %}
-  </h4>
-
-  <p>{{ notice.timesince }} ago</p>
-
-  <p>{{ notice.description|linebreaksbr }}</p>
-
-  <div class="notice-actions">
-    {% for action in notice.data.actions %}
-      <a class="btn" href="{{ action.href }}">{{ action.title }}</a>
-    {% endfor %}
-  </div>
+    <h2>Their Reply:</h2>
+    <p>{{ notice.action_object.comment }}</p>
 </div>
