@@ -120,6 +120,24 @@ def is_in_group(user, group_name):
     return user.groups.filter(name__exact=group_name).exists()
 
 
+@register.inclusion_tag(
+    'notifications/tags/notification_banner.html',
+    takes_context=True)
+def display_unread_notifications(context):
+    locale = context.get('locale_code')
+    user = context['request'].user
+
+    # print(type(context))
+    # for thing in dir(context):
+    #     print thing
+
+    num_unread = len(user.notifications.unread())
+    return {
+        'locale_code': locale,
+        'num_unread': num_unread,
+    }
+
+
 register.filter('is_in_group', is_in_group)
 register.tag('get_molo_comments', get_molo_comments)
 register.tag('get_comments_content_object', get_comments_content_object)

@@ -1,0 +1,10 @@
+{% load notifications_tags %}
+
+{% notifications_unread as unread_count %}
+  <h1>You have {{ unread_count }} unread notification</h1>
+
+<ul class="notifications">
+  {% for notice in notifications %}
+    {% include 'notifications/notice.html' %}
+  {% endfor %}
+</ul>
