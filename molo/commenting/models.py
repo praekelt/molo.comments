@@ -1,12 +1,16 @@
 from django_comments.models import Comment, COMMENT_MAX_LENGTH
 from django_comments.models import CommentFlag
 from django.dispatch import receiver
-from django_comments.signals import comment_was_flagged
+from django_comments.signals import (
+    comment_was_flagged,
+    comment_was_posted,
+)
 from django.conf import settings
 from django.db import models
 
 from mptt.models import MPTTModel, TreeForeignKey
 
+from notifications.signals import notify
 
 class MoloComment(MPTTModel, Comment):
     """
@@ -46,6 +50,26 @@ def remove_comment_if_flag_limit(sender, comment, flag, created, **kwargs):
     if (comment.flag_count(CommentFlag.SUGGEST_REMOVAL) >= threshold_count):
         comment.is_removed = True
         comment.save()
+
+
+@receiver(comment_was_posted)
+def create_notification_for_comment_reply(sender, comment, request, **kwargs):
+    # check if comment is a reply
+    if comment.get_ancestors():
+
+        user_replying = request.user
+        user_being_replied_to = comment.get_ancestors().first().user
+
+        print("user_replying: " + str(request.user))
+        print("user_being_replied_to: " + str(comment.get_ancestors().first().user))
+
+        notify.send(
+            user_replying,
+            recipient=user_being_replied_to,
+            verb=u'replied',
+            action_object=comment,
+            description=comment.comment,
+            target=comment.content_object)
 
 
 class CannedResponse(models.Model):
