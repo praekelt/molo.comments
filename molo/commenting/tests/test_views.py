@@ -338,7 +338,7 @@ class TestFrontEndCommentReplies(TestCase, MoloTestCaseMixin):
         )
 
     def check_reply_exists(self, client):
-        response = self.client.get(
+        response = client.get(
             reverse('molo.commenting:more-comments',
                     args=[self.article.pk, ],))
         self.assertTrue(response.status_code, 200)
