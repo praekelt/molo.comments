@@ -382,3 +382,14 @@ class TestFrontEndCommentReplies(TestCase, MoloTestCaseMixin):
         client.login(
             username=self.bob.username, password='password')
         self.check_reply_exists(client)
+
+    def test_user_cannot_reply_to_comments_when_logged_out(self):
+        response = self.client.get(
+            reverse('molo.commenting:more-comments',
+                    args=[self.article.pk, ],))
+
+        self.assertTrue(response.status_code, 200)
+        html = BeautifulSoup(response.content, 'html.parser')
+        [comment] = html.find_all(class_='comment-list__item')
+        self.assertTrue(comment.find('p', string='this_is_comment_content'))
+        self.assertFalse(comment.find('a', string='Reply'))
