@@ -338,13 +338,10 @@ class TestFrontEndCommentReplies(TestCase, MoloTestCaseMixin):
         )
 
     def check_reply_exists(self, client):
-        response = client.get(
-            '/sections/{0}/{1}/'.format(self.section.slug,
-                                        self.article.slug)
-        )
+        response = self.client.get(
+            reverse('molo.commenting:more-comments',
+                    args=[self.article.pk, ],))
         self.assertTrue(response.status_code, 200)
-
-        print(response)
 
         html = BeautifulSoup(response.content, 'html.parser')
         [comment] = html.find_all(class_='comment-list__item')
