@@ -19,9 +19,7 @@
     {% if node.parent == None %}
         <a href="{% url 'molo.commenting:molo-comments-report' node.pk %}?next={% url 'molo.commenting:report_response' node.pk %}" class="call-to-action__nav-item call-to-action__nav-item--response">
         {% trans "Report" %}</a>
-        {% if request.user|is_in_group:'Expert' and not node.user|is_in_group:'Expert' %}
           <a href="{% url 'molo.commenting:molo-comments-reply' node.pk %}" class="call-to-action__nav-item call-to-action__nav-item--response">{% trans "Reply"%}</a>
-        {% endif %}
     {% endif %}
   {% endif %}
 </div>
