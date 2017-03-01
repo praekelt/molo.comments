@@ -382,4 +382,3 @@ class TestFrontEndCommentReplies(TestCase, MoloTestCaseMixin):
         client.login(
             username=self.bob.username, password='password')
         self.check_reply_exists(client)
-
