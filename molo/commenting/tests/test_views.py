@@ -343,11 +343,15 @@ class TestFrontEndCommentReplies(TestCase, MoloTestCaseMixin):
                                         self.article.slug)
         )
         self.assertTrue(response.status_code, 200)
+
+        print(response)
+
         html = BeautifulSoup(response.content, 'html.parser')
         [comment] = html.find_all(class_='comment-list__item')
         self.assertTrue(comment.find('p', string='this_is_comment_content'))
         self.assertTrue(comment.find('a', string='Reply'))
-        comment_reply_url = comment.find('a', string='Reply')['href']
+
+        # comment_reply_url = comment.find('a', string='Reply')['href']
 
         # response = self.client.get(comment_reply_url)
         # self.assertTrue(response.status_code, 200)
@@ -358,14 +362,10 @@ class TestFrontEndCommentReplies(TestCase, MoloTestCaseMixin):
             username=self.expert.username, password='password')
         self.check_reply_exists(client)
 
-        self.check_reply_exists(client)
-
     def test_moderator_can_reply_to_comments_on_front_end(self):
         client = Client()
         client.login(
             username=self.moderator.username, password='password')
-        self.check_reply_exists(client)
-
         self.check_reply_exists(client)
 
     def test_comment_moderator_can_reply_to_comments_on_front_end(self):
@@ -374,14 +374,10 @@ class TestFrontEndCommentReplies(TestCase, MoloTestCaseMixin):
             username=self.comment_moderator.username, password='password')
         self.check_reply_exists(client)
 
-        self.check_reply_exists(client)
-
     def test_superuser_can_reply_to_comments_on_front_end(self):
         client = Client()
         client.login(
             username=self.superuser.username, password='password')
-        self.check_reply_exists(client)
-
         self.check_reply_exists(client)
 
     def test_ordinary_user_can_reply_to_comments_on_front_end(self):
@@ -390,4 +386,3 @@ class TestFrontEndCommentReplies(TestCase, MoloTestCaseMixin):
             username=self.bob.username, password='password')
         self.check_reply_exists(client)
 
-        self.check_reply_exists(client)
