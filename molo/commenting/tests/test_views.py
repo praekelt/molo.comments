@@ -3,7 +3,7 @@ from datetime import datetime
 
 from django.conf.urls import patterns, url, include
 from django.core.urlresolvers import reverse
-from django.contrib.auth.models import User, Group
+from django.contrib.auth.models import User
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.sites.models import Site
 from django.test import TestCase, Client, override_settings
