@@ -3,7 +3,7 @@ from datetime import datetime
 
 from django.conf.urls import patterns, url, include
 from django.core.urlresolvers import reverse
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, Group
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.sites.models import Site
 from django.test import TestCase, Client, override_settings
@@ -12,6 +12,9 @@ from molo.commenting.models import MoloComment
 from molo.commenting.forms import MoloCommentForm
 from molo.core.models import ArticlePage
 from molo.core.tests.base import MoloTestCaseMixin
+
+from notifications.signals import notify
+from notifications.models import Notification
 
 urlpatterns = patterns(
     '',
@@ -265,3 +268,36 @@ class ViewMoreCommentsTest(TestCase, MoloTestCaseMixin):
         self.assertTrue('report' in crow.prettify())
         self.assertTrue(reply.comment in replyrow.prettify())
         self.assertFalse('report' in replyrow.prettify())
+
+
+@override_settings(ROOT_URLCONF='molo.commenting.tests.test_views')
+class ViewNotificationsRepliesOnCommentsTest(TestCase, MoloTestCaseMixin):
+    def setUp(self):
+        self.message_count = 10
+        self.from_user = User.objects.create(
+            username="foo", password="pwd", email="example@example.com")
+        self.to_user = User.objects.create(
+            username="bob", password="pwd", email="example@example.com")
+        for i in range(self.message_count):
+            notify.send(
+                self.from_user, recipient=self.to_user,
+                verb='replied', description='commented')
+
+    def test_unread_manager(self):
+        self.assertEqual(
+            Notification.objects.unread().count(), self.message_count)
+        n = Notification.objects.filter(recipient=self.to_user).first()
+        n.mark_as_read()
+        self.assertEqual(
+            Notification.objects.unread().count(), self.message_count - 1)
+        for n in Notification.objects.unread():
+            self.assertTrue(n.unread)
+
+    def test_read_manager(self):
+        self.assertEqual(
+            Notification.objects.unread().count(), self.message_count)
+        n = Notification.objects.filter(recipient=self.to_user).first()
+        n.mark_as_read()
+        self.assertEqual(Notification.objects.read().count(), 1)
+        for n in Notification.objects.read():
+            self.assertFalse(n.unread)
