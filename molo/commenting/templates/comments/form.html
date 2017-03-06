@@ -1,3 +1,4 @@
+{% extends "base.html" %}
 {% load comments i18n wagtailcore_tags wagtailimages_tags %}
 
 <form action="{% url 'molo.commenting:molo-comments-post' %}#comments-list" method="post" class="comment__form comment__form{{self.get_parent_section.get_effective_extra_style_hints}}">

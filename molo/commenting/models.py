@@ -55,6 +55,7 @@ def remove_comment_if_flag_limit(sender, comment, flag, created, **kwargs):
 
 @receiver(comment_was_posted)
 def create_notification_for_comment_reply(sender, comment, request, **kwargs):
+    print("Fired: create_notification_for_comment_reply")
     # check if comment is a reply
     if comment.get_ancestors():
 

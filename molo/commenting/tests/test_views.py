@@ -13,8 +13,8 @@ from molo.commenting.forms import MoloCommentForm
 from molo.core.models import ArticlePage
 from molo.core.tests.base import MoloTestCaseMixin
 
-from notifications.signals import notify
-from notifications.models import Notification
+# from notifications.signals import notify
+# from notifications.models import Notification
 
 urlpatterns = patterns(
     '',
@@ -272,32 +272,42 @@ class ViewMoreCommentsTest(TestCase, MoloTestCaseMixin):
 
 @override_settings(ROOT_URLCONF='molo.commenting.tests.test_views')
 class ViewNotificationsRepliesOnCommentsTest(TestCase, MoloTestCaseMixin):
+
     def setUp(self):
-        self.message_count = 10
-        self.from_user = User.objects.create(
-            username="foo", password="pwd", email="example@example.com")
-        self.to_user = User.objects.create(
-            username="bob", password="pwd", email="example@example.com")
-        for i in range(self.message_count):
-            notify.send(
-                self.from_user, recipient=self.to_user,
-                verb='replied', description='commented')
+        # Creates main page
+        self.mk_main()
+        self.user = User.objects.create_user(
+            'test', 'test@example.org', 'test')
+        self.article = ArticlePage.objects.create(
+            title='article 1', depth=1,
+            subtitle='article 1 subtitle',
+            slug='article-1', path=[1])
 
-    def test_unread_manager(self):
-        self.assertEqual(
-            Notification.objects.unread().count(), self.message_count)
-        n = Notification.objects.filter(recipient=self.to_user).first()
-        n.mark_as_read()
-        self.assertEqual(
-            Notification.objects.unread().count(), self.message_count - 1)
-        for n in Notification.objects.unread():
-            self.assertTrue(n.unread)
+        self.client = Client()
+        self.client.login(username='test', password='test')
 
-    def test_read_manager(self):
-        self.assertEqual(
-            Notification.objects.unread().count(), self.message_count)
-        n = Notification.objects.filter(recipient=self.to_user).first()
-        n.mark_as_read()
-        self.assertEqual(Notification.objects.read().count(), 1)
-        for n in Notification.objects.read():
-            self.assertFalse(n.unread)
+    def create_comment(self, comment, parent=None):
+        return MoloComment.objects.create(
+            content_type=ContentType.objects.get_for_model(self.article),
+            object_pk=self.article.pk,
+            content_object=self.article,
+            site=Site.objects.get_current(),
+            user=self.user,
+            comment=comment,
+            parent=parent,
+            submit_date=datetime.now())
+
+    def test_notification_reply_list(self):
+        comment1 = self.create_comment('test comment1 text')
+        comment2 = self.create_comment('test comment2 text')
+        comment3 = self.create_comment('test comment3 text')
+        reply1 = self.create_comment('test reply1 text', parent=comment2)
+        reply2 = self.create_comment('test reply2 text', parent=comment2)
+
+        response = self.client.get('/')
+        print response
+
+        # response = self.client.get(
+        #     reverse('molo.commenting:reply_list'))
+        # print response
+        # self.assertContains(response, 'You have 0 unread replies')
