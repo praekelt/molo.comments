@@ -120,6 +120,14 @@ def is_in_group(user, group_name):
     return user.groups.filter(name__exact=group_name).exists()
 
 
+
+def truncate(value, arg):
+    num_characters = int(arg)
+    if len(value) > num_characters:
+        return value[:num_characters] + " . . ."
+    return value
+
+register.filter('truncate', truncate)
 register.filter('is_in_group', is_in_group)
 register.tag('get_molo_comments', get_molo_comments)
 register.tag('get_comments_content_object', get_comments_content_object)

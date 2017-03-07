@@ -15,7 +15,13 @@
     <h6 class="comment__description">
     {% trans "This comment has been removed by the community. Please read our platform rules." %}</h6>
   {% else %}
-  <p>{{node.comment}}</p>
+
+    {% if truncate_comment %}
+      <p>{{ node.comment|truncate:60 }}</p>
+    {% else %}
+      <p>{{ node.comment }}</p>
+    {% endif %}
+
     {% if node.parent == None %}
         <a href="{% url 'molo.commenting:molo-comments-report' node.pk %}?next={% url 'molo.commenting:report_response' node.pk %}" class="call-to-action__nav-item call-to-action__nav-item--response">
         {% trans "Report" %}</a>
