@@ -141,6 +141,15 @@ def is_in_group(user, group_name):
     return user.groups.filter(name__exact=group_name).exists()
 
 
+def is_in_admin_group(person):
+    boolean = (
+        person.is_superuser or
+        is_in_group(person, 'Moderator') or
+        is_in_group(person, 'Comment Moderator') or
+        is_in_group(person, 'Expert')
+    )
+    return boolean
+
 
 def truncate(value, arg):
     num_characters = int(arg)
@@ -152,3 +161,4 @@ register.filter('truncate', truncate)
 register.filter('is_in_group', is_in_group)
 register.tag('get_molo_comments', get_molo_comments)
 register.tag('get_comments_content_object', get_comments_content_object)
+register.filter('is_in_admin_group', is_in_admin_group)
