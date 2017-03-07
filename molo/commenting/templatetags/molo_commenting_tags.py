@@ -19,12 +19,13 @@ def get_molo_comments(parser, token):
 
         {% get_molo_comments for object as variable_name %}
         {% get_molo_comments for object as variable_name limit amount %}
+        {% get_molo_comments for object as variable_name limit amount child_limit amount %}
 
     """
     keywords = token.contents.split()
-    if len(keywords) != 5 and len(keywords) != 7:
+    if len(keywords) != 5 and len(keywords) != 7 and len(keywords) != 9:
         raise template.TemplateSyntaxError(
-            "'%s' tag takes exactly 2 or 4 arguments" % (keywords[0],))
+            "'%s' tag takes exactly 2,4 or 6 arguments" % (keywords[0],))
     if keywords[1] != 'for':
         raise template.TemplateSyntaxError(
             "first argument to '%s' tag must be 'for'" % (keywords[0],))
@@ -56,7 +57,20 @@ class GetMoloCommentsNode(template.Node):
             object_pk=obj.pk, parent__isnull=True)
         if self.limit > 0:
             qs = qs[:self.limit]
-        qs = [c.get_descendants(include_self=True) for c in qs]
+
+        if self.child_limit > -1:
+            comments = qs
+            qs = []
+
+            for comment in comments:
+                qs += [comment]
+                temp = list(comment.get_descendants()
+                                   .reverse()[:self.child_limit])
+                temp.reverse()
+                qs += temp
+        else:
+            qs = [c.get_descendants(include_self=True) for c in qs]
+
         context[self.variable_name] = qs
         return ''
 
