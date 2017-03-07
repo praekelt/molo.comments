@@ -40,6 +40,11 @@ style="background-color:grey"
         {% if request.user.is_authenticated %}
           <a href="{% url 'molo.commenting:molo-comments-reply' node.pk %}" class="call-to-action__nav-item call-to-action__nav-item--response">{% trans "Reply"%}</a>
         {% endif %}
+      {% if do_not_link_replies or node.get_children.count == 0 %}
+        <p>{{ node.get_children.count }} {% trans "Replies" %}</p>
+      {% else %}
+        <a href="{% url 'molo.commenting:molo-comments-reply' node.pk %}">{{ node.get_children.count }} {% trans "Replies" %}</a>
+      {% endif %}
     {% endif %}
   {% endif %}
 </div>

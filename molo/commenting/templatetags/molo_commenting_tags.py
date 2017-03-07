@@ -157,8 +157,14 @@ def truncate(value, arg):
         return value[:num_characters] + " . . ."
     return value
 
+
+def get_number_replies(comment):
+    # TODO include reported/banned comments?
+    return comment.get_children().count()
+
 register.filter('truncate', truncate)
 register.filter('is_in_group', is_in_group)
 register.tag('get_molo_comments', get_molo_comments)
 register.tag('get_comments_content_object', get_comments_content_object)
+register.filter('get_number_replies', get_number_replies)
 register.filter('is_in_admin_group', is_in_admin_group)
