@@ -1,5 +1,10 @@
 {% load i18n molo_commenting_tags %}
-<div class="comment-list__item {% if node.user.is_staff %}staff{% endif %}">
+<div class="comment-list__item {% if node.user.is_staff %}staff{% endif %}"
+{# TODO: remove this when working on FE styling #}
+{% if node.parent %}
+style="background-color:grey"
+{% endif %}
+>
   <h4 class="comment__author">
     {% if node.user_name.lower == 'anonymous' %}
       {{node.user_name}}
