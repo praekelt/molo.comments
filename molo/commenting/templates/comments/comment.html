@@ -22,6 +22,8 @@
       <p>{{ node.comment }}</p>
     {% endif %}
 
+    <span class="date">{{ node.submit_date|timesince }} {% trans "Ago" %}</span>
+
     {% if node.parent == None %}
         <a href="{% url 'molo.commenting:molo-comments-report' node.pk %}?next={% url 'molo.commenting:report_response' node.pk %}" class="call-to-action__nav-item call-to-action__nav-item--response">
         {% trans "Report" %}</a>
