@@ -341,7 +341,10 @@ class ViewNotificationsRepliesOnCommentsTest(TestCase, MoloTestCaseMixin):
 
         response = self.client.get(
             reverse('molo.commenting:reply_list'))
+        print response
         self.assertContains(response, 'You have 1 unread replies')
+
+
 
         response = self.client.get('/')
         self.assertEqual(response.status_code, 200)
