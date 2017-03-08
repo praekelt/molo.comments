@@ -8,8 +8,6 @@ from django.contrib.contenttypes.models import ContentType
 from django.contrib.sites.models import Site
 from django.test import TestCase, Client, override_settings
 
-
-from django_comments.models import Comment
 from molo.commenting.models import MoloComment
 from molo.commenting.forms import MoloCommentForm
 from molo.core.models import ArticlePage
