@@ -183,13 +183,14 @@ class ViewMoreCommentsTest(TestCase, MoloTestCaseMixin):
 
         self.client = Client()
 
-    def create_comment(self, comment, parent=None):
+    def create_comment(self, comment, parent=None, user=None):
+        commenter = user or self.user
         return MoloComment.objects.create(
             content_type=ContentType.objects.get_for_model(self.article),
             object_pk=self.article.pk,
             content_object=self.article,
             site=Site.objects.get_current(),
-            user=self.user,
+            user=commenter,
             comment=comment,
             parent=parent,
             submit_date=datetime.now())
@@ -251,8 +252,8 @@ class ViewMoreCommentsTest(TestCase, MoloTestCaseMixin):
         self.assertTrue(comment1.comment in c1row.prettify())
 
     def test_view_replies_report(self):
-        '''If a comment is a reply, there should be no report button, as all
-        replies are created by admins.'''
+        '''If a comment is a reply, there should only be a report button
+        if the reply is not made by an admin'''
         comment = self.create_comment('test comment1 text')
         reply = self.create_comment('test reply text', parent=comment)
 
@@ -264,7 +265,28 @@ class ViewMoreCommentsTest(TestCase, MoloTestCaseMixin):
         self.assertTrue(comment.comment in crow.prettify())
         self.assertTrue('report' in crow.prettify())
         self.assertTrue(reply.comment in replyrow.prettify())
-        self.assertFalse('report' in replyrow.prettify())
+        self.assertTrue('report' in replyrow.prettify())
+
+        comment2 = self.create_comment('test comment2 text')
+        superuser = User.objects.create_superuser(
+            username='superuser',
+            email='superuser@email.com',
+            password='password'
+        )
+        reply2 = self.create_comment('test reply2 text',
+                                     parent=comment2,
+                                     user=superuser)
+
+        response = self.client.get(
+            reverse('molo.commenting:more-comments', args=(self.article.pk,)))
+        # print(response)
+        html = BeautifulSoup(response.content, 'html.parser')
+        [crow2, replyrow2, crow, replyrow] = html.find_all(
+            class_='comment-list__item')
+        self.assertTrue(comment2.comment in crow2.prettify())
+        self.assertTrue('report' in crow2.prettify())
+        self.assertTrue(reply2.comment in replyrow2.prettify())
+        self.assertFalse('report' in replyrow2.prettify())
 
 
 class TestFrontEndCommentReplies(TestCase, MoloTestCaseMixin):
