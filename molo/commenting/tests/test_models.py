@@ -9,8 +9,6 @@ from molo.commenting.models import MoloComment
 from django_comments.models import CommentFlag
 from django_comments import signals
 
-from notifications.models import Notification
-
 
 class MoloCommentTest(TestCase):
 
@@ -112,19 +110,3 @@ class MoloCommentTest(TestCase):
             )
         altered_comment = MoloComment.objects.get(pk=comment.pk)
         self.assertFalse(altered_comment.is_removed)
-
-    def test_notification_reply(self):
-        comment = self.mk_comment('make a comment')
-        reply = MoloComment.objects.create(
-            content_type=self.content_type,
-            object_pk=self.user.pk,
-            content_object=self.user,
-            site=Site.objects.get_current(),
-            user=self.user,
-            comment='test reply text',
-            submit_date=datetime.now(),
-            parent=comment)
-        self.assertEqual(MoloComment.objects.count(), 2)
-        self.assertTrue(MoloComment.objects.count(), 2)
-        self.assertEqual(
-            Notification.objects.unread().count(), 1)

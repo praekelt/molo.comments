@@ -9,19 +9,21 @@ from django.contrib.sites.models import Site
 from django.test import TestCase, Client, override_settings
 
 
+from django_comments.models import Comment
 from molo.commenting.models import MoloComment
 from molo.commenting.forms import MoloCommentForm
 from molo.core.models import ArticlePage
 from molo.core.tests.base import MoloTestCaseMixin
 
-# from notifications.signals import notify
-# from notifications.models import Notification
+from notifications.models import Notification
 
 urlpatterns = patterns(
     '',
     url(r'^commenting/',
         include('molo.commenting.urls', namespace='molo.commenting')),
     url(r'', include('django_comments.urls')),
+    url(r'', include('molo.core.urls')),
+    url(r'', include('wagtail.wagtailcore.urls')),
 )
 
 
@@ -299,16 +301,48 @@ class ViewNotificationsRepliesOnCommentsTest(TestCase, MoloTestCaseMixin):
             submit_date=datetime.now())
 
     def test_notification_reply_list(self):
-        comment1 = self.create_comment('test comment1 text')
-        comment2 = self.create_comment('test comment2 text')
-        comment3 = self.create_comment('test comment3 text')
-        reply1 = self.create_comment('test reply1 text', parent=comment2)
-        reply2 = self.create_comment('test reply2 text', parent=comment2)
+        self.client = Client()
+        self.client.login(username='test', password='test')
+
+        data = MoloCommentForm(self.user, {}).generate_security_data()
+        data.update({
+            'name': 'the supplied name',
+            'comment': 'Foo',
+        })
+        self.client.post(
+            reverse('molo.commenting:molo-comments-post'), data)
+        [comment] = MoloComment.objects.filter(user=self.user)
+        self.assertEqual(comment.comment, 'Foo')
+        self.assertEqual(comment.user_name, 'the supplied name')
 
         response = self.client.get('/')
-        print response
+        self.assertEqual(response.status_code, 200)
+        self.assertNotContains(response, 'Unread replies: 0')
 
-        # response = self.client.get(
-        #     reverse('molo.commenting:reply_list'))
-        # print response
-        # self.assertContains(response, 'You have 0 unread replies')
+        data = MoloCommentForm(self.user, {}).generate_security_data()
+        data.update({
+            'name': 'the supplied name',
+            'comment': 'Foo reply',
+            'parent': comment.pk
+        })
+        self.client.post(
+            reverse('molo.commenting:molo-comments-post'), data)
+        self.assertEqual(MoloComment.objects.count(), 2)
+        self.assertEqual(Comment.objects.count(), 2)
+        self.assertEqual(
+            Notification.objects.unread().count(), 1)
+
+        response = self.client.get('/')
+        self.assertEqual(response.status_code, 200)
+        html = BeautifulSoup(response.content, 'html.parser')
+        [ntfy] = html.find_all("div", class_='notifications-list__item')
+        self.assertEqual(ntfy.find("div").get_text().strip(),
+                         'Unread replies: 1')
+
+        response = self.client.get(
+            reverse('molo.commenting:reply_list'))
+        self.assertContains(response, 'You have 1 unread replies')
+
+        response = self.client.get('/')
+        self.assertEqual(response.status_code, 200)
+        self.assertNotContains(response, 'Unread replies: 0')
