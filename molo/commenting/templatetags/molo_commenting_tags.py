@@ -14,12 +14,13 @@ def get_molo_comments(parser, token):
     """
     Get a limited set of comments for a given object.
     Defaults to a limit of 5. Setting the limit to -1 disables limiting.
+    Set the amount of comments to
 
     usage:
 
         {% get_molo_comments for object as variable_name %}
         {% get_molo_comments for object as variable_name limit amount %}
-        {% get_molo_comments for object as variable_name limit amount child_limit amount %}
+        {% get_molo_comments for object as variable_name limit amount child_limit amount %} # noqa
 
     """
     keywords = token.contents.split()
@@ -39,9 +40,11 @@ def get_molo_comments(parser, token):
         return GetMoloCommentsNode(keywords[2], keywords[4], keywords[6])
     if len(keywords) > 7 and keywords[7] != 'child_limit':
         raise template.TemplateSyntaxError(
-            "third argument to '%s' tag must be 'child_limit'" % (keywords[0],))
+            "third argument to '%s' tag must be 'child_limit'"
+            % (keywords[0],))
     if len(keywords) > 7:
-        return GetMoloCommentsNode(keywords[2], keywords[4], keywords[6], keywords[8])
+        return GetMoloCommentsNode(keywords[2], keywords[4],
+                                   keywords[6], keywords[8])
     return GetMoloCommentsNode(keywords[2], keywords[4])
 
 
@@ -161,6 +164,7 @@ def truncate(value, arg):
 def get_number_replies(comment):
     # TODO include reported/banned comments?
     return comment.get_children().count()
+
 
 register.filter('truncate', truncate)
 register.filter('is_in_group', is_in_group)
