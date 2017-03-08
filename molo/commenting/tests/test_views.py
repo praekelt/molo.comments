@@ -327,10 +327,7 @@ class ViewNotificationsRepliesOnCommentsTest(TestCase, MoloTestCaseMixin):
         })
         self.client.post(
             reverse('molo.commenting:molo-comments-post'), data)
-        self.assertEqual(MoloComment.objects.count(), 2)
-        self.assertEqual(Comment.objects.count(), 2)
-        self.assertEqual(
-            Notification.objects.unread().count(), 1)
+        self.assertEqual(Notification.objects.unread().count(), 1)
 
         response = self.client.get('/')
         self.assertEqual(response.status_code, 200)
@@ -339,13 +336,22 @@ class ViewNotificationsRepliesOnCommentsTest(TestCase, MoloTestCaseMixin):
         self.assertEqual(ntfy.find("div").get_text().strip(),
                          'Unread replies: 1')
 
+        # Unread notifications
         response = self.client.get(
             reverse('molo.commenting:reply_list'))
-        print response
         self.assertContains(response, 'You have 1 unread replies')
-
-
+        self.assertContains(response, 'Unread')
+        n = Notification.objects.filter(recipient=self.user).first()
+        n.mark_as_read()
+        self.assertEqual(Notification.objects.unread().count(), 0)
 
         response = self.client.get('/')
         self.assertEqual(response.status_code, 200)
         self.assertNotContains(response, 'Unread replies: 0')
+
+        # Read notifications
+        response = self.client.get(
+            reverse('molo.commenting:reply_list'))
+        self.assertEqual(Notification.objects.read().count(), 1)
+        self.assertContains(response, 'You have 0 unread replies')
+        self.assertContains(response, 'Read')
