@@ -126,9 +126,30 @@ class CommentReplyView(TemplateView):
                 comment.content_type.model),
             'object_pk': comment.object_pk,
         })
+
+        queryset = comment.get_children().reverse()
+
+        try:
+            comments_per_page = settings.COMMENTS_PER_PAGE
+        except AttributeError:
+            comments_per_page = 5
+
+        paginator = Paginator(queryset, comments_per_page)
+        page = request.GET.get('p', 1)
+        try:
+            comments = paginator.page(page)
+        except PageNotAnInteger:
+            comments = paginator.page(1)
+            page = 1
+        except EmptyPage:
+            comments = paginator.page(paginator.num_pages)
+            page = paginator.num_pages
+
         return self.render_to_response({
             'form': form,
             'comment': comment,
+            'replies': comments,
+            'page': page
         })
 
 

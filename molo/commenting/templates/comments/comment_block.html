@@ -13,26 +13,26 @@
         <a href="{% url 'molo.profiles:auth_login' %}?next={{request.path}}" class="call-to-action__nav-item call-to-action__nav-item--login">
         {% trans "Log in to comment" %}</a>
       {% endif %}
-      {% else %}
-      <h6 class="comment__description">
-      {% trans "Commenting on this article is currently disabled" %}</h6>
-      {% endif %}
+  {% else %}
+    <h6 class="comment__description">
+    {% trans "Commenting on this article is currently disabled" %}</h6>
+  {% endif %}
 
-    {% get_comment_count for self as comment_count %}
-    {% if comment_count > 0 %}
-      <h6 class="comment__text">{% trans "Comments" %}</h6>
-      <span class="comment__counter">{{comment_count}}</span>
-      <span class="comment__counter comment__counter--plural">
-      {% trans "comment" %}{{comment_count|pluralize}}</span>
-    {% endif %}
-    </div>
+  {% get_comment_count for self as comment_count %}
+  {% if comment_count > 0 %}
+    <h6 class="comment__text">{% trans "Comments" %}</h6>
+    <span class="comment__counter">{{comment_count}}</span>
+    <span class="comment__counter comment__counter--plural">
+    {% trans "comment" %}{{comment_count|pluralize}}</span>
+  </div>
+{% endif %}
 </div>
 <div id="comments-list" class="comment-list">
   {% get_comment_count for self as comment_count %}
-    {% get_molo_comments for self as comment_list %}
+    {% get_molo_comments for self as comment_list limit 2 child_limit 2 %}
       {% for node in comment_list %}
         {% recursetree node %}
-            {% include "comments/comment.html" %}
+             {% include "comments/comment.html" with truncate_comment=True %}
             {{ children }}
         {% endrecursetree %}
       {% endfor %}
