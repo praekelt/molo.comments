@@ -11,7 +11,7 @@ from django.contrib.auth.models import Group
 
 from molo.commenting.models import MoloComment
 from molo.commenting.forms import MoloCommentForm
-from molo.core.models import ArticlePage, SiteLanguage, SectionPage
+from molo.core.models import ArticlePage, SiteLanguage
 from molo.core.tests.base import MoloTestCaseMixin
 urlpatterns = patterns(
     '',
