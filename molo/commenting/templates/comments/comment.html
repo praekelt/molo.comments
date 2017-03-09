@@ -22,7 +22,7 @@ style="background-color:grey"
   {% else %}
 
     {% if truncate_comment %}
-      <p>{{ node.comment|truncate:60 }}</p>
+      <p>{{ node.comment|truncatechars:60 }}</p>
     {% else %}
       <p>{{ node.comment }}</p>
     {% endif %}
