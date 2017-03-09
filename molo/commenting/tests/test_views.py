@@ -11,7 +11,7 @@ from django.contrib.auth.models import Group
 
 from molo.commenting.models import MoloComment
 from molo.commenting.forms import MoloCommentForm
-from molo.core.models import ArticlePage, SiteLanguage
+from molo.core.models import ArticlePage, SiteLanguage, SectionPage
 from molo.core.tests.base import MoloTestCaseMixin
 urlpatterns = patterns(
     '',
@@ -279,7 +279,6 @@ class ViewMoreCommentsTest(TestCase, MoloTestCaseMixin):
 
         response = self.client.get(
             reverse('molo.commenting:more-comments', args=(self.article.pk,)))
-        # print(response)
         html = BeautifulSoup(response.content, 'html.parser')
         [crow2, replyrow2, crow, replyrow] = html.find_all(
             class_='comment-list__item')
@@ -415,3 +414,91 @@ class TestFrontEndCommentReplies(TestCase, MoloTestCaseMixin):
         [comment] = html.find_all(class_='comment-list__item')
         self.assertTrue(comment.find('p', string='this_is_comment_content'))
         self.assertFalse(comment.find('a', string='Reply'))
+
+
+class TestThreadedComments(TestCase, MoloTestCaseMixin):
+
+    def setUp(self):
+        # Creates main page
+        self.mk_main()
+        self.english = SiteLanguage.objects.create(locale='en')
+        self.user = User.objects.create_user(
+            'test', 'test@example.org', 'test')
+
+        self.section = self.mk_section(
+            self.section_index, title='section')
+        self.article = self.mk_article(self.section, title='article 1',
+                                       subtitle='article 1 subtitle',
+                                       slug='article-1')
+
+        self.client = Client()
+
+    def create_comment(self, comment, parent=None, user=None):
+        commenter = user or self.user
+        return MoloComment.objects.create(
+            content_type=ContentType.objects.get_for_model(self.article),
+            object_pk=self.article.pk,
+            content_object=self.article,
+            site=Site.objects.get_current(),
+            user=commenter,
+            comment=comment,
+            parent=parent,
+            submit_date=datetime.now())
+
+    def test_restrict_article_count(self):
+        for i in range(3):
+            self.create_comment('comment %d' % i)
+
+        response = self.client.get('/')
+        self.assertEqual(response.status_code, 200)
+
+        response = self.client.get('/sections/section/article-1/')
+        self.assertEqual(response.status_code, 200)
+
+        self.assertContains(response, "comment 2")
+        self.assertContains(response, "comment 1")
+        self.assertNotContains(response, "comment 0")
+
+    def test_comment_reply_list(self):
+        comment = self.create_comment('Original Comment')
+
+        for i in range(3):
+            self.create_comment('Reply %d' % i, parent=comment)
+
+        response = self.client.get(
+            reverse('molo.commenting:molo-comments-reply',
+                    args=(comment.pk, )))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'Original Comment')
+        self.assertContains(response, 'Reply 0')
+        self.assertContains(response, 'Reply 1')
+        self.assertContains(response, 'Reply 2')
+
+    def test_reply_pagination(self):
+        comment = self.create_comment('Original Comment')
+        for i in range(15):
+            self.create_comment('Reply %d' % i, parent=comment)
+
+        response = self.client.get(
+            reverse('molo.commenting:molo-comments-reply',
+                    args=[comment.pk, ],))
+
+        self.assertContains(response, 'Original Comment')
+        self.assertContains(response, 'Page 1 of 3')
+        self.assertContains(response, '&rarr;')
+        self.assertNotContains(response, '&larr;')
+
+        response = self.client.get('%s?p=2' % (reverse(
+            'molo.commenting:molo-comments-reply',
+            args=[comment.pk, ],),))
+        self.assertContains(response, 'Page 2 of 3')
+        self.assertContains(response, '&rarr;')
+        self.assertContains(response, '&larr;')
+
+        response = self.client.get('%s?p=3' % (reverse(
+            'molo.commenting:molo-comments-reply',
+            args=[comment.pk, ],),))
+        self.assertContains(response, 'Page 3 of 3')
+        self.assertNotContains(response, '&rarr;')
+        self.assertContains(response, '&larr;')
