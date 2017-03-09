@@ -14,12 +14,15 @@ from molo.commenting.forms import MoloCommentForm
 from molo.core.models import ArticlePage, SiteLanguage
 from molo.core.tests.base import MoloTestCaseMixin
 
+from notifications.models import Notification
 
 urlpatterns = patterns(
     '',
     url(r'^commenting/',
         include('molo.commenting.urls', namespace='molo.commenting')),
     url(r'', include('django_comments.urls')),
+    url(r'', include('molo.core.urls')),
+    url(r'', include('wagtail.wagtailcore.urls')),
 )
 
 
@@ -532,3 +535,87 @@ class TestThreadedComments(TestCase, MoloTestCaseMixin):
         self.assertContains(response, 'Page 3 of 3')
         self.assertNotContains(response, '&rarr;')
         self.assertContains(response, '&larr;')
+
+
+@override_settings(ROOT_URLCONF='molo.commenting.tests.test_views')
+class ViewNotificationsRepliesOnCommentsTest(TestCase, MoloTestCaseMixin):
+
+    def setUp(self):
+        # Creates main page
+        self.mk_main()
+        self.user = User.objects.create_user(
+            'test', 'test@example.org', 'test')
+        self.article = ArticlePage.objects.create(
+            title='article 1', depth=1,
+            subtitle='article 1 subtitle',
+            slug='article-1', path=[1])
+
+        self.client = Client()
+        self.client.login(username='test', password='test')
+
+    def create_comment(self, comment, parent=None):
+        return MoloComment.objects.create(
+            content_type=ContentType.objects.get_for_model(self.article),
+            object_pk=self.article.pk,
+            content_object=self.article,
+            site=Site.objects.get_current(),
+            user=self.user,
+            comment=comment,
+            parent=parent,
+            submit_date=datetime.now())
+
+    def test_notification_reply_list(self):
+        self.client = Client()
+        self.client.login(username='test', password='test')
+
+        data = MoloCommentForm(self.user, {}).generate_security_data()
+        data.update({
+            'name': 'the supplied name',
+            'comment': 'Foo',
+        })
+        self.client.post(
+            reverse('molo.commenting:molo-comments-post'), data)
+        [comment] = MoloComment.objects.filter(user=self.user)
+        self.assertEqual(comment.comment, 'Foo')
+        self.assertEqual(comment.user_name, 'the supplied name')
+
+        response = self.client.get('/')
+        self.assertEqual(response.status_code, 200)
+        self.assertNotContains(response, 'Unread replies: 0')
+
+        data = MoloCommentForm(self.user, {}).generate_security_data()
+        data.update({
+            'name': 'the supplied name',
+            'comment': 'Foo reply',
+            'parent': comment.pk
+        })
+        self.client.post(
+            reverse('molo.commenting:molo-comments-post'), data)
+        self.assertEqual(Notification.objects.unread().count(), 1)
+
+        response = self.client.get('/')
+        self.assertEqual(response.status_code, 200)
+        html = BeautifulSoup(response.content, 'html.parser')
+        [ntfy] = html.find_all("div", class_='notifications-list__item')
+        self.assertEqual(ntfy.find("div").get_text().strip(),
+                         'Unread replies: 1')
+
+        # Unread notifications
+        response = self.client.get(
+            reverse('molo.commenting:reply_list'))
+        self.assertContains(response, 'You have 1 unread replies')
+        self.assertContains(response, 'Unread')
+        n = Notification.objects.filter(recipient=self.user).first()
+        n.mark_as_read()
+        self.assertEqual(Notification.objects.unread().count(), 0)
+
+        response = self.client.get('/')
+        self.assertEqual(response.status_code, 200)
+        self.assertNotContains(response, 'Unread replies: 0')
+
+        # Read notifications
+        response = self.client.get(
+            reverse('molo.commenting:reply_list'))
+        self.assertEqual(Notification.objects.read().count(), 1)
+        self.assertContains(response, 'You have 0 unread replies')
+        self.assertContains(response, 'Read')
