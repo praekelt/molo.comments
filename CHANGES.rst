@@ -1,6 +1,11 @@
 CHANGELOG
 =========
 
+2.1.0
+-----
+- Added notifications for users when comments are replied to
+- Added threaded comments that allow all users to reply to comments
+
 2.0.1
 -----
 - Updated templates in order to reflect styling changes in modeladmin
