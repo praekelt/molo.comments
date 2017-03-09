@@ -369,10 +369,10 @@ class TestFrontEndCommentReplies(TestCase, MoloTestCaseMixin):
         self.assertTrue(comment.find('p', string='this_is_comment_content'))
         self.assertTrue(comment.find('a', string='Reply'))
 
-        # comment_reply_url = comment.find('a', string='Reply')['href']
+        comment_reply_url = comment.find('a', string='Reply')['href']
 
-        # response = self.client.get(comment_reply_url)
-        # self.assertTrue(response.status_code, 200)
+        response = self.client.get(comment_reply_url)
+        self.assertTrue(response.status_code, 200)
 
     def test_expert_can_reply_to_comments_on_front_end(self):
         client = Client()
