@@ -68,8 +68,7 @@ class GetMoloCommentsNode(template.Node):
         if self.limit > 0:
             qs = qs[:self.limit]
 
-        qs = [list(c.get_descendants(include_self=True))[self.child_limit:]
-              for c in qs]
+        qs = [[c] + list(c.get_descendants())[self.child_limit:] for c in qs]
 
         context[self.variable_name] = qs
         return ''

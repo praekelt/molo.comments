@@ -445,12 +445,9 @@ class TestThreadedComments(TestCase, MoloTestCaseMixin):
             parent=parent,
             submit_date=datetime.now())
 
-    def test_restrict_article_count(self):
+    def test_restrict_article_comment_count(self):
         for i in range(3):
             self.create_comment('comment %d' % i)
-
-        response = self.client.get('/')
-        self.assertEqual(response.status_code, 200)
 
         response = self.client.get('/sections/section/article-1/')
         self.assertEqual(response.status_code, 200)
@@ -458,6 +455,19 @@ class TestThreadedComments(TestCase, MoloTestCaseMixin):
         self.assertContains(response, "comment 2")
         self.assertContains(response, "comment 1")
         self.assertNotContains(response, "comment 0")
+
+    def test_restrict_article_comment_reply_count(self):
+        comment = self.create_comment('Original Comment')
+        for i in range(3):
+            self.create_comment('reply %d' % i, parent=comment)
+
+        response = self.client.get('/sections/section/article-1/')
+        self.assertEqual(response.status_code, 200)
+
+        self.assertContains(response, "Original Comment")
+        self.assertContains(response, "reply 2")
+        self.assertContains(response, "reply 1")
+        self.assertNotContains(response, "reply 0")
 
     def test_comment_reply_list(self):
         comment = self.create_comment('Original Comment')
