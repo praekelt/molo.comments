@@ -52,7 +52,6 @@ class GetMoloCommentsNode(template.Node):
 
     def __init__(self, obj, variable_name, limit=5, child_limit=0):
         self.obj = obj
-        print(obj)
         self.variable_name = variable_name
         self.limit = int(limit)
         self.child_limit = int(child_limit) * (-1)
