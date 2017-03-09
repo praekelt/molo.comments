@@ -133,13 +133,12 @@ def is_in_group(user, group_name):
 
 
 def is_in_admin_group(person):
-    boolean = (
+    return (
         person.is_superuser or
         is_in_group(person, 'Moderator') or
         is_in_group(person, 'Comment Moderator') or
         is_in_group(person, 'Expert')
     )
-    return boolean
 
 
 def get_number_replies(comment):
