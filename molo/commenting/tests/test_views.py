@@ -13,6 +13,8 @@ from molo.commenting.models import MoloComment
 from molo.commenting.forms import MoloCommentForm
 from molo.core.models import ArticlePage, SiteLanguage
 from molo.core.tests.base import MoloTestCaseMixin
+
+
 urlpatterns = patterns(
     '',
     url(r'^commenting/',
@@ -468,6 +470,24 @@ class TestThreadedComments(TestCase, MoloTestCaseMixin):
         self.assertContains(response, "reply 2")
         self.assertContains(response, "reply 1")
         self.assertNotContains(response, "reply 0")
+
+    def test_restrict_article_comment_reply_truncation(self):
+        comment = self.create_comment('Original Comment')
+        comment_text = "Lorem ipsum dolor sit amet, consectetur adipisicing \
+            tempor incididunt ut labore et dolore magna aliqua. Ut enim ad \
+            quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea \
+            consequat. Duis aute irure dolor in reprehenderit in voluptate \
+            cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat \
+            proident, sunt in culpa qui officia deserunt mollit anim id est"
+        self.create_comment(comment_text, parent=comment)
+
+        response = self.client.get('/sections/section/article-1/')
+        self.assertEqual(response.status_code, 200)
+
+        self.assertContains(response, "Original Comment")
+        truncated_text = "Lorem ipsum dolor sit amet, consectetur adipisicing"
+        self.assertContains(response, truncated_text)
+        self.assertNotContains(response, "officia deserunt mollit anim id est")
 
     def test_comment_reply_list(self):
         comment = self.create_comment('Original Comment')
