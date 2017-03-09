@@ -50,12 +50,12 @@ def get_molo_comments(parser, token):
 
 class GetMoloCommentsNode(template.Node):
 
-    def __init__(self, obj, variable_name, limit=5, child_limit=-1):
+    def __init__(self, obj, variable_name, limit=5, child_limit=0):
         self.obj = obj
         print(obj)
         self.variable_name = variable_name
         self.limit = int(limit)
-        self.child_limit = int(child_limit)
+        self.child_limit = int(child_limit)*(-1)
 
     def render(self, context):
         try:
@@ -68,18 +68,8 @@ class GetMoloCommentsNode(template.Node):
         if self.limit > 0:
             qs = qs[:self.limit]
 
-        if self.child_limit > -1:
-            comments = qs
-            qs = []
-
-            for comment in comments:
-                qs += [comment]
-                temp = list(comment.get_descendants()
-                                   .reverse()[:self.child_limit])
-                temp.reverse()
-                qs += temp
-        else:
-            qs = [c.get_descendants(include_self=True) for c in qs]
+        qs = [list(c.get_descendants(include_self=True))[self.child_limit:]
+              for c in qs]
 
         context[self.variable_name] = qs
         return ''
