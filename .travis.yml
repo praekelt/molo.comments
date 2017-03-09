@@ -15,6 +15,7 @@ install:
 script:
   - flake8 molo
   - molo scaffold testapp --include molo.commenting ^commenting/
+  - cp molo/commenting/templates/test_templates/main.html testapp/testapp/templates/core/main.html
   - flake8 testapp
   - cp test_settings.py testapp/testapp/settings/local.py
   - pip install -e testapp
