@@ -120,6 +120,23 @@ def is_in_group(user, group_name):
     return user.groups.filter(name__exact=group_name).exists()
 
 
+@register.inclusion_tag(
+    'notifications/tags/notification_banner.html',
+    takes_context=True)
+def display_unread_notifications(context):
+    user = context['request'].user
+
+    number_unread_notifications = 0
+
+    if user.is_authenticated():
+        number_unread_notifications = len(user.notifications.unread())
+
+    return {
+        'user': user,
+        'number_unread_notifications': number_unread_notifications,
+    }
+
+
 register.filter('is_in_group', is_in_group)
 register.tag('get_molo_comments', get_molo_comments)
 register.tag('get_comments_content_object', get_comments_content_object)

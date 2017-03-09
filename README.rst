@@ -18,7 +18,8 @@ Django setup::
 
    INSTALLED_APPS = INSTALLED_APPS + (
       'django_comments',
-      'molo.commenting'
+      'molo.commenting',
+      'notifications'
    )
    COMMENTS_APP = 'molo.commenting'
    COMMENTS_FLAG_THRESHHOLD = 3
