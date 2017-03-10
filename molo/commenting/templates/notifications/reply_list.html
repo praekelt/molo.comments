@@ -2,24 +2,26 @@
 {% load i18n %}
 
 {% block content %}
-
-<h1>{% trans "You have" %} {{ number_unread_notifications }} {% trans "unread replies" %}</h1>
-
-{% if unread_notifications %}
-  <h2><b>Unread</b></h2>
-  <ul class="notifications unread_notification">
-    {% for notice in unread_notifications %}
-      {% include 'notifications/notice.html' %}
-    {% endfor %}
-  </ul>
-{% endif %}
+<div class="comments comments{{self.get_parent_section.get_effective_extra_style_hints}}">
+  <h2 class="comment__title">
+    {% trans "You have" %} {{ number_unread_notifications }} {% trans "unread replies" %}
+  </h2
+  {% if unread_notifications %}
+    <h3 class="comment__text">Unread</h3>
+    <ul class="notifications unread_notification">
+      {% for notice in unread_notifications %}
+        {% include 'notifications/notice.html' %}
+      {% endfor %}
+    </ul>
+  {% endif %}
 
 {% if read_notifications %}
-  <h2><b>Read</b></h2>
+  <h3 class="comment__text">Read</h3>
   <ul class="notifications">
     {% for notice in read_notifications %}
       {% include 'notifications/notice.html' %}
     {% endfor %}
   </ul>
 {% endif %}
+</div>
 {% endblock %}
