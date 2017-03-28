@@ -36,7 +36,7 @@
           {{ node.get_children.count }} {% trans "Replies" %}
         </a>
       {% endif %}
-      {% if request.user.is_authenticated%}
+      {% if request.user.is_authenticated and request.user|is_in_admin_group %}
         <a href="{% url 'molo.commenting:molo-comments-reply' node.pk %}#comment-form" class="call-to-action__nav-item call-to-action__nav-item--response">{% trans "Reply"%}</a>
       {% endif %}
     {% endif %}
