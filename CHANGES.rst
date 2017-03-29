@@ -1,6 +1,10 @@
 CHANGELOG
 =========
 
+2.1.1
+-----
+- Updated notifications templates user-interface for users when comments are replied to by user admin
+
 2.1.0
 -----
 - Added notifications for users when comments are replied to
