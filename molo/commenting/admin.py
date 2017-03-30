@@ -249,8 +249,9 @@ class MoloCommentsModelAdmin(WagtailModelAdmin, MoloCommentAdmin):
     index_view_class = MoloCommentsAdminView
     add_to_settings_menu = False
     list_display = (
-        'comment', 'parent_comment', 'moderator_reply', 'content', '_user', 'is_removed',
-        'is_reported', 'reported_count', 'submit_date',)
+        'comment', 'parent_comment', 'moderator_reply', 'content',
+        '_user', 'is_removed', 'is_reported', 'reported_count',
+        'submit_date',)
 
     list_filter = (('submit_date', MoloCommentsDateRangeFilter), 'site',
                    'is_removed',)
@@ -288,11 +289,11 @@ class MoloCommentsModelAdmin(WagtailModelAdmin, MoloCommentAdmin):
             )
         else:
             return format_html(
-                '<a href="{}">'\
-                '<img '\
-                'src = "/static/admin/img/icon-yes.svg" '\
-                'alt = "True" >'\
-                '</a>',
+                ('<a href="{}">'
+                 '<img '
+                 'src = "/static/admin/img/icon-yes.svg" '
+                 'alt = "True" >'
+                 '</a>'),
                 "?tree_id={}".format(obj.tree_id),
             )
     parent_comment.allow_tags = True
