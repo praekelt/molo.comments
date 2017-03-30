@@ -296,9 +296,9 @@ class TestMoloCommentsAdminViews(TestCase, MoloTestCaseMixin):
         # not sure why user_name, user_email & article_full_url are blank
         # under test - they're in the export when testing manually
         expected_output = (
-            'submit_date,user_name,user_email,comment,parent,article_title,'
-            'article_subtitle,article_full_url,is_public,is_removed\r\n'
-            'datetime,,,export comment,,article 1,article 1 subtitle,,1,0\r\n'
+            'submit_date,user_name,user_email,comment,id,parent_id,article_title,'
+            'article_subtitle,article_full_url,is_public,is_removed,parent\r\n'
+            'datetime,,,export comment,1,,article 1,article 1 subtitle,,1,0,\r\n'
         )
 
         self.assertContains(response, expected_output)
