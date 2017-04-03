@@ -596,15 +596,14 @@ class ViewNotificationsRepliesOnCommentsTest(TestCase, MoloTestCaseMixin):
         response = self.client.get('/')
         self.assertEqual(response.status_code, 200)
         html = BeautifulSoup(response.content, 'html.parser')
-        [ntfy] = html.find_all("div", class_='notifications-list__item')
-        self.assertEqual(ntfy.find("div").get_text().strip(),
-                         'Unread replies: 1')
+        [ntfy] = html.find_all("div", class_='reply-notification')
+        self.assertEqual(ntfy.find("p").get_text().strip(),
+                         'You have 1 unread replies')
 
         # Unread notifications
         response = self.client.get(
             reverse('molo.commenting:reply_list'))
         self.assertContains(response, 'You have 1 unread replies')
-        self.assertContains(response, 'Unread')
         n = Notification.objects.filter(recipient=self.user).first()
         n.mark_as_read()
         self.assertEqual(Notification.objects.unread().count(), 0)
@@ -617,5 +616,5 @@ class ViewNotificationsRepliesOnCommentsTest(TestCase, MoloTestCaseMixin):
         response = self.client.get(
             reverse('molo.commenting:reply_list'))
         self.assertEqual(Notification.objects.read().count(), 1)
-        self.assertContains(response, 'You have 0 unread replies')
+        self.assertNotContains(response, 'You have 0 unread replies')
         self.assertContains(response, 'Read')

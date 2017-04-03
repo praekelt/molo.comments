@@ -30,7 +30,6 @@
 </ul>
 
 <div class="comments comments{{self.get_parent_section.get_effective_extra_style_hints}}">
-
   <div class="comment__post-message">
     {% if request.user.is_authenticated %}
       {% include "comments/form.html" with node=comment %}
