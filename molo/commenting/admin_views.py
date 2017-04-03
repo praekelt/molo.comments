@@ -60,4 +60,4 @@ class MoloCommentsAdminReplyView(FormView):
         post_comment(self.request)
         messages.success(self.request, _('Reply successfully created.'))
 
-        return redirect('/admin/modeladmin/commenting/molocomment/')
+        return redirect('/admin/commenting/molocomment/')
