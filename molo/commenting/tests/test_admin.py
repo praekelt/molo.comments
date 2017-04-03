@@ -10,18 +10,28 @@ from django.core.urlresolvers import reverse
 from django.test import TestCase, Client
 
 from molo.commenting.models import MoloComment, CannedResponse
-from molo.core.models import ArticlePage
+from molo.core.models import ArticlePage, Main, Languages, SiteLanguageRelation
 from molo.core.tests.base import MoloTestCaseMixin
 
 
 class CommentingAdminTest(TestCase):
     def setUp(self):
+        self.mk_main()
+        self.main = Main.objects.all().first()
+        self.language_setting = Languages.objects.create(
+            site_id=self.main.get_site().pk)
+        self.english = SiteLanguageRelation.objects.create(
+            language_setting=self.language_setting,
+            locale='en',
+            is_active=True)
+
+        self.section = self.mk_section(
+            self.section_index, title='section')
+        self.article = self.mk_article(self.section, title='article 1',
+                                       subtitle='article 1 subtitle',
+                                       slug='article-1')
         self.user = User.objects.create_superuser(
             'testadmin', 'testadmin@example.org', 'testadmin')
-        self.article = ArticlePage.objects.create(
-            title='article 1', depth=1,
-            subtitle='article 1 subtitle',
-            slug='article-1', path=[1])
         self.content_type = ContentType.objects.get_for_model(self.article)
         self.client = Client()
         self.client.login(username='testadmin', password='testadmin')

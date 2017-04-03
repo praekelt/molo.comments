@@ -64,11 +64,13 @@ class GetMoloCommentsNode(template.Node):
 
         qs = MoloComment.objects.for_model(obj.__class__).filter(
             object_pk=obj.pk, parent__isnull=True)
+        print qs
         if self.limit > 0:
             qs = qs[:self.limit]
+            print qs
 
         qs = [[c] + list(c.get_descendants())[self.child_limit:] for c in qs]
-
+        print qs
         context[self.variable_name] = qs
         return ''
 

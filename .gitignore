@@ -1,5 +1,5 @@
 *.pyc
-/ve/
+# /ve/
 *.egg
 *.egg-info
 dist

@@ -14,8 +14,7 @@ install:
   - pip install -e . --cache-dir $HOME/.pip-cache/
 script:
   - flake8 molo
-  - molo scaffold testapp --include molo.profiles ^profiles/ --include molo.commenting ^commenting/
-  - pip install molo.profiles
+  - molo scaffold testapp --include molo.commenting ^commenting/
   - cp molo/commenting/test_templates/article_page.html testapp/testapp/templates/core/article_page.html
   - cp molo/commenting/test_templates/main.html testapp/testapp/templates/core/main.html
   - flake8 testapp

@@ -11,7 +11,7 @@ from django.contrib.auth.models import Group
 
 from molo.commenting.models import MoloComment
 from molo.commenting.forms import MoloCommentForm
-from molo.core.models import ArticlePage, SiteLanguage
+from molo.core.models import ArticlePage, SiteLanguageRelation, Languages, Main
 from molo.core.tests.base import MoloTestCaseMixin
 
 from notifications.models import Notification
@@ -32,11 +32,22 @@ class ViewsTest(TestCase, MoloTestCaseMixin):
     def setUp(self):
         # Creates main page
         self.mk_main()
+        self.main = Main.objects.all().first()
+        self.language_setting = Languages.objects.create(
+            site_id=self.main.get_site().pk)
+        self.english = SiteLanguageRelation.objects.create(
+            language_setting=self.language_setting,
+            locale='en',
+            is_active=True)
         self.user = User.objects.create_user(
             'test', 'test@example.org', 'test')
         self.content_type = ContentType.objects.get_for_model(self.user)
         self.client = Client()
         self.client.login(username='test', password='test')
+        self.yourmind = self.mk_section(
+            self.section_index, title='Your mind')
+        self.article1 = self.mk_article(
+            title='article 1', slug='article-1', parent=self.yourmind)
 
     def mk_comment(self, comment):
         return MoloComment.objects.create(
@@ -118,10 +129,7 @@ class ViewsTest(TestCase, MoloTestCaseMixin):
         self.assertEqual(comment.user_email, 'blank@email.com')
 
     def test_report_response(self):
-        article = ArticlePage.objects.create(
-            title='article 1', depth=1,
-            subtitle='article 1 subtitle',
-            slug='article-1', path=[1])
+        article = self.article1
         comment = MoloComment.objects.create(
             content_object=article, object_pk=article.id,
             content_type=ContentType.objects.get_for_model(article),
@@ -135,10 +143,7 @@ class ViewsTest(TestCase, MoloTestCaseMixin):
         )
 
     def test_commenting_closed(self):
-        article = ArticlePage.objects.create(
-            title='article 1', depth=1,
-            subtitle='article 1 subtitle',
-            slug='article-1', path=[1], commenting_state='C')
+        article = self.article1
         article.save()
         initial = {
             'object_pk': article.id,
@@ -154,11 +159,7 @@ class ViewsTest(TestCase, MoloTestCaseMixin):
         self.assertEqual(response.status_code, 302)
 
     def test_commenting_open(self):
-        article = ArticlePage.objects.create(
-            title='article 1', depth=1,
-            subtitle='article 1 subtitle',
-            slug='article-1', path=[1], commenting_state='O')
-        article.save()
+        article = self.article1
         initial = {
             'object_pk': article.id,
             'content_type': "core.articlepage"
@@ -181,10 +182,10 @@ class ViewMoreCommentsTest(TestCase, MoloTestCaseMixin):
         self.mk_main()
         self.user = User.objects.create_user(
             'test', 'test@example.org', 'test')
-        self.article = ArticlePage.objects.create(
-            title='article 1', depth=1,
-            subtitle='article 1 subtitle',
-            slug='article-1', path=[1])
+        self.yourmind = self.mk_section(
+            self.section_index, title='Your mind')
+        self.article = self.mk_article(
+            title='article 1', slug='article-1', parent=self.yourmind)
 
         self.client = Client()
 
@@ -308,7 +309,13 @@ class TestFrontEndCommentReplies(TestCase, MoloTestCaseMixin):
 
     def setUp(self):
         self.mk_main()
-        self.english = SiteLanguage.objects.create(locale='en')
+        self.main = Main.objects.all().first()
+        self.language_setting = Languages.objects.create(
+            site_id=self.main.get_site().pk)
+        self.english = SiteLanguageRelation.objects.create(
+            language_setting=self.language_setting,
+            locale='en',
+            is_active=True)
         self.client = Client()
 
         self.superuser = User.objects.create_superuser(
@@ -426,7 +433,14 @@ class TestThreadedComments(TestCase, MoloTestCaseMixin):
     def setUp(self):
         # Creates main page
         self.mk_main()
-        self.english = SiteLanguage.objects.create(locale='en')
+        self.main = Main.objects.all().first()
+        self.language_setting = Languages.objects.create(
+            site_id=self.main.get_site().pk)
+        self.english = SiteLanguageRelation.objects.create(
+            language_setting=self.language_setting,
+            locale='en',
+            is_active=True)
+
         self.user = User.objects.create_user(
             'test', 'test@example.org', 'test')
 
@@ -440,7 +454,7 @@ class TestThreadedComments(TestCase, MoloTestCaseMixin):
 
     def create_comment(self, comment, parent=None, user=None):
         commenter = user or self.user
-        return MoloComment.objects.create(
+        comment = MoloComment.objects.create(
             content_type=ContentType.objects.get_for_model(self.article),
             object_pk=self.article.pk,
             content_object=self.article,
@@ -454,7 +468,7 @@ class TestThreadedComments(TestCase, MoloTestCaseMixin):
         for i in range(3):
             self.create_comment('comment %d' % i)
 
-        response = self.client.get('/sections/section/article-1/')
+        response = self.client.get(self.article.url)
         self.assertEqual(response.status_code, 200)
 
         self.assertContains(response, "comment 2")
@@ -465,8 +479,11 @@ class TestThreadedComments(TestCase, MoloTestCaseMixin):
         comment = self.create_comment('Original Comment')
         for i in range(3):
             self.create_comment('reply %d' % i, parent=comment)
+        comment2 = self.create_comment('Original Comment 2')
+        # for i in range(3):
+        #     self.create_comment('reply %d' % i, parent=comment)
 
-        response = self.client.get('/sections/section/article-1/')
+        response = self.client.get(self.article.url)
         self.assertEqual(response.status_code, 200)
 
         self.assertContains(response, "Original Comment")
@@ -545,10 +562,12 @@ class ViewNotificationsRepliesOnCommentsTest(TestCase, MoloTestCaseMixin):
         self.mk_main()
         self.user = User.objects.create_user(
             'test', 'test@example.org', 'test')
-        self.article = ArticlePage.objects.create(
-            title='article 1', depth=1,
-            subtitle='article 1 subtitle',
-            slug='article-1', path=[1])
+
+        self.section = self.mk_section(
+            self.section_index, title='section')
+        self.article = self.mk_article(self.section, title='article 1',
+                                       subtitle='article 1 subtitle',
+                                       slug='article-1')
 
         self.client = Client()
         self.client.login(username='test', password='test')
