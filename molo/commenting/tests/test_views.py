@@ -11,7 +11,7 @@ from django.contrib.auth.models import Group
 
 from molo.commenting.models import MoloComment
 from molo.commenting.forms import MoloCommentForm
-from molo.core.models import ArticlePage, SiteLanguageRelation, Languages, Main
+from molo.core.models import SiteLanguageRelation, Languages, Main
 from molo.core.tests.base import MoloTestCaseMixin
 
 from notifications.models import Notification
@@ -454,7 +454,7 @@ class TestThreadedComments(TestCase, MoloTestCaseMixin):
 
     def create_comment(self, comment, parent=None, user=None):
         commenter = user or self.user
-        comment = MoloComment.objects.create(
+        return MoloComment.objects.create(
             content_type=ContentType.objects.get_for_model(self.article),
             object_pk=self.article.pk,
             content_object=self.article,
@@ -479,10 +479,6 @@ class TestThreadedComments(TestCase, MoloTestCaseMixin):
         comment = self.create_comment('Original Comment')
         for i in range(3):
             self.create_comment('reply %d' % i, parent=comment)
-        comment2 = self.create_comment('Original Comment 2')
-        # for i in range(3):
-        #     self.create_comment('reply %d' % i, parent=comment)
-
         response = self.client.get(self.article.url)
         self.assertEqual(response.status_code, 200)
 
@@ -501,7 +497,7 @@ class TestThreadedComments(TestCase, MoloTestCaseMixin):
             proident, sunt in culpa qui officia deserunt mollit anim id est"
         self.create_comment(comment_text, parent=comment)
 
-        response = self.client.get('/sections/section/article-1/')
+        response = self.client.get(self.article.url)
         self.assertEqual(response.status_code, 200)
 
         self.assertContains(response, "Original Comment")
