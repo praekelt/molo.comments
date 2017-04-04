@@ -1,4 +1,4 @@
-from django.conf.urls import patterns, include, url
+from django.conf.urls import patterns, url
 
 from molo.commenting import views
 from molo.commenting.views import CommentReplyView
@@ -18,5 +18,6 @@ urlpatterns = patterns(
         r'molo/(?P<page_id>\d+)/comments/$',
         views.view_more_article_comments,
         name='more-comments'),
-    url(r'', include('django_comments.urls')),
+    url(r'molo/replies/$',
+        views.reply_list, name='reply_list'),
 )
