@@ -1,6 +1,10 @@
 CHANGELOG
 =========
 
+3.0.0-beta.1
+-----
+- Added merged cms support
+
 2.1.1
 -----
 - Updated notifications templates user-interface for users when comments are replied to by user admin
