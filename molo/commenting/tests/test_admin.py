@@ -335,7 +335,7 @@ class TestMoloCommentsAdminViews(TestCase, MoloTestCaseMixin):
 
     def test_export_csv_per_site(self):
         self.mk_comment('export comment')
-        comment2 = MoloComment.objects.create(
+        MoloComment.objects.create(
             content_type=self.content_type,
             object_pk=self.article2.pk,
             content_object=self.article2,
