@@ -7,9 +7,9 @@ from django_comments.signals import (
 )
 from django.conf import settings
 from django.db import models
-
+from django.db.models.signals import pre_save
 from mptt.models import MPTTModel, TreeForeignKey
-
+from wagtail.wagtailcore.models import Site, Page
 from notifications.signals import notify
 
 
@@ -21,6 +21,7 @@ class MoloComment(MPTTModel, Comment):
 
     parent = TreeForeignKey('self', null=True, blank=True,
                             related_name='children')
+    wagtail_site = models.ForeignKey(Site, null=True, blank=True)
 
     class MPTTMeta:
         # comments on one level will be ordered by date of creation
@@ -32,6 +33,12 @@ class MoloComment(MPTTModel, Comment):
 
     def flag_count(self, flag):
         return self.flags.filter(flag=flag).count()
+
+
+@receiver(pre_save, sender=MoloComment)
+def add_wagtail_site(sender, instance, *args, **kwargs):
+        article = Page.objects.filter(pk=instance.object_pk).first().specific
+        instance.wagtail_site = article.get_site()
 
 
 @receiver(comment_was_flagged, sender=MoloComment)
