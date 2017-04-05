@@ -113,7 +113,7 @@ class AdminCommentReplyView(FormView):
 
 
 class CommentReplyView(TemplateView):
-    form_class = MoloCommentForm
+        form_class = MoloCommentForm
     template_name = 'comments/reply.html'
 
     def get(self, request, parent_comment_pk):
