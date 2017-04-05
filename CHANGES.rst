@@ -1,6 +1,10 @@
 CHANGELOG
 =========
 
+3.0.2-beta.1
+-----
+- Pinned molo version
+
 3.0.1-beta.1
 -----
 - Added merged cms support, fixed bug
