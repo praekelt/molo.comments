@@ -1,6 +1,10 @@
 CHANGELOG
 =========
 
+3.0.1-beta.1
+-----
+- Added merged cms support, fixed bug
+
 3.0.0-beta.1
 -----
 - Added merged cms support
