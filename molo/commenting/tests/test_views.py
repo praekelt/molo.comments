@@ -498,6 +498,7 @@ class TestThreadedComments(TestCase, MoloTestCaseMixin):
         self.create_comment(comment_text, parent=comment)
 
         response = self.client.get(self.article.url)
+        print response
         self.assertEqual(response.status_code, 200)
 
         self.assertContains(response, "Original Comment")
