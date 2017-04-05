@@ -15,8 +15,6 @@ install:
 script:
   - flake8 molo
   - molo scaffold testapp --include molo.commenting ^commenting/
-  - mkdir testapp/testapp/templates
-  - mkdir testapp/testapp/templates/core
   - cp molo/commenting/test_templates/article_page.html testapp/testapp/templates/core/article_page.html
   - cp molo/commenting/test_templates/main.html testapp/testapp/templates/core/main.html
   - flake8 testapp
