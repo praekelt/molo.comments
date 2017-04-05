@@ -298,6 +298,9 @@ class MoloCommentsModelAdmin(WagtailModelAdmin, MoloCommentAdmin):
             )
     parent_comment.allow_tags = True
 
+    def get_queryset(self, request):
+        return MoloComment.objects.filter(wagtail_site=request.site.pk)
+
 
 class MoloCannedResponsesModelAdmin(WagtailModelAdmin,
                                     CannedResponseModelAdmin):
