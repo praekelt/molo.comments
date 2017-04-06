@@ -1,6 +1,10 @@
 CHANGELOG
 =========
 
+2.1.2
+-----
+- Add placeholder attribute on comment textarea widget form
+
 2.1.1
 -----
 - Updated notifications templates user-interface for users when comments are replied to by user admin
