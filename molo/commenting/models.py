@@ -79,6 +79,7 @@ def create_notification_for_comment_reply(sender, comment, request, **kwargs):
             target=article
         )
 
+
 class CannedResponse(models.Model):
     response_header = models.CharField(max_length=500, blank=False)
     response = models.TextField(max_length=COMMENT_MAX_LENGTH, blank=False)

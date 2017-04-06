@@ -113,9 +113,9 @@ class AdminCommentReplyView(FormView):
 
 
 class CommentReplyView(TemplateView):
-        form_class = MoloCommentForm
-        template_name = 'comments/reply.html'
-        
+    form_class = MoloCommentForm
+    template_name = 'comments/reply.html'
+
     def get(self, request, parent_comment_pk):
         comment = get_object_or_404(
             django_comments.get_model(), pk=parent_comment_pk,
