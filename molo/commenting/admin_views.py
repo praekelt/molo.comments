@@ -6,7 +6,7 @@ from django_comments.views.comments import post_comment
 from molo.commenting.admin_import_export import MoloCommentsResource
 from molo.commenting.forms import AdminMoloCommentReplyForm
 from molo.commenting.models import MoloComment
-from wagtailmodeladmin.views import IndexView
+from wagtail.contrib.modeladmin.views import IndexView
 from django.utils.translation import ugettext as _
 
 
@@ -23,7 +23,7 @@ class MoloCommentsAdminView(IndexView):
             'is_removed': is_removed__exact
         }
 
-        arguments = {}
+        arguments = {'wagtail_site': request.site.pk}
 
         for key, value in filter_list.items():
             if value:
@@ -60,4 +60,4 @@ class MoloCommentsAdminReplyView(FormView):
         post_comment(self.request)
         messages.success(self.request, _('Reply successfully created.'))
 
-        return redirect('/admin/modeladmin/commenting/molocomment/')
+        return redirect('/admin/commenting/molocomment/')

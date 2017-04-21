@@ -1,6 +1,38 @@
 CHANGELOG
 =========
 
+5.0.0
+-----
+- Add multi-site support
+
+2.1.2
+-----
+- Add placeholder attribute on comment textarea widget form
+
+2.1.1
+-----
+- Updated notifications templates user-interface for users when comments are replied to by user admin
+
+2.1.0
+-----
+- Added notifications for users when comments are replied to
+- Added threaded comments that allow all users to reply to comments
+
+2.0.1
+-----
+- Updated templates in order to reflect styling changes in modeladmin
+
+2.0.0
+-----
+- Removed dependency on wagtailmodeladmin
+
+Backwards incompatible changes
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+- Removed use of ``wagtailmodeladmin``: use ``wagtail.contrib.modeladmin`` instead
+- ``{% load wagtailmodeladmin_tags %}`` has been replaced by ``{% load modeladmin_tags %}``
+
+NOTE: This release is not compatible with molo versions that are less than 4.0
+
 1.0.4
 -----
 - Delete Comment Moderator and Expert group and recreate them again
