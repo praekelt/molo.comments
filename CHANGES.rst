@@ -1,6 +1,10 @@
 CHANGELOG
 =========
 
+5.0.1
+-----
+- Update trans blocks
+
 5.0.0
 -----
 - Add multi-site support
