@@ -23,7 +23,7 @@ class MoloCommentsAdminView(IndexView):
             'is_removed': is_removed__exact
         }
 
-        arguments = {}
+        arguments = {'wagtail_site': request.site.pk}
 
         for key, value in filter_list.items():
             if value:
@@ -60,4 +60,4 @@ class MoloCommentsAdminReplyView(FormView):
         post_comment(self.request)
         messages.success(self.request, _('Reply successfully created.'))
 
-        return redirect('/admin/modeladmin/commenting/molocomment/')
+        return redirect('/admin/commenting/molocomment/')

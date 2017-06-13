@@ -9,6 +9,7 @@ from django.contrib.admin.views.main import ChangeList
 from django.shortcuts import get_object_or_404
 from django.contrib.admin.utils import unquote
 from django.contrib.contenttypes.models import ContentType
+from django.utils.html import format_html
 from molo.commenting.admin_views import MoloCommentsAdminView
 from mptt.admin import MPTTModelAdmin
 
@@ -248,8 +249,9 @@ class MoloCommentsModelAdmin(WagtailModelAdmin, MoloCommentAdmin):
     index_view_class = MoloCommentsAdminView
     add_to_settings_menu = False
     list_display = (
-        'comment', 'moderator_reply', 'content', '_user', 'is_removed',
-        'is_reported', 'reported_count', 'submit_date',)
+        'comment', 'parent_comment', 'moderator_reply', 'content',
+        '_user', 'is_removed', 'is_reported', 'reported_count',
+        'submit_date',)
 
     list_filter = (('submit_date', MoloCommentsDateRangeFilter), 'site',
                    'is_removed',)
@@ -277,6 +279,27 @@ class MoloCommentsModelAdmin(WagtailModelAdmin, MoloCommentAdmin):
         else:
             return ''
     moderator_reply.allow_tags = True
+
+    def parent_comment(self, obj):
+        if obj.parent:
+            return format_html(
+                '<a href="{}">{}</a>',
+                "?tree_id={}".format(obj.tree_id),
+                obj.parent.comment,
+            )
+        else:
+            return format_html(
+                ('<a href="{}">'
+                 '<img '
+                 'src = "/static/admin/img/icon-yes.svg" '
+                 'alt = "True" >'
+                 '</a>'),
+                "?tree_id={}".format(obj.tree_id),
+            )
+    parent_comment.allow_tags = True
+
+    def get_queryset(self, request):
+        return MoloComment.objects.filter(wagtail_site=request.site.pk)
 
 
 class MoloCannedResponsesModelAdmin(WagtailModelAdmin,

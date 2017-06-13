@@ -10,18 +10,28 @@ from django.core.urlresolvers import reverse
 from django.test import TestCase, Client
 
 from molo.commenting.models import MoloComment, CannedResponse
-from molo.core.models import ArticlePage
+from molo.core.models import Main, Languages, SiteLanguageRelation
 from molo.core.tests.base import MoloTestCaseMixin
 
 
-class CommentingAdminTest(TestCase):
+class CommentingAdminTest(TestCase, MoloTestCaseMixin):
     def setUp(self):
+        self.mk_main()
+        self.main = Main.objects.all().first()
+        self.language_setting = Languages.objects.create(
+            site_id=self.main.get_site().pk)
+        self.english = SiteLanguageRelation.objects.create(
+            language_setting=self.language_setting,
+            locale='en',
+            is_active=True)
+
+        self.section = self.mk_section(
+            self.section_index, title='section')
+        self.article = self.mk_article(self.section, title='article 1',
+                                       subtitle='article 1 subtitle',
+                                       slug='article-1')
         self.user = User.objects.create_superuser(
             'testadmin', 'testadmin@example.org', 'testadmin')
-        self.article = ArticlePage.objects.create(
-            title='article 1', depth=1,
-            subtitle='article 1 subtitle',
-            slug='article-1', path=[1])
         self.content_type = ContentType.objects.get_for_model(self.article)
         self.client = Client()
         self.client.login(username='testadmin', password='testadmin')
@@ -225,6 +235,13 @@ class CommentingAdminTest(TestCase):
 class TestMoloCommentsAdminViews(TestCase, MoloTestCaseMixin):
     def setUp(self):
         self.mk_main()
+        self.main = Main.objects.all().first()
+        self.language_setting = Languages.objects.create(
+            site_id=self.main.get_site().pk)
+        self.english = SiteLanguageRelation.objects.create(
+            language_setting=self.language_setting,
+            locale='en',
+            is_active=True)
 
         self.user = User.objects.create_user(
             'test', 'test@example.org', 'test'
@@ -239,14 +256,33 @@ class TestMoloCommentsAdminViews(TestCase, MoloTestCaseMixin):
 
         self.client = Client()
         self.client.login(username='superuser', password='0000')
-
-        self.article = ArticlePage.objects.create(
-            title='article 1', depth=1,
-            subtitle='article 1 subtitle',
-            slug='article-1', path=[1]
-        )
-
+        self.yourmind = self.mk_section(
+            self.section_index, title='Your mind')
+        self.article = self.mk_article(
+            title='article 1', slug='article-1', parent=self.yourmind,
+            subtitle='article 1 subtitle')
         self.content_type = ContentType.objects.get_for_model(self.article)
+
+        self.mk_main2()
+        self.main2 = Main.objects.all().last()
+        self.language_setting2 = Languages.objects.create(
+            site_id=self.main2.get_site().pk)
+        self.english2 = SiteLanguageRelation.objects.create(
+            language_setting=self.language_setting2,
+            locale='en',
+            is_active=True)
+        self.french2 = SiteLanguageRelation.objects.create(
+            language_setting=self.language_setting2,
+            locale='fr',
+            is_active=True)
+        self.yourmind2 = self.mk_section(
+            self.section_index2, title='Your mind2')
+        self.article2 = self.mk_article(
+            title='article 2', slug='article-2', parent=self.yourmind2,
+            subtitle='article 2 subtitle')
+
+        self.mk_main2(title='main3', slug='main3', path=00010003)
+        self.client2 = Client(HTTP_HOST=self.main2.get_site().hostname)
 
     def mk_comment(self, comment, parent=None):
         return MoloComment.objects.create(
@@ -259,14 +295,31 @@ class TestMoloCommentsAdminViews(TestCase, MoloTestCaseMixin):
             parent=parent,
             submit_date=datetime.now())
 
-    def test_comment_appears_in_admin_view(self):
-        comment = self.mk_comment('the comment')
-
+    def test_correct_comment_appears_in_admin_view(self):
+        comment1 = self.mk_comment('the comment')
+        comment2 = MoloComment.objects.create(
+            content_type=self.content_type,
+            object_pk=self.article2.pk,
+            content_object=self.article2,
+            site=Site.objects.first(),
+            user=self.user,
+            comment='second site comment',
+            parent=None,
+            submit_date=datetime.now())
         response = self.client.get(
             '/admin/commenting/molocomment/'
         )
+        self.assertContains(response, comment1.comment)
+        self.assertNotContains(response, comment2.comment)
 
-        self.assertContains(response, comment.comment)
+        User.objects.create_superuser(
+            username='superuser2', password='password2',
+            email='super2@email.com', is_staff=True)
+        self.client2.login(username='superuser2', password='password2')
+        response = self.client2.get(
+            self.site2.root_url + '/admin/commenting/molocomment/')
+        self.assertNotContains(response, comment1.comment)
+        self.assertContains(response, comment2.comment)
 
     def test_canned_response_appears_in_canned_responses_admin_view(self):
         canned_response = CannedResponse.objects.create(
@@ -280,9 +333,17 @@ class TestMoloCommentsAdminViews(TestCase, MoloTestCaseMixin):
 
         self.assertContains(response, canned_response.response_header)
 
-    def test_export_csv(self):
+    def test_export_csv_per_site(self):
         self.mk_comment('export comment')
-
+        MoloComment.objects.create(
+            content_type=self.content_type,
+            object_pk=self.article2.pk,
+            content_object=self.article2,
+            site=Site.objects.first(),
+            user=self.user,
+            comment='second site comment',
+            parent=None,
+            submit_date=datetime.now())
         response = self.client.post(
             '/admin/commenting/molocomment/'
         )
@@ -296,9 +357,36 @@ class TestMoloCommentsAdminViews(TestCase, MoloTestCaseMixin):
         # not sure why user_name, user_email & article_full_url are blank
         # under test - they're in the export when testing manually
         expected_output = (
-            'submit_date,user_name,user_email,comment,parent,article_title,'
-            'article_subtitle,article_full_url,is_public,is_removed\r\n'
-            'datetime,,,export comment,,article 1,article 1 subtitle,,1,0\r\n'
+            'submit_date,user_name,user_email,comment,id,parent_id,'
+            'article_title,article_subtitle,article_full_url,'
+            'is_public,is_removed,parent,wagtail_site\r\n'
+            'datetime,,,export comment,1,,article 1,'
+            'article 1 subtitle,http://main-1.localhost:8000/sections-mai'
+            'n-1/your-mind/article-1/,1,0,,1\r\n'
         )
+        self.assertContains(response, expected_output)
 
+        User.objects.create_superuser(
+            username='superuser2', password='password2',
+            email='super2@email.com', is_staff=True)
+        self.client2.login(username='superuser2', password='password2')
+        response = self.client2.post(
+            self.site2.root_url + '/admin/commenting/molocomment/')
+
+        # substitute the datetime component to avoid intermittent test failures
+        # due to crossing a second boundary
+        response.content = re.sub('\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}',
+                                  'datetime',
+                                  response.content)
+
+        # not sure why user_name, user_email & article_full_url are blank
+        # under test - they're in the export when testing manually
+        expected_output = (
+            'submit_date,user_name,user_email,comment,id,parent_id,'
+            'article_title,article_subtitle,article_full_url,'
+            'is_public,is_removed,parent,wagtail_site\r\n'
+            'datetime,,,second site comment,2,,article 2,'
+            'article 2 subtitle,http://main2-1.localhost:8000/sections-mai'
+            'n2-1/your-mind2/article-2/,1,0,,2\r\n'
+        )
         self.assertContains(response, expected_output)

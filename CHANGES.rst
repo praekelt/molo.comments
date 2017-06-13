@@ -1,6 +1,14 @@
 CHANGELOG
 =========
 
+5.0.1
+-----
+- Update trans blocks
+
+5.0.0
+-----
+- Add multi-site support
+
 2.1.2
 -----
 - Add placeholder attribute on comment textarea widget form
