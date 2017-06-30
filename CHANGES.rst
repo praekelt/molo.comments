@@ -1,6 +1,10 @@
 CHANGELOG
 =========
 
+5.0.2
+-----
+- Bug Fix: use unicode for comments in admin
+
 5.0.1
 -----
 - Update trans blocks
