@@ -1,4 +1,4 @@
-molo.core==5.0.4b1
+molo.core<6.0.0,>=5.0.0
 django-contrib-comments==1.7.1
 django-mptt==0.8.5
 django-import-export

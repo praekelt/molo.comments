@@ -1,17 +1,21 @@
 CHANGELOG
 =========
 
-3.0.2-beta.1
+5.0.2
 -----
-- Pinned molo version
+- Bug Fix: use unicode for comments in admin
 
-3.0.1-beta.1
+5.0.1
 -----
-- Added merged cms support, fixed bug
+- Update trans blocks
 
-3.0.0-beta.1
+5.0.0
 -----
-- Added merged cms support
+- Add multi-site support
+
+2.1.2
+-----
+- Add placeholder attribute on comment textarea widget form
 
 2.1.1
 -----
