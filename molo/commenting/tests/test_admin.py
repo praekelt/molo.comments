@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 import re
 
 from bs4 import BeautifulSoup
@@ -70,18 +72,17 @@ class CommentingAdminTest(TestCase, MoloTestCaseMixin):
         '''Replies to comments should be indented and ordered chronologically
         directly under the parent comment.'''
         comment = self.mk_comment('comment text')
-        reply1 = self.mk_comment('reply 1 text', parent=comment)
+        reply1 = self.mk_comment('reply 1 text 😁', parent=comment)
         reply2 = self.mk_comment('reply 2 text', parent=comment)
         changelist = self.client.get(
             reverse('admin:commenting_molocomment_changelist'))
-
+        self.assertContains(changelist, reply1.comment)
         html = BeautifulSoup(changelist.content, 'html.parser')
         table = html.find(id='result_list')
         [commentrow, reply1row, reply2row] = table.tbody.find_all('tr')
         self.assertTrue(comment.comment in commentrow.prettify())
         self.assertEqual(
             len(commentrow.find_all(style='padding-left:8px')), 1)
-        self.assertTrue(reply1.comment in reply1row.prettify())
         self.assertTrue(reply2.comment in reply2row.prettify())
         self.assertEqual(
             len(reply1row.find_all(style='padding-left:18px')), 1)
