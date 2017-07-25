@@ -9,7 +9,7 @@ from django.contrib.auth.models import User
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.sites.models import Site
 from django.core.urlresolvers import reverse
-from django.test import TestCase, Client
+from django.test import TestCase, Client, override_settings
 
 from molo.commenting.models import MoloComment, CannedResponse
 from molo.core.models import Main, Languages, SiteLanguageRelation
@@ -334,7 +334,8 @@ class TestMoloCommentsAdminViews(TestCase, MoloTestCaseMixin):
 
         self.assertContains(response, canned_response.response_header)
 
-    def test_export_csv_per_site(self):
+    @override_settings(CELERY_ALWAYS_EAGER=True)
+    def test_download_csv_per_site_redirects(self):
         self.mk_comment('export comment')
         MoloComment.objects.create(
             content_type=self.content_type,
@@ -355,39 +356,4 @@ class TestMoloCommentsAdminViews(TestCase, MoloTestCaseMixin):
                                   'datetime',
                                   response.content)
 
-        # not sure why user_name, user_email & article_full_url are blank
-        # under test - they're in the export when testing manually
-        expected_output = (
-            'submit_date,user_name,user_email,comment,id,parent_id,'
-            'article_title,article_subtitle,article_full_url,'
-            'is_public,is_removed,parent,wagtail_site\r\n'
-            'datetime,,,export comment,1,,article 1,'
-            'article 1 subtitle,http://main-1.localhost:8000/sections-mai'
-            'n-1/your-mind/article-1/,1,0,,1\r\n'
-        )
-        self.assertContains(response, expected_output)
-
-        User.objects.create_superuser(
-            username='superuser2', password='password2',
-            email='super2@email.com', is_staff=True)
-        self.client2.login(username='superuser2', password='password2')
-        response = self.client2.post(
-            self.site2.root_url + '/admin/commenting/molocomment/')
-
-        # substitute the datetime component to avoid intermittent test failures
-        # due to crossing a second boundary
-        response.content = re.sub('\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}',
-                                  'datetime',
-                                  response.content)
-
-        # not sure why user_name, user_email & article_full_url are blank
-        # under test - they're in the export when testing manually
-        expected_output = (
-            'submit_date,user_name,user_email,comment,id,parent_id,'
-            'article_title,article_subtitle,article_full_url,'
-            'is_public,is_removed,parent,wagtail_site\r\n'
-            'datetime,,,second site comment,2,,article 2,'
-            'article 2 subtitle,http://main2-1.localhost:8000/sections-mai'
-            'n2-1/your-mind2/article-2/,1,0,,2\r\n'
-        )
-        self.assertContains(response, expected_output)
+        self.assertEquals(response.status_code, 302)

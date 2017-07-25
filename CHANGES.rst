@@ -1,6 +1,10 @@
 CHANGELOG
 =========
 
+5.1.0
+-----
+- Deprecated the use of download as CSV due to timeouts. Implemented send CSV as email.
+
 5.0.2
 -----
 - Bug Fix: use unicode for comments in admin
