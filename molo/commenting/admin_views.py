@@ -5,7 +5,6 @@ from django_comments.views.comments import post_comment
 from molo.commenting.forms import AdminMoloCommentReplyForm
 from tasks import send_export_email
 from wagtail.contrib.modeladmin.views import IndexView
-from django.utils.translation import ugettext as _
 
 
 class MoloCommentsAdminView(IndexView):
@@ -15,7 +14,7 @@ class MoloCommentsAdminView(IndexView):
     def post(self, request, *args, **kwargs):
         if not request.user.email:
             messages.error(
-                request, _(
+                request, (
                     "Your email address is not configured. "
                     "Please update it before exporting."))
             return redirect(request.path)
@@ -38,7 +37,7 @@ class MoloCommentsAdminView(IndexView):
                 arguments[key] = value
 
         self.send_export_email_to_celery(request.user.email, arguments)
-        messages.success(request, _(
+        messages.success(request, (
             "CSV emailed to '{0}'").format(request.user.email))
         return redirect(request.path)
 
@@ -62,6 +61,6 @@ class MoloCommentsAdminReplyView(FormView):
         self.request.POST['email'] = ''
         self.request.POST['parent'] = self.kwargs['parent']
         post_comment(self.request)
-        messages.success(self.request, _('Reply successfully created.'))
+        messages.success(self.request, ('Reply successfully created.'))
 
         return redirect('/admin/commenting/molocomment/')
