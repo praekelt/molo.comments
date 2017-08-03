@@ -11,6 +11,7 @@ from django.db.models.signals import pre_save
 from mptt.models import MPTTModel, TreeForeignKey
 from wagtail.wagtailcore.models import Site, Page
 from notifications.signals import notify
+from .rules import CommentDataRule
 
 
 class MoloComment(MPTTModel, Comment):
