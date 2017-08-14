@@ -1,6 +1,10 @@
 CHANGELOG
 =========
 
+5.2.0
+-----
+- Added Comment Rules for Personalise
+
 5.1.0
 -----
 - Deprecated the use of download as CSV due to timeouts. Implemented send CSV as email.
