@@ -5,3 +5,4 @@ django-import-export
 django-daterange-filter
 django-notifications-hq
 wagtail-personalisation==0.9.1
+Unidecode==0.04.16
