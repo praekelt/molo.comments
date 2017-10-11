@@ -1,6 +1,10 @@
 CHANGELOG
 =========
 
+5.2.1
+-----
+- Bug Fix: redirect edit user page to wagtail admin not django-admin
+
 5.2.0
 -----
 - Added Comment Rules for Personalise
