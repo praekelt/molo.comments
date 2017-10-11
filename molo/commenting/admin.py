@@ -76,7 +76,7 @@ class MoloCommentAdmin(MPTTModelAdmin, CommentsAdmin):
         if not obj.user:
             return ""
 
-        url = reverse('admin:auth_user_change', args=(obj.user.id,))
+        url = '/admin/auth/user/edit/%s/' % obj.user.pk
         return '<a href="?user=%s">%s</a>' % (
             obj.user.id,
             self.get_user_display_name(obj)
