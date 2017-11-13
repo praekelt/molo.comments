@@ -1,6 +1,10 @@
 CHANGELOG
 =========
 
+5.2.2
+-----
+- Update dependency on wagtail-personalisation to wagtail-personalisation-molo, a custom, forked version
+
 5.2.1
 -----
 - Bug Fix: redirect edit user page to wagtail admin not django-admin
