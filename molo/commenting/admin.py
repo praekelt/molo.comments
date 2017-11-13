@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+import sys
 from django_comments.models import CommentFlag
 from django_comments.admin import CommentsAdmin
 from django.contrib import admin
@@ -74,7 +76,7 @@ class MoloCommentAdmin(MPTTModelAdmin, CommentsAdmin):
         if not obj.user:
             return ""
 
-        url = reverse('admin:auth_user_change', args=(obj.user.id,))
+        url = '/admin/auth/user/edit/%s/' % obj.user.pk
         return '<a href="?user=%s">%s</a>' % (
             obj.user.id,
             self.get_user_display_name(obj)
@@ -281,6 +283,8 @@ class MoloCommentsModelAdmin(WagtailModelAdmin, MoloCommentAdmin):
     moderator_reply.allow_tags = True
 
     def parent_comment(self, obj):
+        reload(sys)
+        sys.setdefaultencoding('utf-8')
         if obj.parent:
             return format_html(
                 '<a href="{}">{}</a>',

@@ -1,9 +1,12 @@
 from django import forms
+from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.forms import ModelChoiceField
 from django.utils.translation import ugettext_lazy as _
 from django_comments.forms import CommentForm
 from molo.commenting.models import MoloComment, CannedResponse
+
+COMMENT_MAX_LENGTH = getattr(settings, 'COMMENT_MAX_LENGTH', 3000)
 
 
 class MoloCommentForm(CommentForm):
@@ -11,6 +14,10 @@ class MoloCommentForm(CommentForm):
     parent = forms.ModelChoiceField(
         queryset=MoloComment.objects.all(),
         required=False, widget=forms.HiddenInput)
+    comment = forms.CharField(
+        label=_('Comment'), widget=forms.Textarea(
+            attrs={'placeholder': _('Type your comment here...')}),
+        max_length=COMMENT_MAX_LENGTH)
 
     def get_comment_model(self):
         # Use our custom comment model instead of the built-in one.

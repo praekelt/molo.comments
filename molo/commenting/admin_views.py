@@ -1,17 +1,24 @@
 from django.contrib import messages
-from django.http import HttpResponse
 from django.shortcuts import redirect
 from django.views.generic import FormView
 from django_comments.views.comments import post_comment
-from molo.commenting.admin_import_export import MoloCommentsResource
 from molo.commenting.forms import AdminMoloCommentReplyForm
-from molo.commenting.models import MoloComment
+from tasks import send_export_email
 from wagtail.contrib.modeladmin.views import IndexView
-from django.utils.translation import ugettext as _
 
 
 class MoloCommentsAdminView(IndexView):
+    def send_export_email_to_celery(self, email, arguments):
+        send_export_email.delay(email, arguments)
+
     def post(self, request, *args, **kwargs):
+        if not request.user.email:
+            messages.error(
+                request, (
+                    "Your email address is not configured. "
+                    "Please update it before exporting."))
+            return redirect(request.path)
+
         drf__submit_date__gte = request.GET.get('drf__submit_date__gte')
         drf__submit_date__lte = request.GET.get('drf__submit_date__lte')
         is_removed__exact = request.GET.get('is_removed__exact')
@@ -29,14 +36,10 @@ class MoloCommentsAdminView(IndexView):
             if value:
                 arguments[key] = value
 
-        dataset = MoloCommentsResource().export(
-            MoloComment.objects.filter(**arguments)
-        )
-
-        response = HttpResponse(dataset.csv, content_type="text/csv")
-        response['Content-Disposition'] = \
-            'attachment;filename=comments.csv'
-        return response
+        self.send_export_email_to_celery(request.user.email, arguments)
+        messages.success(request, (
+            "CSV emailed to '{0}'").format(request.user.email))
+        return redirect(request.path)
 
     def get_template_names(self):
         return 'admin/molo_comments_admin.html'
@@ -58,6 +61,6 @@ class MoloCommentsAdminReplyView(FormView):
         self.request.POST['email'] = ''
         self.request.POST['parent'] = self.kwargs['parent']
         post_comment(self.request)
-        messages.success(self.request, _('Reply successfully created.'))
+        messages.success(self.request, ('Reply successfully created.'))
 
         return redirect('/admin/commenting/molocomment/')

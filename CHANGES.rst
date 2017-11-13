@@ -1,17 +1,37 @@
 CHANGELOG
 =========
 
-3.0.2-beta.1
+5.2.2
 -----
-- Pinned molo version
+- Update dependency on wagtail-personalisation to wagtail-personalisation-molo, a custom, forked version
 
-3.0.1-beta.1
+5.2.1
 -----
-- Added merged cms support, fixed bug
+- Bug Fix: redirect edit user page to wagtail admin not django-admin
 
-3.0.0-beta.1
+5.2.0
 -----
-- Added merged cms support
+- Added Comment Rules for Personalise
+
+5.1.0
+-----
+- Deprecated the use of download as CSV due to timeouts. Implemented send CSV as email.
+
+5.0.2
+-----
+- Bug Fix: use unicode for comments in admin
+
+5.0.1
+-----
+- Update trans blocks
+
+5.0.0
+-----
+- Add multi-site support
+
+2.1.2
+-----
+- Add placeholder attribute on comment textarea widget form
 
 2.1.1
 -----

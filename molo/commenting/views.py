@@ -22,7 +22,7 @@ def report(request, comment_id):
     """
     Flags a comment on GET.
 
-    Redirects to whatever is provided in request.REQUESRT['next'].
+    Redirects to whatever is provided in request.REQUEST['next'].
     """
 
     comment = get_object_or_404(
