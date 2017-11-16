@@ -57,7 +57,7 @@ def post_molo_comment(request, next=None, using=None):
 
 def view_more_article_comments(request, page_id):
     article = get_object_or_404(ArticlePage, id=page_id)
-    qs = MoloComment.objects.for_model(ArticlePage).filter(
+    qs = MoloComment.objects.filter(
         object_pk=page_id, parent__isnull=True)
 
     try:

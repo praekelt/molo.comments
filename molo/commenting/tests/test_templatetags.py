@@ -74,6 +74,7 @@ class GetMoloCommentsTest(TestCase, MoloTestCaseMixin):
         output = template.render(Context({
             'object': self.user,
         }))
+        print output
         self.assertFalse('comment 4' in output)
         self.assertFalse('comment 5' in output)
         self.assertTrue('comment 8' in output)
