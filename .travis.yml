@@ -6,7 +6,6 @@ cache:
   directories:
     - $HOME/.pip-cache/
 install:
-  - pip install twine
   - pip install --upgrade pip --cache-dir $HOME/.pip-cache/
   - pip install coveralls coverage --cache-dir $HOME/.pip-cache/
   - pip install flake8 --cache-dir $HOME/.pip-cache/
@@ -24,6 +23,8 @@ script:
   - py.test --cov=molo
 after_success:
   - coveralls
+before_deploy:
+  - pip install twine
 deploy:
   provider: pypi
   user: Praekelt
