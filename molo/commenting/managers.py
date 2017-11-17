@@ -1,9 +1,10 @@
 from django.db import models
 from django.contrib.contenttypes.models import ContentType
 from django.utils.encoding import force_text
+from django_comments.managers import CommentManager
 
 
-class CommentManager(models.Manager):
+class MoloCommentManager(CommentManager):
 
     def for_model(self, model):
         """
