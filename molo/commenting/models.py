@@ -12,6 +12,7 @@ from mptt.models import MPTTModel, TreeForeignKey
 from wagtail.wagtailcore.models import Site, Page
 from notifications.signals import notify
 from .rules import CommentDataRule  # noqa
+from .managers import MoloCommentManager
 
 
 class MoloComment(MPTTModel, Comment):
@@ -23,6 +24,8 @@ class MoloComment(MPTTModel, Comment):
     parent = TreeForeignKey('self', null=True, blank=True,
                             related_name='children')
     wagtail_site = models.ForeignKey(Site, null=True, blank=True)
+
+    objects = MoloCommentManager()
 
     class MPTTMeta:
         # comments on one level will be ordered by date of creation
