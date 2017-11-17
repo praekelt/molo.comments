@@ -469,7 +469,6 @@ class TestThreadedComments(TestCase, MoloTestCaseMixin):
 
         response = self.client.get(self.article.url)
         self.assertEqual(response.status_code, 200)
-
         self.assertContains(response, "comment 2")
         self.assertContains(response, "comment 1")
         self.assertNotContains(response, "comment 0")
