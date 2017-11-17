@@ -62,7 +62,7 @@ class GetMoloCommentsNode(template.Node):
         except template.VariableDoesNotExist:
             return ''
 
-        qs = MoloComment.objects.filter(
+        qs = MoloComment.objects.for_model(obj.__class__).filter(
             object_pk=obj.pk, parent__isnull=True)
         if self.limit > 0:
             qs = qs[:self.limit]
