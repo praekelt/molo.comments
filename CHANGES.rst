@@ -1,6 +1,18 @@
 CHANGELOG
 =========
 
+6.0.1-beta.1
+------------
+- Upgrade to Django 1.10, Molo 6
+
+5.2.3
+-----
+- Remove comment field placeholder
+
+5.2.2
+-----
+- Update dependency on wagtail-personalisation to wagtail-personalisation-molo, a custom, forked version
+
 5.2.1
 -----
 - Bug Fix: redirect edit user page to wagtail admin not django-admin
