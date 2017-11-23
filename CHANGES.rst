@@ -1,6 +1,10 @@
 CHANGELOG
 =========
 
+6.0.2-beta.1
+------------
+- Bug Fix: Update old migration to make django 1.10 friendly
+
 6.0.1-beta.1
 ------------
 - Upgrade to Django 1.10, Molo 6
