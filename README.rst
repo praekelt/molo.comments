@@ -28,7 +28,7 @@ Django setup::
 
 In your urls.py::
 
-   urlpatterns += [,
+   urlpatterns += [
        url(r'^commenting/',include('molo.commenting.urls', namespace='molo.commenting', app_name='molo.commenting')),
        url(r'', include('django_comments.urls')),
    ]
