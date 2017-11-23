@@ -1,6 +1,10 @@
 CHANGELOG
 =========
 
+5.2.2
+-----
+- Update dependency on wagtail-personalisation-molo
+
 5.2.3
 -----
 - Remove comment field placeholder
