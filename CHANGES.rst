@@ -1,6 +1,10 @@
 CHANGELOG
 =========
 
+6.0.1-beta.1
+------------
+- upgrade to Django 1.10, molo 6x
+
 5.2.3
 -----
 - Remove comment field placeholder
