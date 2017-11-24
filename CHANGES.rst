@@ -1,6 +1,10 @@
 CHANGELOG
 =========
 
+6.0.4-beta.1
+------------
+- Bug Fix in Migration: Rely on Django Auth Latest migration for Django 1.10
+
 6.0.3-beta.1
 ------------
 - Bug Fix in Migration: Rely on Django Auth Latest

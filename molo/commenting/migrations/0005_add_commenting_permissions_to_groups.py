@@ -70,7 +70,7 @@ class Migration(migrations.Migration):
         ('core', '0047_add_core_permissions_to_groups'),
         ('contenttypes', '__latest__'),
         ('sites', '__latest__'),
-        ('auth', '0009_alter_user_last_name_max_length.py'),
+        ('auth', '0008_alter_user_username_max_length'),
         ('wagtailcore', '__latest__'),
         ('wagtailadmin', '__latest__'),
         ('wagtailusers', '__latest__'),
