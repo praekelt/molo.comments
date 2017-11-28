@@ -1,6 +1,10 @@
 CHANGELOG
 =========
 
+6.0.5-beta.1
+------------
+- Remove __latest__ from migration dependencies
+
 6.0.4-beta.1
 ------------
 - Bug Fix in Migration: Rely on Django Auth Latest migration for Django 1.10
