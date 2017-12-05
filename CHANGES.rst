@@ -1,6 +1,12 @@
 CHANGELOG
 =========
 
+6.0.0
+-----
+- Official Release of Commenting 6.0.0
+- No longer supporting Django 1.9, see upgrade considerations
+  https://docs.djangoproject.com/en/2.0/releases/1.10/
+
 6.0.5-beta.1
 ------------
 - Remove __latest__ from migration dependencies
