@@ -1,13 +1,27 @@
 CHANGELOG
 =========
 
-6.0.2-beta.1
+6.0.0
+-----
+- Official Release of Commenting 6.0.0
+- No longer supporting Django 1.9, see upgrade considerations
+  https://docs.djangoproject.com/en/2.0/releases/1.10/
+
+6.0.5-beta.1
 ------------
-- Bug Fix: Update old migration to make django 1.10 friendly
+- Remove __latest__ from migration dependencies
+
+6.0.4-beta.1
+------------
+- Bug Fix in Migration: Rely on Django Auth Latest migration for Django 1.10
+
+6.0.3-beta.1
+------------
+- Bug Fix in Migration: Rely on Django Auth Latest
 
 6.0.1-beta.1
 ------------
-- Upgrade to Django 1.10, Molo 6
+- upgrade to Django 1.10, molo 6x
 
 5.2.3
 -----
