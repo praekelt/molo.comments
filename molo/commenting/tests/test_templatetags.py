@@ -1,3 +1,5 @@
+import re
+
 from datetime import datetime
 
 from django.contrib.auth.models import User
@@ -56,9 +58,15 @@ class GetMoloCommentsTest(TestCase, MoloTestCaseMixin):
         output = template.render(Context({
             'object': self.user,
         }))
+        expected_output = [
+            'comment 9\s+',
+            'comment 8\s+',
+            'comment 7\s+',
+            'comment 6\s+',
+            'comment 5\s+',
+        ]
+        self.assertNotEqual(re.search(''.join(expected_output), output), None)
         self.assertFalse('comment 4' in output)
-        self.assertTrue('comment 5' in output)
-        self.assertTrue('comment 9' in output)
 
     def test_template_tags_limits(self):
         template = Template("""
@@ -74,10 +82,12 @@ class GetMoloCommentsTest(TestCase, MoloTestCaseMixin):
         output = template.render(Context({
             'object': self.user,
         }))
-        self.assertFalse('comment 4' in output)
-        self.assertFalse('comment 5' in output)
-        self.assertTrue('comment 8' in output)
-        self.assertTrue('comment 9' in output)
+        expected_output = [
+            'comment 9\s+',
+            'comment 8\s+',
+        ]
+        self.assertNotEqual(re.search(''.join(expected_output), output), None)
+        self.assertFalse('comment 7' in output)
 
     def test_template_tags_unlimited(self):
         template = Template("""
@@ -93,8 +103,19 @@ class GetMoloCommentsTest(TestCase, MoloTestCaseMixin):
         output = template.render(Context({
             'object': self.user,
         }))
-        self.assertTrue('comment 1' in output)
-        self.assertTrue('comment 9' in output)
+        expected_output = [
+            'comment 9\s+',
+            'comment 8\s+',
+            'comment 7\s+',
+            'comment 6\s+',
+            'comment 5\s+',
+            'comment 4\s+',
+            'comment 3\s+',
+            'comment 2\s+',
+            'comment 1\s+',
+            'comment 0\s+',
+        ]
+        self.assertNotEqual(re.search(''.join(expected_output), output), None)
 
 
 class GetCommentsContentObjectTest(TestCase, MoloTestCaseMixin):

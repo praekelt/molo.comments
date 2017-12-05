@@ -1,9 +1,21 @@
 CHANGELOG
 =========
 
-5.2.2
------
-- Update dependency on wagtail-personalisation-molo
+6.0.5-beta.1
+------------
+- Remove __latest__ from migration dependencies
+
+6.0.4-beta.1
+------------
+- Bug Fix in Migration: Rely on Django Auth Latest migration for Django 1.10
+
+6.0.3-beta.1
+------------
+- Bug Fix in Migration: Rely on Django Auth Latest
+
+6.0.1-beta.1
+------------
+- upgrade to Django 1.10, molo 6x
 
 5.2.3
 -----
