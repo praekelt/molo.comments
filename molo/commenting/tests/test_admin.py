@@ -49,6 +49,15 @@ class CommentingAdminTest(TestCase, MoloTestCaseMixin):
             parent=parent,
             submit_date=datetime.now())
 
+    def test_is_staff_filter(self):
+        self.mk_comment('staff user comment')
+        response = self.client.get(
+            '/admin/commenting/molocomment/?user__is_staff__exact=1')
+        self.assertContains(response, 'staff user comment')
+        response = self.client.get(
+            '/admin/commenting/molocomment/?user__is_staff__exact=0')
+        self.assertNotContains(response, 'staff user comment')
+
     def test_reply_link_on_comment(self):
         '''Every root comment should have the "Add reply" text and icon that
         has a link to the reply view for that comment.'''
