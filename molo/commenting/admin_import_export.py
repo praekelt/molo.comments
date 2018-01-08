@@ -10,25 +10,26 @@ class MoloCommentsResource(resources.ModelResource):
     article_subtitle = Field()
     article_full_url = Field()
     parent_id = Field()
+    country = Field()
 
     class Meta:
         model = MoloComment
 
-        exclude = ('comment_ptr', 'content_type', 'object_pk',
+        exclude = ('site', 'comment_ptr', 'content_type', 'object_pk',
                    'user', 'user_url', 'lft', 'rght',
                    'tree_id', 'level', 'ip_address', )
 
         export_order = (
-            'site', 'submit_date', 'user_name', 'user_email', 'comment', 'id',
-            'parent_id', 'article_title', 'article_subtitle',
+            'country', 'submit_date', 'user_name', 'user_email', 'comment',
+            'id', 'parent_id', 'article_title', 'article_subtitle',
             'article_full_url', 'is_public', 'is_removed')
 
-    def dehydrate_site(self, comment):
+    def dehydrate_country(self, comment):
         if not comment.content_object or not \
                 hasattr(comment.content_object, 'subtitle'):
             return ''
 
-        return comment.content_object.get_site()
+        return comment.content_object.get_site().root_page.title
 
     def dehydrate_article_title(self, comment):
         if not comment.content_object or not \

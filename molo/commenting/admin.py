@@ -251,12 +251,15 @@ class MoloCommentsModelAdmin(WagtailModelAdmin, MoloCommentAdmin):
     list_display = (
         'comment', 'parent_comment', 'moderator_reply', 'content',
         '_user', 'is_removed', 'is_reported', 'reported_count',
-        'submit_date',)
+        'submit_date', 'country')
 
     list_filter = (('submit_date', MoloCommentsDateRangeFilter), 'site',
                    'is_removed', 'user__is_staff')
 
     search_fields = ('comment',)
+
+    def country(self, obj):
+        return obj.wagtail_site.root_page.title
 
     def content(self, obj, *args, **kwargs):
         if obj.content_object and obj.parent is None:
