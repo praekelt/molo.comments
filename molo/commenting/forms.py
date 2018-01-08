@@ -15,8 +15,7 @@ class MoloCommentForm(CommentForm):
         queryset=MoloComment.objects.all(),
         required=False, widget=forms.HiddenInput)
     comment = forms.CharField(
-        label=_('Comment'), widget=forms.Textarea(
-            attrs={'placeholder': _('Type your comment here...')}),
+        label=_('Comment'), widget=forms.Textarea,
         max_length=COMMENT_MAX_LENGTH)
 
     def get_comment_model(self):

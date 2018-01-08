@@ -1,10 +1,12 @@
+# -*- coding: utf-8 -*-
+import sys
 from django_comments.models import CommentFlag
 from django_comments.admin import CommentsAdmin
 from django.contrib import admin
 from django.contrib.admin.templatetags.admin_static import static
 from django.core.urlresolvers import reverse
 from django.core.exceptions import PermissionDenied
-from django.conf.urls import patterns, url
+from django.conf.urls import url
 from django.contrib.admin.views.main import ChangeList
 from django.shortcuts import get_object_or_404
 from django.contrib.admin.utils import unquote
@@ -34,13 +36,12 @@ class MoloCommentAdmin(MPTTModelAdmin, CommentsAdmin):
 
     def get_urls(self):
         urls = super(MoloCommentAdmin, self).get_urls()
-        my_urls = patterns(
-            '',
+        my_urls = [
             url(
                 r'(?P<parent>\d+)/reply/$',
                 self.admin_site.admin_view(AdminCommentReplyView.as_view()),
                 name="commenting_molocomment_reply")
-        )
+        ]
         return my_urls + urls
 
     def is_reported(self, obj):
@@ -74,7 +75,7 @@ class MoloCommentAdmin(MPTTModelAdmin, CommentsAdmin):
         if not obj.user:
             return ""
 
-        url = reverse('admin:auth_user_change', args=(obj.user.id,))
+        url = '/admin/auth/user/edit/%s/' % obj.user.pk
         return '<a href="?user=%s">%s</a>' % (
             obj.user.id,
             self.get_user_display_name(obj)
@@ -171,15 +172,14 @@ class AdminModeratorMixin(admin.ModelAdmin):
         """
         Add aditional moderate url.
         """
-        from django.conf.urls import patterns, url
+        from django.conf.urls import url
         urls = super(AdminModeratorMixin, self).get_urls()
         info = self.model._meta.app_label, self.model._meta.model_name
-        return patterns(
-            '',
+        return [
             url(r'^(.+)/moderate/$',
                 self.admin_site.admin_view(self.moderate_view),
                 name='%s_%s_moderate' % info),
-        ) + urls
+        ] + urls
 
     def moderate_view(self, request, object_id, extra_context=None):
         """
@@ -281,6 +281,8 @@ class MoloCommentsModelAdmin(WagtailModelAdmin, MoloCommentAdmin):
     moderator_reply.allow_tags = True
 
     def parent_comment(self, obj):
+        reload(sys)
+        sys.setdefaultencoding('utf-8')
         if obj.parent:
             return format_html(
                 '<a href="{}">{}</a>',

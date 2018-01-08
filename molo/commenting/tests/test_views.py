@@ -1,7 +1,7 @@
 from bs4 import BeautifulSoup
 from datetime import datetime
 
-from django.conf.urls import patterns, url, include
+from django.conf.urls import url, include
 from django.core.urlresolvers import reverse
 from django.contrib.auth.models import User
 from django.contrib.contenttypes.models import ContentType
@@ -16,14 +16,13 @@ from molo.core.tests.base import MoloTestCaseMixin
 
 from notifications.models import Notification
 
-urlpatterns = patterns(
-    '',
+urlpatterns = [
     url(r'^commenting/',
         include('molo.commenting.urls', namespace='molo.commenting')),
     url(r'', include('django_comments.urls')),
     url(r'', include('molo.core.urls')),
     url(r'', include('wagtail.wagtailcore.urls')),
-)
+]
 
 
 @override_settings(ROOT_URLCONF='molo.commenting.tests.test_views')
@@ -470,7 +469,6 @@ class TestThreadedComments(TestCase, MoloTestCaseMixin):
 
         response = self.client.get(self.article.url)
         self.assertEqual(response.status_code, 200)
-
         self.assertContains(response, "comment 2")
         self.assertContains(response, "comment 1")
         self.assertNotContains(response, "comment 0")
