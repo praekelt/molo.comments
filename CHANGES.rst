@@ -1,9 +1,64 @@
 CHANGELOG
 =========
 
+6.0.0
+-----
+- Official Release of Commenting 6.0.0
+- No longer supporting Django 1.9, see upgrade considerations
+  https://docs.djangoproject.com/en/2.0/releases/1.10/
+
+6.0.5-beta.1
+------------
+- Remove __latest__ from migration dependencies
+
+6.0.4-beta.1
+------------
+- Bug Fix in Migration: Rely on Django Auth Latest migration for Django 1.10
+
+6.0.3-beta.1
+------------
+- Bug Fix in Migration: Rely on Django Auth Latest
+
+6.0.1-beta.1
+------------
+- upgrade to Django 1.10, molo 6x
+
+5.2.3
+-----
+- Remove comment field placeholder
+
+5.2.2
+-----
+- Update dependency on wagtail-personalisation to wagtail-personalisation-molo, a custom, forked version
+
+5.2.1
+-----
+- Bug Fix: redirect edit user page to wagtail admin not django-admin
+
+5.2.0
+-----
+- Added Comment Rules for Personalise
+
+5.1.0
+-----
+- Deprecated the use of download as CSV due to timeouts. Implemented send CSV as email.
+
+5.0.2
+-----
+- Bug Fix: use unicode for comments in admin
+
+5.0.1
+-----
+- Update trans blocks
+
+5.0.0
+-----
+- Add multi-site support
+
 2.1.3
 -----
 - Add trans block on comment textarea widget form
+=======
 
 2.1.2
 -----

@@ -58,7 +58,7 @@ class GetMoloCommentsNode(template.Node):
 
     def render(self, context):
         try:
-            obj = template.resolve_variable(self.obj, context)
+            obj = template.Variable(self.obj).resolve(context)
         except template.VariableDoesNotExist:
             return ''
 
@@ -68,7 +68,6 @@ class GetMoloCommentsNode(template.Node):
             qs = qs[:self.limit]
 
         qs = [[c] + list(c.get_descendants())[self.child_limit:] for c in qs]
-
         context[self.variable_name] = qs
         return ''
 
@@ -104,7 +103,7 @@ class GetCommentsContentObject(template.Node):
 
     def render(self, context):
         try:
-            form = template.resolve_variable(self.obj, context)
+            form = template.Variable(self.obj).resolve(context)
         except template.VariableDoesNotExist:
             return ''
 

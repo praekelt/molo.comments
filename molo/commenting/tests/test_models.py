@@ -9,18 +9,34 @@ from molo.commenting.models import MoloComment
 from django_comments.models import CommentFlag
 from django_comments import signals
 
+from molo.core.tests.base import MoloTestCaseMixin
+from molo.core.models import Main, Languages, SiteLanguageRelation
 
-class MoloCommentTest(TestCase):
+
+class MoloCommentTest(TestCase, MoloTestCaseMixin):
 
     def setUp(self):
+        self.mk_main()
+        self.main = Main.objects.all().first()
+        self.language_setting = Languages.objects.create(
+            site_id=self.main.get_site().pk)
+        self.english = SiteLanguageRelation.objects.create(
+            language_setting=self.language_setting,
+            locale='en',
+            is_active=True)
         self.user = User.objects.create_user(
             'test', 'test@example.org', 'test')
         self.content_type = ContentType.objects.get_for_model(self.user)
 
+        self.yourmind = self.mk_section(
+            self.section_index, title='Your mind')
+        self.article1 = self.mk_article(
+            title='article 1', slug='article-1', parent=self.yourmind)
+
     def mk_comment(self, comment):
         return MoloComment.objects.create(
             content_type=self.content_type,
-            object_pk=self.user.pk,
+            object_pk=self.article1.pk,
             content_object=self.user,
             site=Site.objects.get_current(),
             user=self.user,

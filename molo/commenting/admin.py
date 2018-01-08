@@ -1,14 +1,17 @@
+# -*- coding: utf-8 -*-
+import sys
 from django_comments.models import CommentFlag
 from django_comments.admin import CommentsAdmin
 from django.contrib import admin
 from django.contrib.admin.templatetags.admin_static import static
 from django.core.urlresolvers import reverse
 from django.core.exceptions import PermissionDenied
-from django.conf.urls import patterns, url
+from django.conf.urls import url
 from django.contrib.admin.views.main import ChangeList
 from django.shortcuts import get_object_or_404
 from django.contrib.admin.utils import unquote
 from django.contrib.contenttypes.models import ContentType
+from django.utils.html import format_html
 from molo.commenting.admin_views import MoloCommentsAdminView
 from mptt.admin import MPTTModelAdmin
 
@@ -33,13 +36,12 @@ class MoloCommentAdmin(MPTTModelAdmin, CommentsAdmin):
 
     def get_urls(self):
         urls = super(MoloCommentAdmin, self).get_urls()
-        my_urls = patterns(
-            '',
+        my_urls = [
             url(
                 r'(?P<parent>\d+)/reply/$',
                 self.admin_site.admin_view(AdminCommentReplyView.as_view()),
                 name="commenting_molocomment_reply")
-        )
+        ]
         return my_urls + urls
 
     def is_reported(self, obj):
@@ -73,7 +75,7 @@ class MoloCommentAdmin(MPTTModelAdmin, CommentsAdmin):
         if not obj.user:
             return ""
 
-        url = reverse('admin:auth_user_change', args=(obj.user.id,))
+        url = '/admin/auth/user/edit/%s/' % obj.user.pk
         return '<a href="?user=%s">%s</a>' % (
             obj.user.id,
             self.get_user_display_name(obj)
@@ -170,15 +172,14 @@ class AdminModeratorMixin(admin.ModelAdmin):
         """
         Add aditional moderate url.
         """
-        from django.conf.urls import patterns, url
+        from django.conf.urls import url
         urls = super(AdminModeratorMixin, self).get_urls()
         info = self.model._meta.app_label, self.model._meta.model_name
-        return patterns(
-            '',
+        return [
             url(r'^(.+)/moderate/$',
                 self.admin_site.admin_view(self.moderate_view),
                 name='%s_%s_moderate' % info),
-        ) + urls
+        ] + urls
 
     def moderate_view(self, request, object_id, extra_context=None):
         """
@@ -248,8 +249,9 @@ class MoloCommentsModelAdmin(WagtailModelAdmin, MoloCommentAdmin):
     index_view_class = MoloCommentsAdminView
     add_to_settings_menu = False
     list_display = (
-        'comment', 'moderator_reply', 'content', '_user', 'is_removed',
-        'is_reported', 'reported_count', 'submit_date',)
+        'comment', 'parent_comment', 'moderator_reply', 'content',
+        '_user', 'is_removed', 'is_reported', 'reported_count',
+        'submit_date',)
 
     list_filter = (('submit_date', MoloCommentsDateRangeFilter), 'site',
                    'is_removed',)
@@ -277,6 +279,29 @@ class MoloCommentsModelAdmin(WagtailModelAdmin, MoloCommentAdmin):
         else:
             return ''
     moderator_reply.allow_tags = True
+
+    def parent_comment(self, obj):
+        reload(sys)
+        sys.setdefaultencoding('utf-8')
+        if obj.parent:
+            return format_html(
+                '<a href="{}">{}</a>',
+                "?tree_id={}".format(obj.tree_id),
+                obj.parent.comment,
+            )
+        else:
+            return format_html(
+                ('<a href="{}">'
+                 '<img '
+                 'src = "/static/admin/img/icon-yes.svg" '
+                 'alt = "True" >'
+                 '</a>'),
+                "?tree_id={}".format(obj.tree_id),
+            )
+    parent_comment.allow_tags = True
+
+    def get_queryset(self, request):
+        return MoloComment.objects.filter(wagtail_site=request.site.pk)
 
 
 class MoloCannedResponsesModelAdmin(WagtailModelAdmin,

@@ -6,24 +6,24 @@ cache:
   directories:
     - $HOME/.pip-cache/
 install:
-  - pip install twine
   - pip install --upgrade pip --cache-dir $HOME/.pip-cache/
   - pip install coveralls coverage --cache-dir $HOME/.pip-cache/
-  - pip install flake8 --cache-dir $HOME/.pip-cache/
   - pip install -r requirements-dev.txt --cache-dir $HOME/.pip-cache/
   - pip install -e . --cache-dir $HOME/.pip-cache/
 script:
   - flake8 molo
-  - molo scaffold testapp --include molo.profiles ^profiles/ --include molo.commenting ^commenting/
-  - pip install molo.profiles==3.2.1
+  - molo scaffold testapp --include molo.commenting ^commenting/
+  - mkdir -p testapp/testapp/templates/core
   - cp molo/commenting/test_templates/article_page.html testapp/testapp/templates/core/article_page.html
-  - cp molo/commenting/templates/test_templates/main.html testapp/testapp/templates/core/main.html
+  - cp molo/commenting/test_templates/main.html testapp/testapp/templates/core/main.html
   - flake8 testapp
   - cp test_settings.py testapp/testapp/settings/local.py
   - pip install -e testapp
   - py.test --cov=molo
 after_success:
   - coveralls
+before_deploy:
+  - pip install twine
 deploy:
   provider: pypi
   user: Praekelt
