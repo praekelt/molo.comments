@@ -18,7 +18,8 @@ Django setup::
 
    INSTALLED_APPS = INSTALLED_APPS + (
       'django_comments',
-      'molo.commenting'
+      'molo.commenting',
+      'notifications'
    )
    COMMENTS_APP = 'molo.commenting'
    COMMENTS_FLAG_THRESHHOLD = 3
@@ -27,10 +28,10 @@ Django setup::
 
 In your urls.py::
 
-   urlpatterns += patterns('',
+   urlpatterns += [,
        url(r'^commenting/',include('molo.commenting.urls', namespace='molo.commenting', app_name='molo.commenting')),
        url(r'', include('django_comments.urls')),
-   )
+   ]
 
 In your article_page.html::
 

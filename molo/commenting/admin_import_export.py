@@ -9,16 +9,17 @@ class MoloCommentsResource(resources.ModelResource):
     article_title = Field()
     article_subtitle = Field()
     article_full_url = Field()
+    parent_id = Field()
 
     class Meta:
         model = MoloComment
 
-        exclude = ('id', 'comment_ptr', 'content_type', 'object_pk',
+        exclude = ('comment_ptr', 'content_type', 'object_pk',
                    'site', 'user', 'user_url', 'lft', 'rght',
                    'tree_id', 'level', 'ip_address', )
 
         export_order = ('submit_date', 'user_name', 'user_email', 'comment',
-                        'parent', 'article_title', 'article_subtitle',
+                        'id', 'parent_id', 'article_title', 'article_subtitle',
                         'article_full_url', 'is_public', 'is_removed')
 
     def dehydrate_article_title(self, comment):
@@ -41,3 +42,9 @@ class MoloCommentsResource(resources.ModelResource):
             return ''
 
         return comment.content_object.full_url
+
+    def dehydrate_parent_id(self, comment):
+        if comment.parent:
+            return comment.parent.id
+
+        return ''

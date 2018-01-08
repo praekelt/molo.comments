@@ -20,7 +20,7 @@ class Migration(migrations.Migration):
         migrations.AlterModelManagers(
             name='molocomment',
             managers=[
-                ('_default_manager', django.db.models.manager.Manager()),
+                ('objects', django.db.models.manager.Manager()),
             ],
         ),
     ]

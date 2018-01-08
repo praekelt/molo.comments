@@ -1,10 +1,9 @@
-from django.conf.urls import patterns, url
+from django.conf.urls import url
 
 from molo.commenting import views
 from molo.commenting.views import CommentReplyView
 
-urlpatterns = patterns(
-    '',
+urlpatterns = [
     url(r'molo/report/(\d+)/$', views.report, name='molo-comments-report'),
     url(r'^comments/reported/(?P<comment_pk>\d+)/$',
         views.report_response, name='report_response'),
@@ -18,5 +17,6 @@ urlpatterns = patterns(
         r'molo/(?P<page_id>\d+)/comments/$',
         views.view_more_article_comments,
         name='more-comments'),
-
-)
+    url(r'molo/replies/$',
+        views.reply_list, name='reply_list'),
+]

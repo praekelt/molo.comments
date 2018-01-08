@@ -1,11 +1,18 @@
 from django_comments.models import Comment, COMMENT_MAX_LENGTH
 from django_comments.models import CommentFlag
 from django.dispatch import receiver
-from django_comments.signals import comment_was_flagged
+from django_comments.signals import (
+    comment_was_flagged,
+    comment_was_posted,
+)
 from django.conf import settings
 from django.db import models
-
+from django.db.models.signals import pre_save
 from mptt.models import MPTTModel, TreeForeignKey
+from wagtail.wagtailcore.models import Site, Page
+from notifications.signals import notify
+from .rules import CommentDataRule  # noqa
+from .managers import MoloCommentManager
 
 
 class MoloComment(MPTTModel, Comment):
@@ -16,6 +23,9 @@ class MoloComment(MPTTModel, Comment):
 
     parent = TreeForeignKey('self', null=True, blank=True,
                             related_name='children')
+    wagtail_site = models.ForeignKey(Site, null=True, blank=True)
+
+    objects = MoloCommentManager()
 
     class MPTTMeta:
         # comments on one level will be ordered by date of creation
@@ -27,6 +37,12 @@ class MoloComment(MPTTModel, Comment):
 
     def flag_count(self, flag):
         return self.flags.filter(flag=flag).count()
+
+
+@receiver(pre_save, sender=MoloComment)
+def add_wagtail_site(sender, instance, *args, **kwargs):
+        article = Page.objects.filter(pk=instance.object_pk).first().specific
+        instance.wagtail_site = article.get_site()
 
 
 @receiver(comment_was_flagged, sender=MoloComment)
@@ -46,6 +62,26 @@ def remove_comment_if_flag_limit(sender, comment, flag, created, **kwargs):
     if (comment.flag_count(CommentFlag.SUGGEST_REMOVAL) >= threshold_count):
         comment.is_removed = True
         comment.save()
+
+
+@receiver(comment_was_posted)
+def create_notification_for_comment_reply(sender, comment, request, **kwargs):
+    # check if comment is a reply
+    if comment.get_ancestors():
+
+        user_replying = request.user
+        parent_comment = comment.get_ancestors().first()
+        user_being_replied_to = parent_comment.user
+        article = parent_comment.content_object
+
+        notify.send(
+            user_replying,
+            recipient=user_being_replied_to,
+            verb=u'replied',
+            action_object=comment,
+            description=comment.comment,
+            target=article
+        )
 
 
 class CannedResponse(models.Model):
