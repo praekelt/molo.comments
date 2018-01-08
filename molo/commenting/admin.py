@@ -254,7 +254,7 @@ class MoloCommentsModelAdmin(WagtailModelAdmin, MoloCommentAdmin):
         'submit_date',)
 
     list_filter = (('submit_date', MoloCommentsDateRangeFilter), 'site',
-                   'is_removed',)
+                   'is_removed', 'user__is_staff')
 
     search_fields = ('comment',)
 

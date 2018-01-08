@@ -21,13 +21,15 @@ class MoloCommentsAdminView(IndexView):
 
         drf__submit_date__gte = request.GET.get('drf__submit_date__gte')
         drf__submit_date__lte = request.GET.get('drf__submit_date__lte')
+        is_staff = request.GET.get('user__is_staff__exact')
         is_removed__exact = request.GET.get('is_removed__exact')
 
         filter_list = {
             'submit_date__range': (drf__submit_date__gte,
                                    drf__submit_date__lte) if
             drf__submit_date__gte and drf__submit_date__lte else None,
-            'is_removed': is_removed__exact
+            'is_removed': is_removed__exact,
+            'user__is_staff': is_staff
         }
 
         arguments = {'wagtail_site': request.site.pk}
