@@ -1,6 +1,10 @@
 CHANGELOG
 =========
 
+6.0.1
+-----
+- add is_staff filter to admin
+
 6.0.0
 -----
 - Official Release of Commenting 6.0.0
