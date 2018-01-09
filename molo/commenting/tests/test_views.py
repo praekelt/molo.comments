@@ -611,9 +611,7 @@ class ViewNotificationsRepliesOnCommentsTest(TestCase, MoloTestCaseMixin):
         html = BeautifulSoup(response.content, 'html.parser')
         [ntfy] = html.find_all("div", class_='reply-notification')
         self.assertEqual(ntfy.find("p").get_text().strip(),
-                         'You have 1 unread reply')
-        self.assertEqual(ntfy.find("p").get_text().strip(),
-                         'You have 1 unread replies')
+                                   'You have 1 unread replies')
 
         # Unread notifications
         response = self.client.get(
