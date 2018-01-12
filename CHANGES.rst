@@ -1,6 +1,10 @@
 CHANGELOG
 =========
 
+6.1.0
+-----
+- add support for Django 1.11
+
 6.0.1
 -----
 - add is_staff filter to admin
