@@ -566,17 +566,6 @@ class ViewNotificationsRepliesOnCommentsTest(TestCase, MoloTestCaseMixin):
         self.client = Client()
         self.client.login(username='test', password='test')
 
-    def create_comment(self, comment, parent=None):
-        return MoloComment.objects.create(
-            content_type=ContentType.objects.get_for_model(self.article),
-            object_pk=self.article.pk,
-            content_object=self.article,
-            site=Site.objects.get_current(),
-            user=self.user,
-            comment=comment,
-            parent=parent,
-            submit_date=timezone.now())
-
     def test_notification_reply_list(self):
         data = MoloCommentForm(self.article, {}).generate_security_data()
         data.update({
