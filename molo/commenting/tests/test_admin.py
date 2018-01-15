@@ -1,7 +1,5 @@
 # -*- coding: utf-8 -*-
 
-import re
-
 from bs4 import BeautifulSoup
 from django.contrib.admin.templatetags.admin_static import static
 from django.contrib.auth.models import User
@@ -358,11 +356,5 @@ class TestMoloCommentsAdminViews(TestCase, MoloTestCaseMixin):
         response = self.client.post(
             '/admin/commenting/molocomment/'
         )
-
-        # substitute the datetime component to avoid intermittent test failures
-        # due to crossing a second boundary
-        response.content = re.sub('\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}',
-                                  'datetime',
-                                  response.content)
 
         self.assertEquals(response.status_code, 302)
