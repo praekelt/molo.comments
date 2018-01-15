@@ -1,5 +1,4 @@
 from bs4 import BeautifulSoup
-from datetime import datetime
 
 from django.conf.urls import url, include
 from django.core.urlresolvers import reverse
@@ -8,6 +7,7 @@ from django.contrib.contenttypes.models import ContentType
 from django.contrib.sites.models import Site
 from django.test import TestCase, Client, override_settings
 from django.contrib.auth.models import Group
+from django.utils import timezone
 
 from molo.commenting.models import MoloComment
 from molo.commenting.forms import MoloCommentForm
@@ -56,7 +56,7 @@ class ViewsTest(TestCase, MoloTestCaseMixin):
             site=Site.objects.get_current(),
             user=self.user,
             comment=comment,
-            submit_date=datetime.now())
+            submit_date=timezone.now())
 
     def test_reporting_without_removal(self):
         comment = self.mk_comment('the comment')
@@ -133,7 +133,7 @@ class ViewsTest(TestCase, MoloTestCaseMixin):
             content_object=article, object_pk=article.id,
             content_type=ContentType.objects.get_for_model(article),
             site=Site.objects.get_current(), user=self.user,
-            comment='comment 1', submit_date=datetime.now())
+            comment='comment 1', submit_date=timezone.now())
         response = self.client.get(reverse('molo.commenting:report_response',
                                    args=(comment.id,)))
         self.assertContains(
@@ -198,7 +198,7 @@ class ViewMoreCommentsTest(TestCase, MoloTestCaseMixin):
             user=commenter,
             comment=comment,
             parent=parent,
-            submit_date=datetime.now())
+            submit_date=timezone.now())
 
     def test_view_more_comments(self):
         for i in range(50):
@@ -304,7 +304,7 @@ class TestFrontEndCommentReplies(TestCase, MoloTestCaseMixin):
             user=user,
             comment=comment,
             parent=parent,
-            submit_date=datetime.now())
+            submit_date=timezone.now())
 
     def setUp(self):
         self.mk_main()
@@ -461,7 +461,7 @@ class TestThreadedComments(TestCase, MoloTestCaseMixin):
             user=commenter,
             comment=comment,
             parent=parent,
-            submit_date=datetime.now())
+            submit_date=timezone.now())
 
     def test_restrict_article_comment_count(self):
         for i in range(3):
@@ -575,7 +575,7 @@ class ViewNotificationsRepliesOnCommentsTest(TestCase, MoloTestCaseMixin):
             user=self.user,
             comment=comment,
             parent=parent,
-            submit_date=datetime.now())
+            submit_date=timezone.now())
 
     def test_notification_reply_list(self):
         self.client = Client()
