@@ -578,7 +578,7 @@ class ViewNotificationsRepliesOnCommentsTest(TestCase, MoloTestCaseMixin):
             submit_date=timezone.now())
 
     def test_notification_reply_list(self):
-        data = MoloCommentForm(self.user, {}).generate_security_data()
+        data = MoloCommentForm(self.article, {}).generate_security_data()
         data.update({
             'name': 'the supplied name',
             'comment': 'Foo',
@@ -593,7 +593,7 @@ class ViewNotificationsRepliesOnCommentsTest(TestCase, MoloTestCaseMixin):
         self.assertEqual(response.status_code, 200)
         self.assertNotContains(response, 'Unread replies: 0')
 
-        data = MoloCommentForm(self.user, {}).generate_security_data()
+        data = MoloCommentForm(self.article, {}).generate_security_data()
         data.update({
             'name': 'the supplied name',
             'comment': 'Foo reply',
