@@ -578,9 +578,6 @@ class ViewNotificationsRepliesOnCommentsTest(TestCase, MoloTestCaseMixin):
             submit_date=timezone.now())
 
     def test_notification_reply_list(self):
-        self.client = Client()
-        self.client.login(username='test', password='test')
-
         data = MoloCommentForm(self.user, {}).generate_security_data()
         data.update({
             'name': 'the supplied name',
