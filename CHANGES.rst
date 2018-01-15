@@ -63,6 +63,11 @@ CHANGELOG
 -----
 - Add multi-site support
 
+2.1.3
+-----
+- Add trans block on comment textarea widget form
+=======
+
 2.1.2
 -----
 - Add placeholder attribute on comment textarea widget form

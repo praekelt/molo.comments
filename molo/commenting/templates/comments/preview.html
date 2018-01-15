@@ -10,34 +10,35 @@
 <ul class="section-list-nav section-list-nav{{self.get_parent_section.get_effective_extra_style_hints}}">
   <li class="section-list-nav__item section-list-nav__item--arrow-right"><a href="/">{% trans "Home" %}</a></li>
     {% if self.get_parent_section.get_parent_section %}
-    {% with section=self.get_parent_section.get_parent_section %}
-    <li class="section-list-nav__item  section-list-nav__item--arrow-right">
-      <a href="{% pageurl self %}">{{section.title}}</a>
-      {% with sub_section=self.get_parent_section %}
-        <li class="section-list-nav__item">
-          <a href="{% pageurl section %}">{{sub_section.title}}</a>
-        </li>
-      {% endwith %}
-      </li>
-    {% endwith %}
+        {% with section=self.get_parent_section.get_parent_section %}
+            <li class="section-list-nav__item  section-list-nav__item--arrow-right">
+              <a href="{% pageurl self %}">{{section.title}}</a>
+              {% with sub_section=self.get_parent_section %}
+                <li class="section-list-nav__item">
+                  <a href="{% pageurl section %}">{{sub_section.title}}</a>
+                </li>
+              {% endwith %}
+             </li>
+        {% endwith %}
     {% else %}
-    {% with section=self.get_parent_section %}
-    <li class="section-list-nav__item">
-      <a href="{% pageurl section %}">{{section.title}}</a>
-    </li>
-    {% endwith %}
+        {% with section=self.get_parent_section %}
+            <li class="section-list-nav__item">
+              <a href="{% pageurl section %}">{{section.title}}</a>
+            </li>
+        {% endwith %}
     {% endif %}
 </ul>
 
 <div class="comments comments{{self.get_parent_section.get_effective_extra_style_hints}}">
   <div class="comment__post-message">
     {% if request.user.is_authenticated %}
-      {% include "comments/form.html" with node=comment %}
+        {% include "comments/form.html" with node=comment %}
     {% else %}
-      <h6 class="comment__text">{% trans "Please " %}
-      <a href="{% url 'molo.profiles:auth_login' %}" class="call-to-action__nav-item call-to-action__nav-item--login">
-        {% trans "log in" %}</a>
-      {% trans " to leave a comment." %}</h6>
+        <h6 class="comment__text">{% trans "Please " %}
+          <a href="{% url 'molo.profiles:auth_login' %}" class="call-to-action__nav-item call-to-action__nav-item--login">
+            {% trans "log in" %}</a>
+            {% trans " to leave a comment." %}
+        </h6>
     {% endif %}
   </div>
   <a href="{% pageurl self %}" class="call-to-action__nav-item call-to-action__nav-item--back">
