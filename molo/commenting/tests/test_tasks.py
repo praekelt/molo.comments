@@ -65,9 +65,9 @@ class ModelsTestCase(TestCase, MoloTestCaseMixin):
         self.assertEquals(
             message.attachments[0],
             ('Molo_export_testapp.csv',
-             'submit_date,user_name,user_email,comment,id,parent_id,'
+             'country,submit_date,user_name,user_email,comment,id,parent_id,'
              'article_title,article_subtitle,article_full_url,is_public,'
-             'is_removed,parent,wagtail_site\r\n' + str(
+             'is_removed,parent,wagtail_site\r\nMain,' + str(
                  datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")) +
              ',,,comment_text,1,,article 1,article 1 subtitle,'
              'http://main-1.localhost:8000/sections-main-1/your-mind/'

@@ -1,7 +1,7 @@
 from bs4 import BeautifulSoup
 from datetime import datetime
 
-from django.conf.urls import patterns, url, include
+from django.conf.urls import url, include
 from django.core.urlresolvers import reverse
 from django.contrib.auth.models import User
 from django.contrib.contenttypes.models import ContentType
@@ -16,14 +16,13 @@ from molo.core.tests.base import MoloTestCaseMixin
 
 from notifications.models import Notification
 
-urlpatterns = patterns(
-    '',
+urlpatterns = [
     url(r'^commenting/',
         include('molo.commenting.urls', namespace='molo.commenting')),
     url(r'', include('django_comments.urls')),
     url(r'', include('molo.core.urls')),
     url(r'', include('wagtail.wagtailcore.urls')),
-)
+]
 
 
 @override_settings(ROOT_URLCONF='molo.commenting.tests.test_views')
@@ -470,7 +469,6 @@ class TestThreadedComments(TestCase, MoloTestCaseMixin):
 
         response = self.client.get(self.article.url)
         self.assertEqual(response.status_code, 200)
-
         self.assertContains(response, "comment 2")
         self.assertContains(response, "comment 1")
         self.assertNotContains(response, "comment 0")
@@ -612,13 +610,19 @@ class ViewNotificationsRepliesOnCommentsTest(TestCase, MoloTestCaseMixin):
         self.assertEqual(response.status_code, 200)
         html = BeautifulSoup(response.content, 'html.parser')
         [ntfy] = html.find_all("div", class_='reply-notification')
-        self.assertEqual(ntfy.find("p").get_text().strip(),
-                         'You have 1 unread replies')
+        self.assertTrue(
+            ntfy.find("p").get_text().strip() in [
+                'You have 1 unread reply',
+                'You have 2 unread replies'
+            ])
 
         # Unread notifications
         response = self.client.get(
             reverse('molo.commenting:reply_list'))
-        self.assertContains(response, 'You have 1 unread replies')
+        self.assertTrue(response, [
+            'You have 1 unread reply',
+            'You have 2 unread replies'
+        ])
         n = Notification.objects.filter(recipient=self.user).first()
         n.mark_as_read()
         self.assertEqual(Notification.objects.unread().count(), 0)

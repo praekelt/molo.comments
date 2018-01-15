@@ -1,9 +1,39 @@
 CHANGELOG
 =========
 
-5.2.2
+6.1.1
 -----
-- Update dependency on wagtail-personalisation-molo
+- Plugin templates refactor and cleanup
+
+6.1.0
+-----
+- add support for Django 1.11
+
+6.0.1
+-----
+- add is_staff filter to admin
+
+6.0.0
+-----
+- Official Release of Commenting 6.0.0
+- No longer supporting Django 1.9, see upgrade considerations
+  https://docs.djangoproject.com/en/2.0/releases/1.10/
+
+6.0.5-beta.1
+------------
+- Remove __latest__ from migration dependencies
+
+6.0.4-beta.1
+------------
+- Bug Fix in Migration: Rely on Django Auth Latest migration for Django 1.10
+
+6.0.3-beta.1
+------------
+- Bug Fix in Migration: Rely on Django Auth Latest
+
+6.0.1-beta.1
+------------
+- upgrade to Django 1.10, molo 6x
 
 5.2.3
 -----
@@ -36,6 +66,11 @@ CHANGELOG
 5.0.0
 -----
 - Add multi-site support
+
+2.1.3
+-----
+- Add trans block on comment textarea widget form
+=======
 
 2.1.2
 -----

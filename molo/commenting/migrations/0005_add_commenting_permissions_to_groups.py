@@ -68,12 +68,12 @@ class Migration(migrations.Migration):
     dependencies = [
         ('commenting', '0004_auto_20160713_0221'),
         ('core', '0047_add_core_permissions_to_groups'),
-        ('contenttypes', '__latest__'),
-        ('sites', '__latest__'),
-        ('auth', '__latest__'),
-        ('wagtailcore', '__latest__'),
-        ('wagtailadmin', '__latest__'),
-        ('wagtailusers', '__latest__'),
+        ('contenttypes', '0002_remove_content_type_name'),
+        ('sites', '0002_alter_domain_unique'),
+        ('auth', '0007_alter_validators_add_error_messages'),
+        ('wagtailcore', '0032_add_bulk_delete_page_permission'),
+        ('wagtailadmin', '0001_create_admin_access_permissions'),
+        ('wagtailusers', '0005_make_related_name_wagtail_specific'),
     ]
 
     operations = [

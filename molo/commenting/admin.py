@@ -6,7 +6,7 @@ from django.contrib import admin
 from django.contrib.admin.templatetags.admin_static import static
 from django.core.urlresolvers import reverse
 from django.core.exceptions import PermissionDenied
-from django.conf.urls import patterns, url
+from django.conf.urls import url
 from django.contrib.admin.views.main import ChangeList
 from django.shortcuts import get_object_or_404
 from django.contrib.admin.utils import unquote
@@ -36,13 +36,12 @@ class MoloCommentAdmin(MPTTModelAdmin, CommentsAdmin):
 
     def get_urls(self):
         urls = super(MoloCommentAdmin, self).get_urls()
-        my_urls = patterns(
-            '',
+        my_urls = [
             url(
                 r'(?P<parent>\d+)/reply/$',
                 self.admin_site.admin_view(AdminCommentReplyView.as_view()),
                 name="commenting_molocomment_reply")
-        )
+        ]
         return my_urls + urls
 
     def is_reported(self, obj):
@@ -173,15 +172,14 @@ class AdminModeratorMixin(admin.ModelAdmin):
         """
         Add aditional moderate url.
         """
-        from django.conf.urls import patterns, url
+        from django.conf.urls import url
         urls = super(AdminModeratorMixin, self).get_urls()
         info = self.model._meta.app_label, self.model._meta.model_name
-        return patterns(
-            '',
+        return [
             url(r'^(.+)/moderate/$',
                 self.admin_site.admin_view(self.moderate_view),
                 name='%s_%s_moderate' % info),
-        ) + urls
+        ] + urls
 
     def moderate_view(self, request, object_id, extra_context=None):
         """
@@ -253,12 +251,15 @@ class MoloCommentsModelAdmin(WagtailModelAdmin, MoloCommentAdmin):
     list_display = (
         'comment', 'parent_comment', 'moderator_reply', 'content',
         '_user', 'is_removed', 'is_reported', 'reported_count',
-        'submit_date',)
+        'submit_date', 'country')
 
     list_filter = (('submit_date', MoloCommentsDateRangeFilter), 'site',
-                   'is_removed',)
+                   'is_removed', 'user__is_staff')
 
     search_fields = ('comment',)
+
+    def country(self, obj):
+        return obj.wagtail_site.root_page.title
 
     def content(self, obj, *args, **kwargs):
         if obj.content_object and obj.parent is None:
