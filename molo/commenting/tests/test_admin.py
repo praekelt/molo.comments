@@ -291,7 +291,7 @@ class TestMoloCommentsAdminViews(TestCase, MoloTestCaseMixin):
             title='article 2', slug='article-2', parent=self.yourmind2,
             subtitle='article 2 subtitle')
 
-        self.mk_main2(title='main3', slug='main3', path=00010003)
+        self.mk_main2(title='main3', slug='main3', path='4099')
         self.client2 = Client(HTTP_HOST=self.main2.get_site().hostname)
 
     def mk_comment(self, comment, parent=None):
