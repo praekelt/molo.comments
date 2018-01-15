@@ -1,6 +1,10 @@
 CHANGELOG
 =========
 
+6.1.1
+-----
+- Plugin templates refactor and cleanup
+
 6.1.0
 -----
 - add support for Django 1.11
