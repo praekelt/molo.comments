@@ -1,9 +1,8 @@
-from datetime import datetime
-
 from django.contrib.auth.models import User
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.sites.models import Site
 from django.test import TestCase
+from django.utils import timezone
 
 from molo.commenting.models import MoloComment
 from django_comments.models import CommentFlag
@@ -41,13 +40,13 @@ class MoloCommentTest(TestCase, MoloTestCaseMixin):
             site=Site.objects.get_current(),
             user=self.user,
             comment=comment,
-            submit_date=datetime.now())
+            submit_date=timezone.now())
 
     def mk_comment_flag(self, comment, flag):
         return CommentFlag.objects.create(
             user=self.user,
             comment=comment,
-            flag_date=datetime.now(),
+            flag_date=timezone.now(),
             flag=flag)
 
     def test_parent(self):

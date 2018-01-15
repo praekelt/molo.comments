@@ -8,6 +8,7 @@ from django_comments.signals import (
 from django.conf import settings
 from django.db import models
 from django.db.models.signals import pre_save
+from django.utils.encoding import python_2_unicode_compatible
 from mptt.models import MPTTModel, TreeForeignKey
 from wagtail.wagtailcore.models import Site, Page
 from notifications.signals import notify
@@ -84,12 +85,13 @@ def create_notification_for_comment_reply(sender, comment, request, **kwargs):
         )
 
 
+@python_2_unicode_compatible
 class CannedResponse(models.Model):
     response_header = models.CharField(max_length=500, blank=False)
     response = models.TextField(max_length=COMMENT_MAX_LENGTH, blank=False)
     date_added = models.DateTimeField(auto_now_add=True)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.response_header
 
     class Meta:
