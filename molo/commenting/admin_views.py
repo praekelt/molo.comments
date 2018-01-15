@@ -1,9 +1,10 @@
+from .tasks import send_export_email
+
 from django.contrib import messages
 from django.shortcuts import redirect
 from django.views.generic import FormView
 from django_comments.views.comments import post_comment
 from molo.commenting.forms import AdminMoloCommentReplyForm
-from tasks import send_export_email
 from wagtail.contrib.modeladmin.views import IndexView
 
 
