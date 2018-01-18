@@ -1,6 +1,10 @@
 CHANGELOG
 =========
 
+6.1.1
+-----
+- Plugin templates refactor and cleanup
+
 6.1.0
 -----
 - add support for Django 1.11
@@ -62,6 +66,11 @@ CHANGELOG
 5.0.0
 -----
 - Add multi-site support
+
+2.1.3
+-----
+- Add trans block on comment textarea widget form
+=======
 
 2.1.2
 -----

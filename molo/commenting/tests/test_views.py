@@ -1,5 +1,4 @@
 from bs4 import BeautifulSoup
-from datetime import datetime
 
 from django.conf.urls import url, include
 from django.core.urlresolvers import reverse
@@ -8,6 +7,7 @@ from django.contrib.contenttypes.models import ContentType
 from django.contrib.sites.models import Site
 from django.test import TestCase, Client, override_settings
 from django.contrib.auth.models import Group
+from django.utils import timezone
 
 from molo.commenting.models import MoloComment
 from molo.commenting.forms import MoloCommentForm
@@ -56,7 +56,7 @@ class ViewsTest(TestCase, MoloTestCaseMixin):
             site=Site.objects.get_current(),
             user=self.user,
             comment=comment,
-            submit_date=datetime.now())
+            submit_date=timezone.now())
 
     def test_reporting_without_removal(self):
         comment = self.mk_comment('the comment')
@@ -133,7 +133,7 @@ class ViewsTest(TestCase, MoloTestCaseMixin):
             content_object=article, object_pk=article.id,
             content_type=ContentType.objects.get_for_model(article),
             site=Site.objects.get_current(), user=self.user,
-            comment='comment 1', submit_date=datetime.now())
+            comment='comment 1', submit_date=timezone.now())
         response = self.client.get(reverse('molo.commenting:report_response',
                                    args=(comment.id,)))
         self.assertContains(
@@ -198,7 +198,7 @@ class ViewMoreCommentsTest(TestCase, MoloTestCaseMixin):
             user=commenter,
             comment=comment,
             parent=parent,
-            submit_date=datetime.now())
+            submit_date=timezone.now())
 
     def test_view_more_comments(self):
         for i in range(50):
@@ -304,7 +304,7 @@ class TestFrontEndCommentReplies(TestCase, MoloTestCaseMixin):
             user=user,
             comment=comment,
             parent=parent,
-            submit_date=datetime.now())
+            submit_date=timezone.now())
 
     def setUp(self):
         self.mk_main()
@@ -461,7 +461,7 @@ class TestThreadedComments(TestCase, MoloTestCaseMixin):
             user=commenter,
             comment=comment,
             parent=parent,
-            submit_date=datetime.now())
+            submit_date=timezone.now())
 
     def test_restrict_article_comment_count(self):
         for i in range(3):
@@ -566,22 +566,8 @@ class ViewNotificationsRepliesOnCommentsTest(TestCase, MoloTestCaseMixin):
         self.client = Client()
         self.client.login(username='test', password='test')
 
-    def create_comment(self, comment, parent=None):
-        return MoloComment.objects.create(
-            content_type=ContentType.objects.get_for_model(self.article),
-            object_pk=self.article.pk,
-            content_object=self.article,
-            site=Site.objects.get_current(),
-            user=self.user,
-            comment=comment,
-            parent=parent,
-            submit_date=datetime.now())
-
     def test_notification_reply_list(self):
-        self.client = Client()
-        self.client.login(username='test', password='test')
-
-        data = MoloCommentForm(self.user, {}).generate_security_data()
+        data = MoloCommentForm(self.article, {}).generate_security_data()
         data.update({
             'name': 'the supplied name',
             'comment': 'Foo',
@@ -596,7 +582,7 @@ class ViewNotificationsRepliesOnCommentsTest(TestCase, MoloTestCaseMixin):
         self.assertEqual(response.status_code, 200)
         self.assertNotContains(response, 'Unread replies: 0')
 
-        data = MoloCommentForm(self.user, {}).generate_security_data()
+        data = MoloCommentForm(self.article, {}).generate_security_data()
         data.update({
             'name': 'the supplied name',
             'comment': 'Foo reply',
@@ -610,13 +596,19 @@ class ViewNotificationsRepliesOnCommentsTest(TestCase, MoloTestCaseMixin):
         self.assertEqual(response.status_code, 200)
         html = BeautifulSoup(response.content, 'html.parser')
         [ntfy] = html.find_all("div", class_='reply-notification')
-        self.assertEqual(ntfy.find("p").get_text().strip(),
-                         'You have 1 unread replies')
+        self.assertTrue(
+            ntfy.find("p").get_text().strip() in [
+                'You have 1 unread reply',
+                'You have 2 unread replies'
+            ])
 
         # Unread notifications
         response = self.client.get(
             reverse('molo.commenting:reply_list'))
-        self.assertContains(response, 'You have 1 unread replies')
+        self.assertTrue(response, [
+            'You have 1 unread reply',
+            'You have 2 unread replies'
+        ])
         n = Notification.objects.filter(recipient=self.user).first()
         n.mark_as_read()
         self.assertEqual(Notification.objects.unread().count(), 0)

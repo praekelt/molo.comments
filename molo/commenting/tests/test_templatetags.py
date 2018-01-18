@@ -1,12 +1,11 @@
 import re
 
-from datetime import datetime
-
 from django.contrib.auth.models import User
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.sites.models import Site
 from django.test import TestCase
 from django.template import Template, Context
+from django.utils import timezone
 
 from molo.commenting.models import MoloComment
 from molo.commenting.forms import MoloCommentForm
@@ -42,7 +41,7 @@ class GetMoloCommentsTest(TestCase, MoloTestCaseMixin):
                 site=Site.objects.get_current(),
                 user=self.user,
                 comment='comment %s' % (i,),
-                submit_date=datetime.now())
+                submit_date=timezone.now())
 
     def test_template_tags_default(self):
         template = Template("""
@@ -146,7 +145,7 @@ class GetCommentsContentObjectTest(TestCase, MoloTestCaseMixin):
                 site=Site.objects.get_current(),
                 user=self.user,
                 comment='comment %s' % (i,),
-                submit_date=datetime.now())
+                submit_date=timezone.now())
 
     def test_get_comments_content_object(self):
         template = Template("""

@@ -6,6 +6,8 @@ from django.contrib.auth.models import User
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.sites.models import Site
 from django.test import Client
+from django.utils import timezone
+
 from molo.core.tests.base import MoloTestCaseMixin
 from molo.commenting.tasks import send_export_email
 from molo.core.models import Main, Languages, SiteLanguageRelation
@@ -53,7 +55,7 @@ class ModelsTestCase(TestCase, MoloTestCaseMixin):
             user=self.user,
             comment=comment,
             parent=parent,
-            submit_date=datetime.now())
+            submit_date=timezone.now())
 
     def test_send_export_email(self):
         self.mk_comment('comment_text')
