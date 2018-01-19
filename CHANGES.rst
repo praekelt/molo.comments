@@ -1,6 +1,14 @@
 CHANGELOG
 =========
 
+6.2.0
+-----
+- Add support for Python 3
+
+6.1.1
+-----
+- Plugin templates refactor and cleanup
+
 6.1.0
 -----
 - add support for Django 1.11

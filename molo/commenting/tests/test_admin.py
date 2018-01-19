@@ -1,15 +1,13 @@
 # -*- coding: utf-8 -*-
 
-import re
-
 from bs4 import BeautifulSoup
-from datetime import datetime
 from django.contrib.admin.templatetags.admin_static import static
 from django.contrib.auth.models import User
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.sites.models import Site
 from django.core.urlresolvers import reverse
 from django.test import TestCase, Client, override_settings
+from django.utils import timezone
 
 from molo.commenting.models import MoloComment, CannedResponse
 from molo.core.models import Main, Languages, SiteLanguageRelation
@@ -47,7 +45,7 @@ class CommentingAdminTest(TestCase, MoloTestCaseMixin):
             user=self.user,
             comment=comment,
             parent=parent,
-            submit_date=datetime.now())
+            submit_date=timezone.now())
 
     def test_is_staff_filter(self):
         self.mk_comment('staff user comment')
@@ -291,7 +289,7 @@ class TestMoloCommentsAdminViews(TestCase, MoloTestCaseMixin):
             title='article 2', slug='article-2', parent=self.yourmind2,
             subtitle='article 2 subtitle')
 
-        self.mk_main2(title='main3', slug='main3', path=00010003)
+        self.mk_main2(title='main3', slug='main3', path='4099')
         self.client2 = Client(HTTP_HOST=self.main2.get_site().hostname)
 
     def mk_comment(self, comment, parent=None):
@@ -303,7 +301,7 @@ class TestMoloCommentsAdminViews(TestCase, MoloTestCaseMixin):
             user=self.user,
             comment=comment,
             parent=parent,
-            submit_date=datetime.now())
+            submit_date=timezone.now())
 
     def test_correct_comment_appears_in_admin_view(self):
         comment1 = self.mk_comment('the comment')
@@ -315,7 +313,7 @@ class TestMoloCommentsAdminViews(TestCase, MoloTestCaseMixin):
             user=self.user,
             comment='second site comment',
             parent=None,
-            submit_date=datetime.now())
+            submit_date=timezone.now())
         response = self.client.get(
             '/admin/commenting/molocomment/'
         )
@@ -354,15 +352,9 @@ class TestMoloCommentsAdminViews(TestCase, MoloTestCaseMixin):
             user=self.user,
             comment='second site comment',
             parent=None,
-            submit_date=datetime.now())
+            submit_date=timezone.now())
         response = self.client.post(
             '/admin/commenting/molocomment/'
         )
-
-        # substitute the datetime component to avoid intermittent test failures
-        # due to crossing a second boundary
-        response.content = re.sub('\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}',
-                                  'datetime',
-                                  response.content)
 
         self.assertEquals(response.status_code, 302)

@@ -7,10 +7,10 @@ with open(os.path.join(here, 'README.rst')) as f:
     readme = f.read()
 
 with open(os.path.join(here, 'requirements.txt')) as f:
-    requires = filter(None, f.readlines())
+    requires = f.read().split('\n')
 
 with open(os.path.join(here, 'requirements-dev.txt')) as f:
-    requires_dev = filter(None, f.readlines())
+    requires_dev = f.read().split('\n')
 
 with open(os.path.join(here, 'VERSION')) as f:
     version = f.read().strip()
