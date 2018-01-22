@@ -8,6 +8,8 @@ from wagtail_personalisation.rules import AbstractBaseRule
 
 
 class CommentDataRule(AbstractBaseRule):
+    static = True
+
     EQUALS = 'eq'
     CONTAINS = 'in'
 

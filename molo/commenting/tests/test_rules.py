@@ -41,6 +41,11 @@ class TestCommentDataRuleSegmentation(TestCase, MoloTestCaseMixin):
             parent=parent,
             submit_date=timezone.now())
 
+    def test_comment_data_rule_is_static(self):
+        rule = CommentDataRule(expected_content='that is some random content.',
+                               operator=CommentDataRule.EQUALS)
+        self.assertTrue(rule.static)
+
     def test_comment_data_exact_rule(self):
         self._create_comment('that is some random content.')
         rule = CommentDataRule(expected_content='that is some random content.',
