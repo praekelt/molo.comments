@@ -56,6 +56,15 @@ class CommentingAdminTest(TestCase, MoloTestCaseMixin):
             '/admin/commenting/molocomment/?user__is_staff__exact=0')
         self.assertNotContains(response, 'staff user comment')
 
+    def test_parent_comment_can_contain_unicode(self):
+        comment_parent = self.mk_comment('Parent comment 👋')
+        comment_reply = self.mk_comment('Reply', parent=comment_parent)
+
+        response = self.client.get('/admin/commenting/molocomment/')
+
+        self.assertContains(response, comment_parent.comment)
+        self.assertContains(response, comment_reply.comment)
+
     def test_reply_link_on_comment(self):
         '''Every root comment should have the "Add reply" text and icon that
         has a link to the reply view for that comment.'''
@@ -358,3 +367,19 @@ class TestMoloCommentsAdminViews(TestCase, MoloTestCaseMixin):
         )
 
         self.assertEquals(response.status_code, 302)
+
+    def test_article_title_in_comment_view_can_contain_unicode(self):
+        article = self.mk_article(self.yourmind, title='Test article 😴')
+        MoloComment.objects.create(
+            content_type=self.content_type,
+            object_pk=article.pk,
+            content_object=article,
+            site=Site.objects.first(),
+            user=self.user,
+            comment='Comment',
+            parent=None,
+            submit_date=timezone.now())
+
+        response = self.client.get('/admin/commenting/molocomment/')
+
+        self.assertContains(response, 'Test article 😴')

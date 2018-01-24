@@ -1,6 +1,22 @@
 CHANGELOG
 =========
 
+6.2.3
+-----
+- Fix comment admin for unicode comments on Python 2
+
+6.2.2
+-----
+- Fix comment admin for unicode comments on Python 2
+
+6.2.1
+-----
+- Ensure segmentation rules are marked as static
+
+6.2.0
+-----
+- Add support for Python 3
+
 6.1.1
 -----
 - Plugin templates refactor and cleanup
