@@ -1,6 +1,10 @@
 CHANGELOG
 =========
 
+6.2.2
+-----
+- Fix comment admin for unicode comments on Python 2
+
 6.2.1
 -----
 - Ensure segmentation rules are marked as static
