@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+from __future__ import unicode_literals
+
 from django_comments.models import CommentFlag
 from django_comments.admin import CommentsAdmin
 from django.contrib import admin
