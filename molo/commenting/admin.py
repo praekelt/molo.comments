@@ -267,7 +267,7 @@ class MoloCommentsModelAdmin(WagtailModelAdmin, MoloCommentAdmin):
             return '<a href="{0}" target="_blank">{1}</a> ' \
                    '(<a href="/admin/pages/{2}/edit/">edit</a>)'\
                 .format(obj.content_object.url,
-                        obj.content_object.title.encode('utf-8'),
+                        obj.content_object.title,
                         obj.content_object.pk)
 
         return
