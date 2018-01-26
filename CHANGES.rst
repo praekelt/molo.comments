@@ -1,6 +1,18 @@
 CHANGELOG
 =========
 
+6.2.4
+-----
+- Enable segmentation rules to be tested without active requests
+
+6.2.3
+-----
+- Fix comment admin for unicode comments on Python 2
+
+6.2.2
+-----
+- Fix comment admin for unicode comments on Python 2
+
 6.2.1
 -----
 - Ensure segmentation rules are marked as static

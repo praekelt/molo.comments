@@ -73,3 +73,16 @@ class TestCommentDataRuleSegmentation(TestCase, MoloTestCaseMixin):
                                operator=CommentDataRule.CONTAINS)
 
         self.assertFalse(rule.test_user(self.request))
+
+    def test_test_user_without_request(self):
+        self._create_comment('that is some random content.')
+        rule = CommentDataRule(expected_content='that is some random content.',
+                               operator=CommentDataRule.EQUALS)
+
+        self.assertTrue(rule.test_user(None, self.request.user))
+
+    def test_test_user_without_user_or_request(self):
+        self._create_comment('that is some random content.')
+        rule = CommentDataRule(expected_content='that is some random content.',
+                               operator=CommentDataRule.EQUALS)
+        self.assertFalse(rule.test_user(None))
