@@ -12,7 +12,6 @@ from molo.core.tests.base import MoloTestCaseMixin
 from molo.commenting.tasks import send_export_email
 from molo.core.models import Main, Languages, SiteLanguageRelation
 from molo.commenting.models import MoloComment
-from datetime import datetime
 
 
 class ModelsTestCase(TestCase, MoloTestCaseMixin):
@@ -58,7 +57,7 @@ class ModelsTestCase(TestCase, MoloTestCaseMixin):
             submit_date=timezone.now())
 
     def test_send_export_email(self):
-        self.mk_comment('comment_text')
+        comment = self.mk_comment('comment_text')
         send_export_email(self.user.email, {})
         message = list(mail.outbox)[0]
         self.assertEquals(message.to, [self.user.email])
@@ -70,7 +69,7 @@ class ModelsTestCase(TestCase, MoloTestCaseMixin):
              'country,submit_date,user_name,user_email,comment,id,parent_id,'
              'article_title,article_subtitle,article_full_url,is_public,'
              'is_removed,parent,wagtail_site\r\nMain,' + str(
-                 datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")) +
+                 comment.submit_date.strftime("%Y-%m-%d %H:%M:%S")) +
              ',,,comment_text,1,,article 1,article 1 subtitle,'
              'http://main-1.localhost:8000/sections-main-1/your-mind/'
              'article-1/,1,0,,1\r\n',
