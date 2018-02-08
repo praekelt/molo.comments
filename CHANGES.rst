@@ -1,6 +1,10 @@
 CHANGELOG
 =========
 
+6.2.5
+-----
+- Update wagtail-personalisation version
+
 6.2.4
 -----
 - Enable segmentation rules to be tested without active requests
