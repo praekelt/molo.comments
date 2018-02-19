@@ -70,6 +70,6 @@ class CommentDataRule(AbstractBaseRule):
         matches = [comment.comment for comment in
                    comments.filter(**{'comment__i' + (
                                    'exact' if self.operator == self.EQUALS
-                                    else 'contains'): self.expected_content})]
+                                   else 'contains'): self.expected_content})]
 
-        return "\"%s\"" % ("\"\n\"".join(matches))  # Surround each comment in ""
+        return "\"%s\"" % ("\"\n\"".join(matches))  # Quote each comment
