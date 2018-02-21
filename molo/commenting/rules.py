@@ -61,3 +61,15 @@ class CommentDataRule(AbstractBaseRule):
                 Truncator(self.expected_content).chars(20)
             )
         }
+
+    def get_column_header(self):
+        return "Comment Data"
+
+    def get_user_info_string(self, user):
+        comments = user.comment_comments
+        matches = [comment.comment for comment in
+                   comments.filter(**{'comment__i' + (
+                                   'exact' if self.operator == self.EQUALS
+                                   else 'contains'): self.expected_content})]
+
+        return "\"%s\"" % ("\"\n\"".join(matches))  # Quote each comment
