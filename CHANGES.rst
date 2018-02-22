@@ -1,6 +1,10 @@
 CHANGELOG
 =========
 
+6.2.6
+-----
+- Add methods to get user data from segmentation rule
+
 6.2.5
 -----
 - Update wagtail-personalisation version
