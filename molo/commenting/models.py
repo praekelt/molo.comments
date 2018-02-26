@@ -15,6 +15,14 @@ from notifications.signals import notify
 from .rules import CommentDataRule  # noqa
 from .managers import MoloCommentManager
 
+from wagtail.contrib.settings.models import BaseSetting
+from wagtail.contrib.settings.registry import register_setting
+from wagtail.wagtailadmin.edit_handlers import (
+    FieldPanel,
+    MultiFieldPanel,
+    PageChooserPanel,
+)
+
 
 class MoloComment(MPTTModel, Comment):
     """
@@ -98,3 +106,21 @@ class CannedResponse(models.Model):
         verbose_name_plural = 'Canned responses'
         app_label = 'commenting'
         ordering = ['response_header', 'response']
+
+
+@register_setting
+class CommentingSettings(BaseSetting):
+
+    commenting_anonymous_alias = models.TextField(
+        verbose_name='Commenting Anonymous Alias',
+        null=True,
+        blank=True,
+        help_text="This is the name used when users comment anonymously"
+                  " when a users comment's anonymously"
+    )
+
+    MultiFieldPanel(
+        [
+            FieldPanel('commenting_anonymous_alias'),
+        ],
+        heading="Site Commenting Settings", )
