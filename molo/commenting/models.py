@@ -111,16 +111,16 @@ class CannedResponse(models.Model):
 class CommentingSettings(BaseSetting):
     """This class will allow users to add an anonymous alias for a site."""
 
-    commenting_anonymous_alias = models.TextField(
+    commenting_anonymous = models.TextField(
         verbose_name='Commenting Anonymous Alias',
-        default='{% trans "Anonymous" %}',
+        default="Anonymous",
         help_text="This is the name used when users comment anonymously"
                   " when a users comment's anonymously"
     )
     panels = [
         MultiFieldPanel(
             [
-                FieldPanel('commenting_anonymous_alias'),
+                FieldPanel('commenting_anonymous'),
             ],
             heading="Site Commenting Settings", )
     ]
