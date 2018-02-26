@@ -20,7 +20,6 @@ from wagtail.contrib.settings.registry import register_setting
 from wagtail.wagtailadmin.edit_handlers import (
     FieldPanel,
     MultiFieldPanel,
-    PageChooserPanel,
 )
 
 
@@ -110,17 +109,18 @@ class CannedResponse(models.Model):
 
 @register_setting
 class CommentingSettings(BaseSetting):
+    """This class will allow users to add an anonymous alias for a site."""
 
     commenting_anonymous_alias = models.TextField(
         verbose_name='Commenting Anonymous Alias',
-        null=True,
-        blank=True,
+        default='{% trans "Anonymous" %}',
         help_text="This is the name used when users comment anonymously"
                   " when a users comment's anonymously"
     )
-
-    MultiFieldPanel(
-        [
-            FieldPanel('commenting_anonymous_alias'),
-        ],
-        heading="Site Commenting Settings", )
+    panels = [
+        MultiFieldPanel(
+            [
+                FieldPanel('commenting_anonymous_alias'),
+            ],
+            heading="Site Commenting Settings", )
+    ]
