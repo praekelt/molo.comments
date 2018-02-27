@@ -109,7 +109,12 @@ class CannedResponse(models.Model):
 
 @register_setting
 class CommentingSettings(BaseSetting):
-    """This class will allow users to add an anonymous alias for a site."""
+    """
+
+    This class will allow content creator to add an anonymous alias.
+    This is for users who want to comment anonymously.
+    The alias is added per site.
+    """
 
     commenting_anonymous = models.TextField(
         verbose_name='Commenting Anonymous Alias',
@@ -124,3 +129,10 @@ class CommentingSettings(BaseSetting):
             ],
             heading="Site Commenting Settings", )
     ]
+
+    def get_anonymous_commenting_alias(self):
+        """Return the alias assigned to anonymous comments."""
+        if(self.commenting_anonymous == "" or
+                self.commenting_anonymous == "Anonymous"):
+            return '{% trans "Anonymous" %}'
+        return '{% trans ' + self.commenting_anonymous + ' %}'

@@ -4,7 +4,7 @@ from django.contrib.sites.models import Site
 from django.test import TestCase
 from django.utils import timezone
 
-from molo.commenting.models import MoloComment
+from molo.commenting.models import MoloComment,CommentingSettings
 from django_comments.models import CommentFlag
 from django_comments import signals
 
@@ -125,3 +125,5 @@ class MoloCommentTest(TestCase, MoloTestCaseMixin):
             )
         altered_comment = MoloComment.objects.get(pk=comment.pk)
         self.assertFalse(altered_comment.is_removed)
+
+class TestCommentingSettings(TestCase, MoloTestCaseMixin):
