@@ -6,12 +6,7 @@
     <h1 class="comments__reply-heading">{% trans "Comment Replies" %}</h1>
     {% if unread_notifications %}
         <h2 class="comments__reply-title comments__reply-title--unread">
-            {% trans "You have" %} {{ number_unread_notifications }} {% trans "unread" %}
-            {% if number_unread_notifications == 1 %}
-                {% trans "Reply"%}
-            {% else %}
-                {% trans "Replies"%}
-            {% endif %}
+            {% trans "You have" %} {{ number_unread_notifications }} {% trans "unread" %}{% if number_unread_notifications == 1 %} {% trans "reply" %}{% else %} {% trans "replies"%}{% endif %}
         </h2>
         <ul class="replies-list replies-list--unread">
             {% for notice in unread_notifications %}
