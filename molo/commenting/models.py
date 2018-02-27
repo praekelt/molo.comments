@@ -134,5 +134,5 @@ class CommentingSettings(BaseSetting):
         """Return the alias assigned to anonymous comments."""
         if(self.commenting_anonymous == "" or
                 self.commenting_anonymous == "Anonymous"):
-            return '{% trans "Anonymous" %}'
-        return '{% trans ' + self.commenting_anonymous + ' %}'
+            return "Anonymous"
+        return self.commenting_anonymous

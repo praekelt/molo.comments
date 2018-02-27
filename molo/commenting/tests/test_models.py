@@ -4,7 +4,7 @@ from django.contrib.sites.models import Site
 from django.test import TestCase
 from django.utils import timezone
 
-from molo.commenting.models import MoloComment,CommentingSettings
+from molo.commenting.models import MoloComment, CommentingSettings
 from django_comments.models import CommentFlag
 from django_comments import signals
 
@@ -126,4 +126,24 @@ class MoloCommentTest(TestCase, MoloTestCaseMixin):
         altered_comment = MoloComment.objects.get(pk=comment.pk)
         self.assertFalse(altered_comment.is_removed)
 
-class TestCommentingSettings(TestCase, MoloTestCaseMixin):
+
+class CommentingSettingsTest(TestCase, MoloTestCaseMixin):
+    """Test if the commengting settings valued are set properly."""
+
+    named_comment = CommentingSettings(commenting_anonymous="Little Sister")
+    empty_comment = CommentingSettings(commenting_anonymous="")
+    default_comment = CommentingSettings()
+
+    def test_get_anonymous_commenting_alias(self):
+        print(self.named_comment.get_anonymous_commenting_alias())
+        print(self.empty_comment.get_anonymous_commenting_alias())
+        print(self.default_comment.get_anonymous_commenting_alias())
+        self.assertTrue(
+            self.named_comment.get_anonymous_commenting_alias() ==
+            "Little Sister")
+        self.assertTrue(
+            self.empty_comment.get_anonymous_commenting_alias() ==
+            "Anonymous")
+        self.assertTrue(
+            self.default_comment.get_anonymous_commenting_alias() ==
+            "Anonymous")
