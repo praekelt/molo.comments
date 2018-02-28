@@ -129,10 +129,3 @@ class CommentingSettings(BaseSetting):
             ],
             heading="Site Commenting Settings", )
     ]
-
-    def get_anonymous_commenting_alias(self):
-        """Return the alias assigned to anonymous comments."""
-        if(self.commenting_anonymous == "" or
-                self.commenting_anonymous == "Anonymous"):
-            return "Anonymous"
-        return self.commenting_anonymous

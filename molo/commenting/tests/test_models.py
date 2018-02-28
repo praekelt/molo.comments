@@ -3,6 +3,7 @@ from django.contrib.contenttypes.models import ContentType
 from django.contrib.sites.models import Site
 from django.test import TestCase
 from django.utils import timezone
+from django.core.urlresolvers import reverse
 
 from molo.commenting.models import MoloComment, CommentingSettings
 from django_comments.models import CommentFlag
@@ -130,20 +131,45 @@ class MoloCommentTest(TestCase, MoloTestCaseMixin):
 class CommentingSettingsTest(TestCase, MoloTestCaseMixin):
     """Test if the commengting settings valued are set properly."""
 
-    named_comment = CommentingSettings(commenting_anonymous="Little Sister")
-    empty_comment = CommentingSettings(commenting_anonymous="")
-    default_comment = CommentingSettings()
+    def setUp(self):
+        self.mk_main()
+        self.main = Main.objects.all().first()
+        self.language_setting = Languages.objects.create(
+            site_id=self.main.get_site().pk)
+        self.english = SiteLanguageRelation.objects.create(
+            language_setting=self.language_setting,
+            locale='en',
+            is_active=True)
+        self.user = User.objects.create_user(
+            'test', 'test@example.org', 'test')
+        self.content_type = ContentType.objects.get_for_model(self.user)
 
-    def test_get_anonymous_commenting_alias(self):
-        print(self.named_comment.get_anonymous_commenting_alias())
-        print(self.empty_comment.get_anonymous_commenting_alias())
-        print(self.default_comment.get_anonymous_commenting_alias())
-        self.assertTrue(
-            self.named_comment.get_anonymous_commenting_alias() ==
-            "Little Sister")
-        self.assertTrue(
-            self.empty_comment.get_anonymous_commenting_alias() ==
-            "Anonymous")
-        self.assertTrue(
-            self.default_comment.get_anonymous_commenting_alias() ==
-            "Anonymous")
+        self.yourmind = self.mk_section(
+            self.section_index, title='Your mind')
+        self.article1 = self.mk_article(
+            title='article 1', slug='article-2', parent=self.yourmind)
+        self.setting = CommentingSettings.for_site(self.site)
+
+    def test_get_comments_anonymous(self):
+        article = self.article1
+        MoloComment.objects.create(
+            content_object=article, object_pk=article.id,
+            content_type=ContentType.objects.get_for_model(article),
+            site=Site.objects.get_current(), user=self.user,
+            comment='This is a comment, you dig?', submit_date=timezone.now())
+        response = self.client.get(
+            reverse('molo.commenting:more-comments', args=(article.pk,)))
+        self.assertContains(response, "Anonymous")
+
+    def test_get_comments_anonymous_alias(self):
+        self.setting.commenting_anonymous = "Little Sister"
+        self.setting.save()
+        article = self.article1
+        MoloComment.objects.create(
+            content_object=article, object_pk=article.id,
+            content_type=ContentType.objects.get_for_model(article),
+            site=Site.objects.get_current(), user=self.user,
+            comment='This is another comment', submit_date=timezone.now())
+        response = self.client.get(
+            reverse('molo.commenting:more-comments', args=(article.pk,)))
+        self.assertContains(response, "Little Sister")
