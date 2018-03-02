@@ -111,9 +111,9 @@ class CannedResponse(models.Model):
 class CommentingSettings(BaseSetting):
     """
 
-    This class will allow content creator to add an anonymous alias.
-    This is for users who want to comment anonymously.
-    The alias is added per site.
+    Anonymous commenting alais for a site.
+    It is set by the admin users of a stie.
+    The value will be displayed everytime an end user comments anonymously
     """
 
     commenting_anonymous = models.TextField(

@@ -129,7 +129,7 @@ class MoloCommentTest(TestCase, MoloTestCaseMixin):
 
 
 class CommentingSettingsTest(TestCase, MoloTestCaseMixin):
-    """Test if the commengting settings valued are set properly."""
+    """Test if the anonymous commengting alias value is set properly."""
 
     def setUp(self):
         self.mk_main()
@@ -143,7 +143,6 @@ class CommentingSettingsTest(TestCase, MoloTestCaseMixin):
         self.user = User.objects.create_user(
             'test', 'test@example.org', 'test')
         self.content_type = ContentType.objects.get_for_model(self.user)
-
         self.yourmind = self.mk_section(
             self.section_index, title='Your mind')
         self.article1 = self.mk_article(
@@ -173,3 +172,24 @@ class CommentingSettingsTest(TestCase, MoloTestCaseMixin):
         response = self.client.get(
             reverse('molo.commenting:more-comments', args=(article.pk,)))
         self.assertContains(response, "Little Sister")
+
+    def test_anonymous_comment_translation(self):
+        article = self.article1
+        MoloComment.objects.create(
+            content_object=article, object_pk=article.id,
+            content_type=ContentType.objects.get_for_model(article),
+            site=Site.objects.get_current(), user=self.user,
+            comment='This is another comment ', submit_date=timezone.now())
+        self.french = SiteLanguageRelation.objects.create(
+            language_setting=Languages.for_site(self.site),
+            locale='fr',
+            is_active=True)
+        self.translated_article = self.mk_article_translation(
+            article, self.french,
+            title=article.title + ' in french',
+            subtitle=article.subtitle + ' in french')
+        response = self.client.get(
+            reverse('molo.commenting:more-comments', args=(
+                self.translated_article.pk,)))
+        self.assertContains(response, "in french")
+        self.assertNotContains(response, "Anonymous")
