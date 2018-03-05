@@ -5,9 +5,7 @@
       {{node.user_name}}
     {% else %}
       {% if not node.user.profile.alias %}
-      {% with settings.commenting.CommentingSettings.commenting_anonymous as alias %}
-        {% trans alias%}
-      }
+        {% trans settings.commenting.CommentingSettings.commenting_anonymous%}
       {% else %}
         {{node.user.profile.alias}}
       {% endif %}
