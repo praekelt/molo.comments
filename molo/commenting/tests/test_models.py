@@ -149,6 +149,15 @@ class CommentingSettingsTest(TestCase, MoloTestCaseMixin):
             title='article 1', slug='article-2', parent=self.yourmind)
         self.setting = CommentingSettings.for_site(self.site)
 
+        self.french = SiteLanguageRelation.objects.create(
+            language_setting=Languages.for_site(self.site),
+            locale='fr',
+            is_active=True)
+        self.translated_article = self.mk_article_translation(
+            self.article1, self.french,
+            title=self.article1.title + ' in french',
+            subtitle=self.article1.subtitle + ' in french')
+
     def test_get_comments_anonymous(self):
         article = self.article1
         MoloComment.objects.create(
@@ -176,20 +185,15 @@ class CommentingSettingsTest(TestCase, MoloTestCaseMixin):
     def test_anonymous_comment_translation(self):
         article = self.article1
         MoloComment.objects.create(
-            content_object=article, object_pk=article.id,
+            content_object=self.translated_article,
+            object_pk=self.translated_article.id,
             content_type=ContentType.objects.get_for_model(article),
             site=Site.objects.get_current(), user=self.user,
-            comment='This is another comment ', submit_date=timezone.now())
-        self.french = SiteLanguageRelation.objects.create(
-            language_setting=Languages.for_site(self.site),
-            locale='fr',
-            is_active=True)
-        self.translated_article = self.mk_article_translation(
-            article, self.french,
-            title=article.title + ' in french',
-            subtitle=article.subtitle + ' in french')
+            comment='This is another comment for French',
+            submit_date=timezone.now())
         response = self.client.get(
             reverse('molo.commenting:more-comments', args=(
                 self.translated_article.pk,)))
-        self.assertContains(response, "in french")
-        self.assertNotContains(response, "Anonymous")
+        self.assertContains(response, "This is another comment for French")
+        # we test for translation of anonymous in project tests
+        self.assertContains(response, "Anonymous")
