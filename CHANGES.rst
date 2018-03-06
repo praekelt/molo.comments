@@ -1,6 +1,10 @@
 CHANGELOG
 =========
 
+6.2.7
+-----
+- Add settings to change commenting alias
+
 6.2.6
 -----
 - Add methods to get user data from segmentation rule
