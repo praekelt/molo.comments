@@ -117,3 +117,12 @@ class TestCommentDataRuleSegmentation(TestCase, MoloTestCaseMixin):
         self.assertEqual(rule.get_user_info_string(self.request.user),
                          '"that is some random content."\n'
                          '"that is some other content."')
+
+    def test_get_user_data_string_returns_if_no_matches(self):
+        self._create_comment('that is some random content.')
+        self._create_comment('that is some other content.')
+        rule = CommentDataRule(expected_content='bla bla bla',
+                               operator=CommentDataRule.CONTAINS)
+
+        self.assertEqual(rule.get_user_info_string(self.request.user),
+                         'No matching comments')
