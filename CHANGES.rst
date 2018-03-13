@@ -1,5 +1,9 @@
 CHANGELOG
 =========
+6.2.8
+-----
+- Remove settings to change commenting alias
+- Return rule data if the user does not match the rules
 
 6.2.7
 -----

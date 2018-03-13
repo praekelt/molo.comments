@@ -72,4 +72,6 @@ class CommentDataRule(AbstractBaseRule):
                                    'exact' if self.operator == self.EQUALS
                                    else 'contains'): self.expected_content})]
 
+        if not matches:
+            return "No matching comments"
         return "\"%s\"" % ("\"\n\"".join(matches))  # Quote each comment
