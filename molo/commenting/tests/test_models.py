@@ -5,7 +5,7 @@ from django.test import TestCase
 from django.utils import timezone
 from django.core.urlresolvers import reverse
 
-from molo.commenting.models import MoloComment, CommentingSettings
+from molo.commenting.models import MoloComment
 from django_comments.models import CommentFlag
 from django_comments import signals
 
@@ -129,7 +129,7 @@ class MoloCommentTest(TestCase, MoloTestCaseMixin):
 
 
 class CommentingSettingsTest(TestCase, MoloTestCaseMixin):
-    """Test if the anonymous commengting alias value is set properly."""
+    """Test if the anonymous commengting alias value translated."""
 
     def setUp(self):
         self.mk_main()
@@ -147,7 +147,6 @@ class CommentingSettingsTest(TestCase, MoloTestCaseMixin):
             self.section_index, title='Your mind')
         self.article1 = self.mk_article(
             title='article 1', slug='article-2', parent=self.yourmind)
-        self.setting = CommentingSettings.for_site(self.site)
 
         self.french = SiteLanguageRelation.objects.create(
             language_setting=Languages.for_site(self.site),
@@ -168,19 +167,6 @@ class CommentingSettingsTest(TestCase, MoloTestCaseMixin):
         response = self.client.get(
             reverse('molo.commenting:more-comments', args=(article.pk,)))
         self.assertContains(response, "Anonymous")
-
-    def test_get_comments_anonymous_alias(self):
-        self.setting.commenting_anonymous = "Little Sister"
-        self.setting.save()
-        article = self.article1
-        MoloComment.objects.create(
-            content_object=article, object_pk=article.id,
-            content_type=ContentType.objects.get_for_model(article),
-            site=Site.objects.get_current(), user=self.user,
-            comment='This is another comment', submit_date=timezone.now())
-        response = self.client.get(
-            reverse('molo.commenting:more-comments', args=(article.pk,)))
-        self.assertContains(response, "Little Sister")
 
     def test_anonymous_comment_translation(self):
         article = self.article1
