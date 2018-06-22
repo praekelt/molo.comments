@@ -102,6 +102,7 @@ class MoloCommentTest(TestCase, MoloTestCaseMixin):
 
         response = self.client.get(
             reverse('molo.commenting:more-comments', args=(self.article1.pk,)))
+        print(response)
         self.assertContains(response,
                             "THIS COMMENT HAS BEEN REMOVED BY THE COMMUNITY")
 
