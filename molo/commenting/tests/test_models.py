@@ -100,6 +100,11 @@ class MoloCommentTest(TestCase, MoloTestCaseMixin):
         # check that is removed is true
         self.assertTrue(comment.is_removed)
 
+        response = self.client.get(
+            reverse('molo.commenting:more-comments', args=(self.article1.pk,)))
+        self.assertContains(response,
+                            "THIS COMMENT HAS BEEN REMOVED BY THE COMMUNITY")
+
     def test_auto_remove_approved_comment(self):
         comment = self.mk_comment('first comment')
         comment.save()
