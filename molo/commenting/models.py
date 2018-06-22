@@ -7,7 +7,7 @@ from django_comments.signals import (
 )
 from django.conf import settings
 from django.db import models
-from django.db.models.signals import pre_save
+from django.db.models.signals import pre_save, pre_delete
 from django.utils.encoding import python_2_unicode_compatible
 from mptt.models import MPTTModel, TreeForeignKey
 from wagtail.wagtailcore.models import Site, Page
@@ -44,6 +44,12 @@ class MoloComment(MPTTModel, Comment):
 def add_wagtail_site(sender, instance, *args, **kwargs):
         article = Page.objects.filter(pk=instance.object_pk).first().specific
         instance.wagtail_site = article.get_site()
+
+
+@receiver(pre_delete, sender=MoloComment)
+def mark_comment_as_removed(sender, comment, *args, **kwargs):
+    comment.is_removed = True
+    comment.save()
 
 
 @receiver(comment_was_flagged, sender=MoloComment)
