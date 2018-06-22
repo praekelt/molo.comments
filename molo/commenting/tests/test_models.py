@@ -89,15 +89,14 @@ class MoloCommentTest(TestCase, MoloTestCaseMixin):
         altered_comment = MoloComment.objects.get(pk=comment.pk)
         self.assertTrue(altered_comment.is_removed)
 
-    def test_delete_comment_removed(self):
+    def test_delete_comment_is_removed(self):
         '''test that the comment delete does
         not delete a comment but rather marks it as removed'''
 
         comment = self.mk_comment('offensive comment')
         comment.save()
-        # delte the question
+        # delete the question
         comment.delete()
-
         # check that is removed is true
         self.assertTrue(comment.is_removed)
 
