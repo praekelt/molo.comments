@@ -97,8 +97,7 @@ class MoloCommentTest(TestCase, MoloTestCaseMixin):
         comment.save()
         # delte the question
         comment.delete()
-        # test the the comment exitss
-        self.assertTrue(comment.exists())
+
         # check that is removed is true
         self.assertTrue(comment.is_removed)
 
