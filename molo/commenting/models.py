@@ -41,8 +41,6 @@ class MoloComment(MPTTModel, Comment):
 
     def delete(self):
         self.is_removed = True
-        print("---------------------------------------------")
-        print(self.is_removed)
         self.save()
 
 
@@ -50,8 +48,6 @@ class MoloComment(MPTTModel, Comment):
 def add_wagtail_site(sender, instance, *args, **kwargs):
         article = Page.objects.filter(pk=instance.object_pk).first().specific
         instance.wagtail_site = article.get_site()
-
-
 
 
 @receiver(comment_was_flagged, sender=MoloComment)
