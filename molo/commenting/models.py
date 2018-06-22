@@ -46,10 +46,9 @@ def add_wagtail_site(sender, instance, *args, **kwargs):
         instance.wagtail_site = article.get_site()
 
 
-@receiver(pre_delete, sender=MoloComment)
-def mark_comment_as_removed(sender, instance, *args, **kwargs):
-    instance.is_removed = True
-    instance.save()
+def delete(self):
+    self.is_removed = True
+    self.save()
 
 
 @receiver(comment_was_flagged, sender=MoloComment)
