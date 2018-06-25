@@ -25,7 +25,13 @@ class MoloCommentsResource(resources.ModelResource):
             'article_full_url', 'is_public', 'is_removed')
 
     def dehydrate_country(self, comment):
-        return comment.content_object.get_site().root_page.title
+        dehydrated_country = ''
+
+        if comment.content_object:
+            site = comment.content_object.get_site()
+            dehydrated_country = site.root_page.title
+
+        return dehydrated_country
 
     def dehydrate_article_title(self, comment):
         if not comment.content_object or not \

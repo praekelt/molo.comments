@@ -1,5 +1,13 @@
 CHANGELOG
 =========
+6.3.0
+-----
+- Fix bug in delete comments
+
+6.2.9
+-----
+- Fix bug in user comments export
+
 6.2.8
 -----
 - Remove settings to change commenting alias
