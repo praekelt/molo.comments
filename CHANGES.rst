@@ -1,5 +1,8 @@
 CHANGELOG
 =========
+6.3.0
+-----
+- Fix bug in delete comments
 
 6.2.9
 -----
