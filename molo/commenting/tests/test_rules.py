@@ -73,3 +73,56 @@ class TestCommentDataRuleSegmentation(TestCase, MoloTestCaseMixin):
                                operator=CommentDataRule.CONTAINS)
 
         self.assertFalse(rule.test_user(self.request))
+
+    def test_test_user_without_request(self):
+        self._create_comment('that is some random content.')
+        rule = CommentDataRule(expected_content='that is some random content.',
+                               operator=CommentDataRule.EQUALS)
+
+        self.assertTrue(rule.test_user(None, self.request.user))
+
+    def test_test_user_without_user_or_request(self):
+        self._create_comment('that is some random content.')
+        rule = CommentDataRule(expected_content='that is some random content.',
+                               operator=CommentDataRule.EQUALS)
+        self.assertFalse(rule.test_user(None))
+
+    def test_get_column_header(self):
+        rule = CommentDataRule(expected_content='that is some random content.',
+                               operator=CommentDataRule.EQUALS)
+        self.assertEqual(rule.get_column_header(), "Comment Data")
+
+    def test_get_user_data_string_returns_data_for_exact_match(self):
+        self._create_comment('that is some random content.')
+        rule = CommentDataRule(expected_content='that is some random content.',
+                               operator=CommentDataRule.EQUALS)
+
+        self.assertEqual(rule.get_user_info_string(self.request.user),
+                         '"that is some random content."')
+
+    def test_get_user_data_string_returns_data_for_contains(self):
+        self._create_comment('that is some random content.')
+        rule = CommentDataRule(expected_content='some random',
+                               operator=CommentDataRule.CONTAINS)
+
+        self.assertEqual(rule.get_user_info_string(self.request.user),
+                         '"that is some random content."')
+
+    def test_get_user_data_string_concatenates_multiple_matches(self):
+        self._create_comment('that is some random content.')
+        self._create_comment('that is some other content.')
+        rule = CommentDataRule(expected_content='that is some',
+                               operator=CommentDataRule.CONTAINS)
+
+        self.assertEqual(rule.get_user_info_string(self.request.user),
+                         '"that is some random content."\n'
+                         '"that is some other content."')
+
+    def test_get_user_data_string_returns_if_no_matches(self):
+        self._create_comment('that is some random content.')
+        self._create_comment('that is some other content.')
+        rule = CommentDataRule(expected_content='bla bla bla',
+                               operator=CommentDataRule.CONTAINS)
+
+        self.assertEqual(rule.get_user_info_string(self.request.user),
+                         'No matching comments')

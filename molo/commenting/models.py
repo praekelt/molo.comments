@@ -39,6 +39,10 @@ class MoloComment(MPTTModel, Comment):
     def flag_count(self, flag):
         return self.flags.filter(flag=flag).count()
 
+    def delete(self):
+        self.is_removed = True
+        self.save()
+
 
 @receiver(pre_save, sender=MoloComment)
 def add_wagtail_site(sender, instance, *args, **kwargs):

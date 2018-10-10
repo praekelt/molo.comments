@@ -1,6 +1,39 @@
 CHANGELOG
 =========
 
+7.0.0
+-----
+- Upgrade to molo 7
+
+6.3.0
+-----
+- Fix bug in delete comments
+
+6.2.9
+-----
+- Fix bug in user comments export
+
+6.2.8
+-----
+- Remove settings to change commenting alias
+- Return rule data if the user does not match the rules
+
+6.2.7
+-----
+- Add settings to change commenting alias
+
+6.2.6
+-----
+- Add methods to get user data from segmentation rule
+
+6.2.5
+-----
+- Update wagtail-personalisation version
+
+6.2.4
+-----
+- Enable segmentation rules to be tested without active requests
+
 6.2.3
 -----
 - Fix comment admin for unicode comments on Python 2

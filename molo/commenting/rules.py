@@ -37,13 +37,17 @@ class CommentDataRule(AbstractBaseRule):
     class Meta:
         verbose_name = _('comment data rule')
 
-    def test_user(self, request):
-        # Must be logged-in to use this rule
-        if not request.user.is_authenticated():
+    def test_user(self, request, user=None):
+        if request:
+            # Must be logged-in to use this rule
+            if not request.user.is_authenticated():
+                return False
+            user = request.user
+        if not user:
             return False
 
         # Construct a queryset with user comments
-        comments = request.user.comment_comments
+        comments = user.comment_comments
 
         return comments.filter(
             **{'comment__i' + (
@@ -57,3 +61,17 @@ class CommentDataRule(AbstractBaseRule):
                 Truncator(self.expected_content).chars(20)
             )
         }
+
+    def get_column_header(self):
+        return "Comment Data"
+
+    def get_user_info_string(self, user):
+        comments = user.comment_comments
+        matches = [comment.comment for comment in
+                   comments.filter(**{'comment__i' + (
+                                   'exact' if self.operator == self.EQUALS
+                                   else 'contains'): self.expected_content})]
+
+        if not matches:
+            return "No matching comments"
+        return "\"%s\"" % ("\"\n\"".join(matches))  # Quote each comment

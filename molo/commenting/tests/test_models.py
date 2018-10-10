@@ -3,6 +3,7 @@ from django.contrib.contenttypes.models import ContentType
 from django.contrib.sites.models import Site
 from django.test import TestCase
 from django.utils import timezone
+from django.core.urlresolvers import reverse
 
 from molo.commenting.models import MoloComment
 from django_comments.models import CommentFlag
@@ -88,6 +89,17 @@ class MoloCommentTest(TestCase, MoloTestCaseMixin):
         altered_comment = MoloComment.objects.get(pk=comment.pk)
         self.assertTrue(altered_comment.is_removed)
 
+    def test_delete_comment_is_removed(self):
+        '''test that the comment delete does
+        not delete a comment but rather marks it as removed'''
+
+        comment = self.mk_comment('offensive comment')
+        comment.save()
+        # delete the question
+        comment.delete()
+        # check that is removed is true
+        self.assertTrue(comment.is_removed)
+
     def test_auto_remove_approved_comment(self):
         comment = self.mk_comment('first comment')
         comment.save()
@@ -125,3 +137,60 @@ class MoloCommentTest(TestCase, MoloTestCaseMixin):
             )
         altered_comment = MoloComment.objects.get(pk=comment.pk)
         self.assertFalse(altered_comment.is_removed)
+
+
+class CommentingSettingsTest(TestCase, MoloTestCaseMixin):
+    """Test if the anonymous commengting alias value translated."""
+
+    def setUp(self):
+        self.mk_main()
+        self.main = Main.objects.all().first()
+        self.language_setting = Languages.objects.create(
+            site_id=self.main.get_site().pk)
+        self.english = SiteLanguageRelation.objects.create(
+            language_setting=self.language_setting,
+            locale='en',
+            is_active=True)
+        self.user = User.objects.create_user(
+            'test', 'test@example.org', 'test')
+        self.content_type = ContentType.objects.get_for_model(self.user)
+        self.yourmind = self.mk_section(
+            self.section_index, title='Your mind')
+        self.article1 = self.mk_article(
+            title='article 1', slug='article-2', parent=self.yourmind)
+
+        self.french = SiteLanguageRelation.objects.create(
+            language_setting=Languages.for_site(self.site),
+            locale='fr',
+            is_active=True)
+        self.translated_article = self.mk_article_translation(
+            self.article1, self.french,
+            title=self.article1.title + ' in french',
+            subtitle=self.article1.subtitle + ' in french')
+
+    def test_get_comments_anonymous(self):
+        article = self.article1
+        MoloComment.objects.create(
+            content_object=article, object_pk=article.id,
+            content_type=ContentType.objects.get_for_model(article),
+            site=Site.objects.get_current(), user=self.user,
+            comment='This is a comment, you dig?', submit_date=timezone.now())
+        response = self.client.get(
+            reverse('molo.commenting:more-comments', args=(article.pk,)))
+        self.assertContains(response, "Anonymous")
+
+    def test_anonymous_comment_translation(self):
+        article = self.article1
+        MoloComment.objects.create(
+            content_object=self.translated_article,
+            object_pk=self.translated_article.id,
+            content_type=ContentType.objects.get_for_model(article),
+            site=Site.objects.get_current(), user=self.user,
+            comment='This is another comment for French',
+            submit_date=timezone.now())
+        response = self.client.get(
+            reverse('molo.commenting:more-comments', args=(
+                self.translated_article.pk,)))
+        self.assertContains(response, "This is another comment for French")
+        # we test for translation of anonymous in project tests
+        self.assertContains(response, "Anonymous")
