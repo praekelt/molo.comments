@@ -1,5 +1,10 @@
 CHANGELOG
 =========
+
+7.0.0
+-----
+- Upgrade to molo 7
+
 6.3.0
 -----
 - Fix bug in delete comments
