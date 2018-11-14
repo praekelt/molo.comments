@@ -383,3 +383,32 @@ class TestMoloCommentsAdminViews(TestCase, MoloTestCaseMixin):
         response = self.client.get('/admin/commenting/molocomment/')
 
         self.assertContains(response, 'Test article 😴')
+
+    def test_article_comment_edit_fields(self):
+        '''
+        Test the articles can be edited on the admin interface
+        '''
+
+        article = self.mk_article(self.yourmind, title='Test article')
+        comment = MoloComment.objects.create(
+            content_type=self.content_type,
+            object_pk=article.pk,
+            content_object=article,
+            site=Site.objects.first(),
+            user=self.user,
+            comment='This is a comment',
+            parent=None,
+            submit_date=timezone.now())
+
+        response = self.client.get(
+            '/admin/commenting/molocomment/edit/' + str(comment.pk) + "/")
+        print(response)
+        self.assertContains(response, comment.comment)
+        # test that the user field is readonly
+        self.assertNotContains(response, '<select name="user" id="id_user">')
+        self.assertNotContains(
+            response,
+            '<option value="3" selected>testadmin2</option>')
+        # test that the comment field is editable
+        self.assertContains(response,
+                            '<textarea name="comment" id="id_comment"')

@@ -14,6 +14,13 @@ from wagtail.wagtailcore.models import Site, Page
 from notifications.signals import notify
 from .rules import CommentDataRule  # noqa
 from .managers import MoloCommentManager
+from wagtail.wagtailadmin.edit_handlers import (
+    FieldPanel,
+    MultiFieldPanel,
+    FieldRowPanel,
+)
+
+from molo.core.models import ReadOnlyPanel
 
 
 class MoloComment(MPTTModel, Comment):
@@ -28,10 +35,6 @@ class MoloComment(MPTTModel, Comment):
 
     objects = MoloCommentManager()
 
-    class MPTTMeta:
-        # comments on one level will be ordered by date of creation
-        order_insertion_by = ['submit_date']
-
     class Meta:
         app_label = 'commenting'
         ordering = ['-tree_id', 'submit_date']
@@ -42,6 +45,20 @@ class MoloComment(MPTTModel, Comment):
     def delete(self):
         self.is_removed = True
         self.save()
+
+    panels = [
+        ReadOnlyPanel('user', classname='readonly_fields',),
+        FieldPanel('comment', classname='editable_fields',),
+        ReadOnlyPanel('content_type', classname='editable_fields',),
+        MultiFieldPanel([
+            ReadOnlyPanel('submit_date', classname='editable_fields',),
+            FieldRowPanel([
+                ReadOnlyPanel('is_removed', classname='readonly_fields',),
+                ReadOnlyPanel('is_public', classname='readonly_fields',),
+            ]),
+        ]),
+        ReadOnlyPanel('wagtail_site', classname='readonly_fields',),
+    ]
 
 
 @receiver(pre_save, sender=MoloComment)
