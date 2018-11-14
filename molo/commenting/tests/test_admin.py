@@ -408,6 +408,6 @@ class TestMoloCommentsAdminViews(TestCase, MoloTestCaseMixin):
         self.assertNotContains(
             response,
             '<option value="3" selected>testadmin2</option>')
+
         # test that the comment field is editable
-        self.assertContains(response,
-                            '<textarea name="comment" id="id_comment"')
+        self.assertContains(response, '<textarea name="comment"')
