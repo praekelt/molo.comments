@@ -386,7 +386,7 @@ class TestMoloCommentsAdminViews(TestCase, MoloTestCaseMixin):
 
     def test_article_comment_edit_fields(self):
         '''
-        Test the articles can be edited on the admin interface
+        Test that the user field in the comment form is readonly
         '''
 
         article = self.mk_article(self.yourmind, title='Test article')
