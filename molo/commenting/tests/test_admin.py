@@ -402,7 +402,6 @@ class TestMoloCommentsAdminViews(TestCase, MoloTestCaseMixin):
 
         response = self.client.get(
             '/admin/commenting/molocomment/edit/' + str(comment.pk) + "/")
-        print(response)
         self.assertContains(response, comment.comment)
         # test that the user field is readonly
         self.assertNotContains(response, '<select name="user" id="id_user">')
