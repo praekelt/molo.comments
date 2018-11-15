@@ -58,11 +58,11 @@ class GetMoloCommentsTest(TestCase, MoloTestCaseMixin):
             'object': self.user,
         }))
         expected_output = [
-            'comment 9\s+',
-            'comment 8\s+',
-            'comment 7\s+',
-            'comment 6\s+',
-            'comment 5\s+',
+            r'comment 9\s+',
+            r'comment 8\s+',
+            r'comment 7\s+',
+            r'comment 6\s+',
+            r'comment 5\s+',
         ]
         self.assertNotEqual(re.search(''.join(expected_output), output), None)
         self.assertFalse('comment 4' in output)
@@ -82,8 +82,8 @@ class GetMoloCommentsTest(TestCase, MoloTestCaseMixin):
             'object': self.user,
         }))
         expected_output = [
-            'comment 9\s+',
-            'comment 8\s+',
+            r'comment 9\s+',
+            r'comment 8\s+',
         ]
         self.assertNotEqual(re.search(''.join(expected_output), output), None)
         self.assertFalse('comment 7' in output)
@@ -103,16 +103,16 @@ class GetMoloCommentsTest(TestCase, MoloTestCaseMixin):
             'object': self.user,
         }))
         expected_output = [
-            'comment 9\s+',
-            'comment 8\s+',
-            'comment 7\s+',
-            'comment 6\s+',
-            'comment 5\s+',
-            'comment 4\s+',
-            'comment 3\s+',
-            'comment 2\s+',
-            'comment 1\s+',
-            'comment 0\s+',
+            r'comment 9\s+',
+            r'comment 8\s+',
+            r'comment 7\s+',
+            r'comment 6\s+',
+            r'comment 5\s+',
+            r'comment 4\s+',
+            r'comment 3\s+',
+            r'comment 2\s+',
+            r'comment 1\s+',
+            r'comment 0\s+',
         ]
         self.assertNotEqual(re.search(''.join(expected_output), output), None)
 
