@@ -34,11 +34,11 @@ class MoloComment(MPTTModel, Comment):
     wagtail_site = models.ForeignKey(Site, null=True, blank=True)
 
     objects = MoloCommentManager()
-    
-    class MPTTMeta:	
-        # comments on one level will be ordered by date of creation	
-        order_insertion_by = ['submit_date']	
-    
+
+    class MPTTMeta:
+        # comments on one level will be ordered by date of creation
+        order_insertion_by = ['submit_date']
+
     class Meta:
         app_label = 'commenting'
         ordering = ['-tree_id', 'submit_date']
