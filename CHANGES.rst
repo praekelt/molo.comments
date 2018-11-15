@@ -1,6 +1,11 @@
 CHANGELOG
 =========
 
+7.0.1
+-----
+-Fix pycodestlye errors
+-Update comment edit to make only the comment text editable
+
 7.0.0
 -----
 - Upgrade to molo 7
