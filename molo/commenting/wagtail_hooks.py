@@ -1,7 +1,7 @@
 from django.conf.urls import url
 from molo.commenting.admin import CommentingModelAdminGroup
 from molo.commenting.admin_views import MoloCommentsAdminReplyView
-from wagtail.wagtailcore import hooks
+from wagtail.core import hooks
 from wagtail.contrib.modeladmin.options import modeladmin_register
 
 
