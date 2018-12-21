@@ -1,5 +1,8 @@
 CHANGELOG
 =========
+8.0.0
+~~~~~
+- Upgrade to wagtail 2
 
 7.0.1
 -----
