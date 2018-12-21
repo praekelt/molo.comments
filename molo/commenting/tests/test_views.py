@@ -21,7 +21,7 @@ urlpatterns = [
         include('molo.commenting.urls', namespace='molo.commenting')),
     url(r'', include('django_comments.urls')),
     url(r'', include('molo.core.urls')),
-    url(r'', include('wagtail.wagtailcore.urls')),
+    url(r'', include('wagtail.core.urls')),
 ]
 
 

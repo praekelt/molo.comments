@@ -10,11 +10,11 @@ from django.db import models
 from django.db.models.signals import pre_save
 from django.utils.encoding import python_2_unicode_compatible
 from mptt.models import MPTTModel, TreeForeignKey
-from wagtail.wagtailcore.models import Site, Page
+from wagtail.core.models import Site, Page
 from notifications.signals import notify
 from .rules import CommentDataRule  # noqa
 from .managers import MoloCommentManager
-from wagtail.wagtailadmin.edit_handlers import (
+from wagtail.admin.edit_handlers import (
     FieldPanel,
     MultiFieldPanel,
     FieldRowPanel,
