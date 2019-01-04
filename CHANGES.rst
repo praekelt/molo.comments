@@ -1,5 +1,9 @@
 CHANGELOG
 =========
+8.0.1
+~~~~~
+- Deploy on Python 3 build
+
 8.0.0
 ~~~~~
 - Upgrade to wagtail 2
