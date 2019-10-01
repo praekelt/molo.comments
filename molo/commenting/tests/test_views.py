@@ -17,7 +17,8 @@ from molo.core.tests.base import MoloTestCaseMixin
 from notifications.models import Notification
 
 urlpatterns = [
-    re_path(r'^commenting/',
+    re_path(
+        r'^commenting/',
         include(
             ('molo.commenting.urls', 'molo.commenting.urls'),
             namespace='molo.commenting')),
