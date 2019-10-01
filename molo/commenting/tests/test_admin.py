@@ -5,7 +5,7 @@ from django.contrib.admin.templatetags.admin_static import static
 from django.contrib.auth.models import User
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.sites.models import Site
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.test import TestCase, Client, override_settings
 from django.utils import timezone
 
@@ -366,7 +366,7 @@ class TestMoloCommentsAdminViews(TestCase, MoloTestCaseMixin):
             '/admin/commenting/molocomment/'
         )
 
-        self.assertEquals(response.status_code, 302)
+        self.assertEqual(response.status_code, 302)
 
     def test_article_title_in_comment_view_can_contain_unicode(self):
         article = self.mk_article(self.yourmind, title='Test article 😴')

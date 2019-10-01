@@ -29,9 +29,11 @@ class MoloComment(MPTTModel, Comment):
     and MPTT traversal
     """
 
-    parent = TreeForeignKey('self', null=True, blank=True,
-                            related_name='children')
-    wagtail_site = models.ForeignKey(Site, null=True, blank=True)
+    parent = TreeForeignKey(
+        'self', null=True, blank=True,
+        related_name='children', on_delete=models.CASCADE)
+    wagtail_site = models.ForeignKey(
+        Site, null=True, blank=True, on_delete=models.CASCADE)
 
     objects = MoloCommentManager()
 

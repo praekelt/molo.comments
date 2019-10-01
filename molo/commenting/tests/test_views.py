@@ -1,7 +1,7 @@
 from bs4 import BeautifulSoup
 
-from django.conf.urls import url, include
-from django.core.urlresolvers import reverse
+from django.conf.urls import re_path, include
+from django.urls import reverse
 from django.contrib.auth.models import User
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.sites.models import Site
@@ -17,11 +17,13 @@ from molo.core.tests.base import MoloTestCaseMixin
 from notifications.models import Notification
 
 urlpatterns = [
-    url(r'^commenting/',
-        include('molo.commenting.urls', namespace='molo.commenting')),
-    url(r'', include('django_comments.urls')),
-    url(r'', include('molo.core.urls')),
-    url(r'', include('wagtail.core.urls')),
+    re_path(r'^commenting/',
+        include(
+            ('molo.commenting.urls', 'molo.commenting.urls'),
+            namespace='molo.commenting')),
+    re_path(r'', include('django_comments.urls')),
+    re_path(r'', include('molo.core.urls')),
+    re_path(r'', include('wagtail.core.urls')),
 ]
 
 
