@@ -24,7 +24,8 @@ class MoloCommentForm(CommentForm):
 
     def get_comment_create_data(self, site_id=None):
         # Use the data of the superclass, and add in the parent field field
-        data = super(MoloCommentForm, self).get_comment_create_data(site_id=site_id)
+        data = super(MoloCommentForm, self)\
+            .get_comment_create_data(site_id=site_id)
         data['parent'] = self.cleaned_data['parent']
         return data
 
