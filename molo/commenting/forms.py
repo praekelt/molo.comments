@@ -18,17 +18,17 @@ class MoloCommentForm(CommentForm):
         label=_('Comment'), widget=forms.Textarea,
         max_length=COMMENT_MAX_LENGTH)
 
-    def get_comment_model(self):
+    def get_comment_model(self, site_id=None):
         # Use our custom comment model instead of the built-in one.
         return MoloComment
 
-    def get_comment_create_data(self):
+    def get_comment_create_data(self, site_id=None):
         # Use the data of the superclass, and add in the parent field field
-        data = super(MoloCommentForm, self).get_comment_create_data()
+        data = super(MoloCommentForm, self).get_comment_create_data(site_id=site_id)
         data['parent'] = self.cleaned_data['parent']
         return data
 
-    def get_comment_object(self):
+    def get_comment_object(self, site_id=None):
         """
         NB: Overridden to remove dupe comment check for admins (necessary for
         canned responses)
@@ -44,7 +44,7 @@ class MoloCommentForm(CommentForm):
             raise ValueError(
                 "get_comment_object may only be called on valid forms")
 
-        CommentModel = self.get_comment_model()
+        CommentModel = self.get_comment_model(site_id=site_id)
         new = CommentModel(**self.get_comment_create_data())
 
         user_model = get_user_model()
