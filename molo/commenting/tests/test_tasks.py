@@ -60,10 +60,10 @@ class ModelsTestCase(TestCase, MoloTestCaseMixin):
         comment = self.mk_comment('comment_text')
         send_export_email(self.user.email, {})
         message = list(mail.outbox)[0]
-        self.assertEquals(message.to, [self.user.email])
-        self.assertEquals(
+        self.assertEqual(message.to, [self.user.email])
+        self.assertEqual(
             message.subject, 'Molo export: ' + settings.SITE_NAME)
-        self.assertEquals(
+        self.assertEqual(
             message.attachments[0],
             ('Molo_export_testapp.csv',
              'country,submit_date,user_name,user_email,comment,id,parent_id,'

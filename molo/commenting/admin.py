@@ -5,7 +5,7 @@ from django_comments.models import CommentFlag
 from django_comments.admin import CommentsAdmin
 from django.contrib import admin
 from django.contrib.admin.templatetags.admin_static import static
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.core.exceptions import PermissionDenied
 from django.conf.urls import url
 from django.contrib.admin.views.main import ChangeList
