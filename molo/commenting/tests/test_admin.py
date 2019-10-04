@@ -298,7 +298,6 @@ class TestMoloCommentsAdminViews(TestCase, MoloTestCaseMixin):
             title='article 2', slug='article-2', parent=self.yourmind2,
             subtitle='article 2 subtitle')
 
-        self.mk_main2(title='main3', slug='main3', path='4099')
         self.client2 = Client(HTTP_HOST=self.main2.get_site().hostname)
 
     def mk_comment(self, comment, parent=None):
@@ -319,6 +318,7 @@ class TestMoloCommentsAdminViews(TestCase, MoloTestCaseMixin):
             object_pk=self.article2.pk,
             content_object=self.article2,
             site=Site.objects.first(),
+            wagtail_site=self.site2,
             user=self.user,
             comment='second site comment',
             parent=None,
