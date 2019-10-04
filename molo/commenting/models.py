@@ -29,9 +29,11 @@ class MoloComment(MPTTModel, Comment):
     and MPTT traversal
     """
 
-    parent = TreeForeignKey('self', null=True, blank=True,
-                            related_name='children')
-    wagtail_site = models.ForeignKey(Site, null=True, blank=True)
+    parent = TreeForeignKey(
+        'self', null=True, blank=True,
+        related_name='children', on_delete=models.CASCADE)
+    wagtail_site = models.ForeignKey(
+        Site, null=True, blank=True, on_delete=models.CASCADE)
 
     objects = MoloCommentManager()
 
@@ -67,8 +69,8 @@ class MoloComment(MPTTModel, Comment):
 
 @receiver(pre_save, sender=MoloComment)
 def add_wagtail_site(sender, instance, *args, **kwargs):
-        article = Page.objects.filter(pk=instance.object_pk).first().specific
-        instance.wagtail_site = article.get_site()
+    article = Page.objects.filter(pk=instance.object_pk).first().specific
+    instance.wagtail_site = article.get_site()
 
 
 @receiver(comment_was_flagged, sender=MoloComment)

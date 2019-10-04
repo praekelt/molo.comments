@@ -1,8 +1,8 @@
-molo.core<9.0.0,>=8.0.0
-django-contrib-comments==1.7.1
-django-mptt==0.8.7
+molo.core>=10.0.0,<=11.0.0
+django-contrib-comments==1.9.1
+django-mptt==0.10.0
 django-import-export
 django-daterange-filter
 django-notifications-hq
-wagtail-personalisation-molo<1.1.0,>=1.0.0
+wagtail-personalisation-molo<3.0.0,>=2.0.10
 Unidecode==0.04.16

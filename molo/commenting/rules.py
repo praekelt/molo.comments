@@ -40,7 +40,7 @@ class CommentDataRule(AbstractBaseRule):
     def test_user(self, request, user=None):
         if request:
             # Must be logged-in to use this rule
-            if not request.user.is_authenticated():
+            if not request.user.is_authenticated:
                 return False
             user = request.user
         if not user:

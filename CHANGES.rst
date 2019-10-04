@@ -1,5 +1,13 @@
 CHANGELOG
 =========
+10.0.0
+~~~~~~
+- Support Django 2.2+
+
+8.0.1
+~~~~~
+- Deploy on Python 3 build
+
 8.0.0
 ~~~~~
 - Upgrade to wagtail 2
