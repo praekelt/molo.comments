@@ -63,7 +63,7 @@ class GetMoloCommentsNode(template.Node):
             return ''
 
         qs = MoloComment.objects.for_model(obj.__class__).filter(
-            object_pk=obj.pk, parent__isnull=True)
+            object_pk=obj.pk, parent__isnull=True, is_public=True)
         if self.limit > 0:
             qs = qs[:self.limit]
 

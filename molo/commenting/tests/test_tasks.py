@@ -72,5 +72,6 @@ class ModelsTestCase(TestCase, MoloTestCaseMixin):
                  comment.submit_date.strftime("%Y-%m-%d %H:%M:%S")) +
              ',,,comment_text,1,,article 1,article 1 subtitle,'
              'http://main-1.localhost:8000/sections-main-1/your-mind/'
-             'article-1/,1,0,,1\r\n',
+             'article-1/,0,0,,1\r\n',
              'text/csv'))
+

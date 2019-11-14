@@ -8,6 +8,7 @@ from django_comments.signals import (
 from django.conf import settings
 from django.db import models
 from django.db.models.signals import pre_save
+from django.utils.translation import ugettext_lazy as _
 from django.utils.encoding import python_2_unicode_compatible
 from mptt.models import MPTTModel, TreeForeignKey
 from wagtail.core.models import Site, Page
@@ -60,7 +61,7 @@ class MoloComment(MPTTModel, Comment):
             ReadOnlyPanel('submit_date', classname='editable_fields',),
             FieldRowPanel([
                 ReadOnlyPanel('is_removed', classname='readonly_fields',),
-                ReadOnlyPanel('is_public', classname='readonly_fields',),
+                FieldPanel('is_public', classname='readonly_fields',),
             ]),
         ]),
         ReadOnlyPanel('wagtail_site', classname='readonly_fields',),
@@ -71,6 +72,13 @@ class MoloComment(MPTTModel, Comment):
 def add_wagtail_site(sender, instance, *args, **kwargs):
     article = Page.objects.filter(pk=instance.object_pk).first().specific
     instance.wagtail_site = article.get_site()
+
+
+@receiver(pre_save, sender=MoloComment)
+def set_comment_is_public(sender, instance, *args, **kwargs):
+    # check to see instance
+    if instance._state.adding:
+        instance.is_public = False
 
 
 @receiver(comment_was_flagged, sender=MoloComment)
