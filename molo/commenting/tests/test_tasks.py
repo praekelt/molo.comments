@@ -74,4 +74,3 @@ class ModelsTestCase(TestCase, MoloTestCaseMixin):
              'http://main-1.localhost:8000/sections-main-1/your-mind/'
              'article-1/,0,0,,1\r\n',
              'text/csv'))
-

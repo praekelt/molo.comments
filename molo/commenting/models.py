@@ -8,7 +8,6 @@ from django_comments.signals import (
 from django.conf import settings
 from django.db import models
 from django.db.models.signals import pre_save
-from django.utils.translation import ugettext_lazy as _
 from django.utils.encoding import python_2_unicode_compatible
 from mptt.models import MPTTModel, TreeForeignKey
 from wagtail.core.models import Site, Page
