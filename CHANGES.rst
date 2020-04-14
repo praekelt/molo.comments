@@ -1,5 +1,9 @@
 CHANGELOG
 =========
+10.0.2
+~~~~~~
+- Update MoloComment signal handler add attribute checks to update wagtail site
+
 10.0.0
 ~~~~~~
 - Support Django 2.2+
