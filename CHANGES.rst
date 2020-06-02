@@ -1,5 +1,9 @@
 CHANGELOG
 =========
+10.0.3
+~~~~~~
+- Fix Admin comment list pagination with date filters
+
 10.0.2
 ~~~~~~
 - Update MoloComment signal handler add attribute checks to update wagtail site
