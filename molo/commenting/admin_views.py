@@ -44,6 +44,13 @@ class MoloCommentsAdminView(IndexView):
             "CSV emailed to '{0}'").format(request.user.email))
         return redirect(request.path)
 
+    def get_query_string(self, new_params=None, remove=None):
+        # For some reason the date filters get removed from the parameters
+        # Add them back but update anything that might need to change.
+        params = dict(self.request.GET.items())
+        params.update(new_params)
+        return super().get_query_string(new_params=params, remove=remove)
+
     def get_template_names(self):
         return 'admin/molo_comments_admin.html'
 
