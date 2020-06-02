@@ -5,7 +5,7 @@ from django.contrib.admin.templatetags.admin_static import static
 from django.contrib.auth.models import User
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.sites.models import Site
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.test import TestCase, Client, override_settings
 from django.utils import timezone
 
@@ -55,6 +55,18 @@ class CommentingAdminTest(TestCase, MoloTestCaseMixin):
         response = self.client.get(
             '/admin/commenting/molocomment/?user__is_staff__exact=0')
         self.assertNotContains(response, 'staff user comment')
+
+    def test_pagination_link_keeps_date_filter(self):
+        i = 0
+        while i < 102:
+            self.mk_comment(comment=i)
+            i += 1
+
+        date = timezone.now().strftime("%Y-%m-%d")
+        response = self.client.get(
+            '/admin/commenting/molocomment/?drf__submit_date__gte=%s' % date)
+        self.assertContains(
+            response, 'href="?drf__submit_date__gte=%s&p=1"' % date)
 
     def test_parent_comment_can_contain_unicode(self):
         comment_parent = self.mk_comment('Parent comment 👋')
@@ -298,7 +310,6 @@ class TestMoloCommentsAdminViews(TestCase, MoloTestCaseMixin):
             title='article 2', slug='article-2', parent=self.yourmind2,
             subtitle='article 2 subtitle')
 
-        self.mk_main2(title='main3', slug='main3', path='4099')
         self.client2 = Client(HTTP_HOST=self.main2.get_site().hostname)
 
     def mk_comment(self, comment, parent=None):
@@ -319,6 +330,7 @@ class TestMoloCommentsAdminViews(TestCase, MoloTestCaseMixin):
             object_pk=self.article2.pk,
             content_object=self.article2,
             site=Site.objects.first(),
+            wagtail_site=self.site2,
             user=self.user,
             comment='second site comment',
             parent=None,
@@ -366,7 +378,7 @@ class TestMoloCommentsAdminViews(TestCase, MoloTestCaseMixin):
             '/admin/commenting/molocomment/'
         )
 
-        self.assertEquals(response.status_code, 302)
+        self.assertEqual(response.status_code, 302)
 
     def test_article_title_in_comment_view_can_contain_unicode(self):
         article = self.mk_article(self.yourmind, title='Test article 😴')

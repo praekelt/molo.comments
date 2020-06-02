@@ -153,7 +153,7 @@ def display_unread_notifications(context):
 
     number_unread_notifications = 0
 
-    if user.is_authenticated():
+    if user.is_authenticated:
         number_unread_notifications = len(user.notifications.unread())
 
     return {
