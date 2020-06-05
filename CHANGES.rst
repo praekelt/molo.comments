@@ -1,5 +1,9 @@
 CHANGELOG
 =========
+10.0.4
+~~~~~~
+- Add request to MoloCommentForm
+
 10.0.3
 ~~~~~~
 - Fix Admin comment list pagination with date filters
