@@ -59,6 +59,10 @@ class MoloCommentForm(CommentForm):
 
         return new
 
+    def __init__(self, *args, **kwargs):
+        self.request = kwargs.pop('request', None)
+        super(MoloCommentForm, self).__init__(*args, **kwargs)
+
 
 class AdminMoloCommentReplyForm(MoloCommentForm):
     parent = forms.ModelChoiceField(

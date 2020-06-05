@@ -125,7 +125,7 @@ class CommentReplyView(TemplateView):
                 comment.content_type.app_label,
                 comment.content_type.model),
             'object_pk': comment.object_pk,
-        })
+        }, request=request)
 
         queryset = comment.get_children().reverse()
 

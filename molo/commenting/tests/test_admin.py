@@ -56,6 +56,18 @@ class CommentingAdminTest(TestCase, MoloTestCaseMixin):
             '/admin/commenting/molocomment/?user__is_staff__exact=0')
         self.assertNotContains(response, 'staff user comment')
 
+    def test_pagination_link_keeps_date_filter(self):
+        i = 0
+        while i < 102:
+            self.mk_comment(comment=i)
+            i += 1
+
+        date = timezone.now().strftime("%Y-%m-%d")
+        response = self.client.get(
+            '/admin/commenting/molocomment/?drf__submit_date__gte=%s' % date)
+        self.assertContains(
+            response, 'href="?drf__submit_date__gte=%s&p=1"' % date)
+
     def test_parent_comment_can_contain_unicode(self):
         comment_parent = self.mk_comment('Parent comment 👋')
         comment_reply = self.mk_comment('Reply', parent=comment_parent)
