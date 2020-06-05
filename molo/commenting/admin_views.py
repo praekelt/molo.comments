@@ -62,6 +62,7 @@ class MoloCommentsAdminReplyView(FormView):
     def get_form_kwargs(self):
         kwargs = super(MoloCommentsAdminReplyView, self).get_form_kwargs()
         kwargs['parent'] = self.kwargs['parent']
+        kwargs['request'] = self.request
         return kwargs
 
     def form_valid(self, form):
