@@ -3,7 +3,6 @@ from .tasks import send_export_email
 from django.contrib import messages
 from django.shortcuts import redirect
 from django.views.generic import FormView
-from django_comments.views.comments import post_comment
 from molo.commenting.forms import AdminMoloCommentReplyForm
 from wagtail.contrib.modeladmin.views import IndexView
 
@@ -71,7 +70,7 @@ class MoloCommentsAdminReplyView(FormView):
         self.request.POST['url'] = ''
         self.request.POST['email'] = ''
         self.request.POST['parent'] = self.kwargs['parent']
-        post_comment(self.request)
+        form.post_comment(self.request)
         messages.success(self.request, ('Reply successfully created.'))
 
         return redirect('/admin/commenting/molocomment/')
