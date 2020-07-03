@@ -16,6 +16,10 @@ from molo.core.tests.base import MoloTestCaseMixin
 
 import testapp.urls
 
+testapp.urls.urlpatterns += [
+    re_path(r'', include('django_comments.urls')),
+]
+
 
 class CommentingAdminTest(TestCase, MoloTestCaseMixin):
     def setUp(self):
@@ -267,9 +271,6 @@ class CommentingAdminTest(TestCase, MoloTestCaseMixin):
 class TestMoloCommentsAdminViews(TestCase, MoloTestCaseMixin):
 
     def setUp(self):
-        testapp.urls.urlpatterns += [
-            re_path(r'', include('django_comments.urls')),
-        ]
         self.mk_main()
         self.main = Main.objects.all().first()
         self.language_setting = Languages.objects.create(
