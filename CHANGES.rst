@@ -1,5 +1,9 @@
 CHANGELOG
 =========
+10.0.5
+~~~~~~
+- Update MoloCommentForm to pass request as a form kwarg when submitting a comment
+
 10.0.4
 ~~~~~~
 - Add request to MoloCommentForm
