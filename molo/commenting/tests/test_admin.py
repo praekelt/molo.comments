@@ -1,17 +1,20 @@
 # -*- coding: utf-8 -*-
 
 from bs4 import BeautifulSoup
-from django.contrib.admin.templatetags.admin_static import static
-from django.contrib.auth.models import User
-from django.contrib.contenttypes.models import ContentType
-from django.contrib.sites.models import Site
 from django.urls import reverse
-from django.test import TestCase, Client, override_settings
 from django.utils import timezone
+from django.urls import re_path, include
+from django.contrib.auth.models import User
+from django.contrib.sites.models import Site
+from django.contrib.contenttypes.models import ContentType
+from django.test import TestCase, Client, override_settings
+from django.contrib.admin.templatetags.admin_static import static
 
 from molo.commenting.models import MoloComment, CannedResponse
 from molo.core.models import Main, Languages, SiteLanguageRelation
 from molo.core.tests.base import MoloTestCaseMixin
+
+import testapp.urls
 
 
 class CommentingAdminTest(TestCase, MoloTestCaseMixin):
@@ -262,7 +265,11 @@ class CommentingAdminTest(TestCase, MoloTestCaseMixin):
 
 
 class TestMoloCommentsAdminViews(TestCase, MoloTestCaseMixin):
+
     def setUp(self):
+        testapp.urls.urlpatterns += [
+            re_path(r'', include('django_comments.urls')),
+        ]
         self.mk_main()
         self.main = Main.objects.all().first()
         self.language_setting = Languages.objects.create(
