@@ -1,17 +1,24 @@
 # -*- coding: utf-8 -*-
 
 from bs4 import BeautifulSoup
-from django.contrib.admin.templatetags.admin_static import static
-from django.contrib.auth.models import User
-from django.contrib.contenttypes.models import ContentType
-from django.contrib.sites.models import Site
 from django.urls import reverse
-from django.test import TestCase, Client, override_settings
 from django.utils import timezone
+from django.urls import re_path, include
+from django.contrib.auth.models import User
+from django.contrib.sites.models import Site
+from django.contrib.contenttypes.models import ContentType
+from django.test import TestCase, Client, override_settings
+from django.contrib.admin.templatetags.admin_static import static
 
 from molo.commenting.models import MoloComment, CannedResponse
 from molo.core.models import Main, Languages, SiteLanguageRelation
 from molo.core.tests.base import MoloTestCaseMixin
+
+import testapp.urls
+
+testapp.urls.urlpatterns += [
+    re_path(r'', include('django_comments.urls')),
+]
 
 
 class CommentingAdminTest(TestCase, MoloTestCaseMixin):
@@ -262,6 +269,7 @@ class CommentingAdminTest(TestCase, MoloTestCaseMixin):
 
 
 class TestMoloCommentsAdminViews(TestCase, MoloTestCaseMixin):
+
     def setUp(self):
         self.mk_main()
         self.main = Main.objects.all().first()
@@ -423,3 +431,21 @@ class TestMoloCommentsAdminViews(TestCase, MoloTestCaseMixin):
 
         # test that the comment field is editable
         self.assertContains(response, '<textarea name="comment"')
+
+    def test_admin_comment_reply(self):
+        self.client.force_login(self.superuser)
+        comment = self.mk_comment('the comment')
+        comment_str = 'the comment 2'
+
+        reply_url = reverse(
+            'molo-comments-admin-reply',
+            args=(comment.id,)
+        )
+
+        res = self.client.get(reply_url)
+        data = res.context_data['form'].initial
+        data.update({'comment': comment_str})
+
+        res = self.client.post(reply_url, data=data, follow=True)
+        self.assertEqual(res.status_code, 200)
+        self.assertIn(bytes(comment_str, encoding='utf-8'), res.content)
