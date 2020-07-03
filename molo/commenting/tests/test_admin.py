@@ -423,3 +423,21 @@ class TestMoloCommentsAdminViews(TestCase, MoloTestCaseMixin):
 
         # test that the comment field is editable
         self.assertContains(response, '<textarea name="comment"')
+
+    def test_admin_comment_reply(self):
+        self.client.force_login(self.superuser)
+        comment = self.mk_comment('the comment')
+        comment_str = 'the comment 2'
+
+        reply_url = reverse(
+            'molo-comments-admin-reply',
+            args=(comment.id,)
+        )
+
+        res = self.client.get(reply_url)
+        data = res.context_data['form'].initial
+        data.update({'comment': comment_str})
+
+        res = self.client.post(reply_url, data=data, follow=True)
+        self.assertEqual(res.status_code, 200)
+        self.assertIn(bytes(comment_str, encoding='utf-8'), res.content)
