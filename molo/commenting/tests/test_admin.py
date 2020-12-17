@@ -8,7 +8,7 @@ from django.contrib.auth.models import User
 from django.contrib.sites.models import Site
 from django.contrib.contenttypes.models import ContentType
 from django.test import TestCase, Client, override_settings
-from django.contrib.admin.templatetags.admin_static import static
+from django.templatetags.static import static
 
 from molo.commenting.models import MoloComment, CannedResponse
 from molo.core.models import Main, Languages, SiteLanguageRelation
@@ -71,9 +71,9 @@ class CommentingAdminTest(TestCase, MoloTestCaseMixin):
 
         date = timezone.now().strftime("%Y-%m-%d")
         response = self.client.get(
-            '/admin/commenting/molocomment/?drf__submit_date__gte=%s' % date)
+            '/admin/commenting/molocomment/?submit_date__gte=%s' % date)
         self.assertContains(
-            response, 'href="?drf__submit_date__gte=%s&p=1"' % date)
+            response, 'href="?p=1&submit_date__gte=%s"' % date)
 
     def test_parent_comment_can_contain_unicode(self):
         comment_parent = self.mk_comment('Parent comment 👋')

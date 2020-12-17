@@ -1,6 +1,7 @@
 from bs4 import BeautifulSoup
 
 from django.conf.urls import re_path, include
+from django.core.cache import cache
 from django.urls import reverse
 from django.contrib.auth.models import User
 from django.contrib.contenttypes.models import ContentType
@@ -181,6 +182,7 @@ class ViewMoreCommentsTest(TestCase, MoloTestCaseMixin):
 
     def setUp(self):
         # Creates main page
+        cache.clear()
         self.mk_main()
         self.user = User.objects.create_user(
             'test', 'test@example.org', 'test')
