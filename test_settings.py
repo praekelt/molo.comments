@@ -4,7 +4,6 @@ INSTALLED_APPS = INSTALLED_APPS + [
     'django_comments',
     'notifications',
     'wagtail_personalisation',
-    'rangefilter'
 ]
 
 COMMENTS_APP = 'molo.commenting'
