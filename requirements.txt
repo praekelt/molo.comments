@@ -6,6 +6,5 @@ django-mptt==0.10.0
 django-import-export
 django-daterange-filter
 django-notifications-hq
-wagtail-personalisation-molo==3.0.2
-wagtail==2.10.2
+wagtail-personalisation-molo==3.0.3
 Unidecode==0.04.16
