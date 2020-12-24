@@ -24,6 +24,7 @@ from rangefilter.filter import DateRangeFilter
 
 from wagtail.contrib.modeladmin.options import ModelAdmin \
     as WagtailModelAdmin, ModelAdminGroup
+from wagtail.core.models import Site
 
 
 class MoloCommentAdmin(MPTTModelAdmin, CommentsAdmin):
@@ -298,7 +299,8 @@ class MoloCommentsModelAdmin(WagtailModelAdmin, MoloCommentAdmin):
     parent_comment.allow_tags = True
 
     def get_queryset(self, request):
-        return MoloComment.objects.filter(wagtail_site=request.site.pk)
+        site = Site.find_for_request(request)
+        return MoloComment.objects.filter(wagtail_site=site.pk)
 
 
 class MoloCannedResponsesModelAdmin(WagtailModelAdmin,
