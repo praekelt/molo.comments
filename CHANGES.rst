@@ -1,5 +1,10 @@
 CHANGELOG
 =========
+
+11.0.0
+~~~~~~
+- Upgrade for Django 3
+
 10.0.5
 ~~~~~~
 - Update MoloCommentForm to pass request as a form kwarg when submitting a comment
