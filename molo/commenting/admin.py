@@ -4,7 +4,7 @@ from __future__ import unicode_literals
 from django_comments.models import CommentFlag
 from django_comments.admin import CommentsAdmin
 from django.contrib import admin
-from django.contrib.admin.templatetags.admin_static import static
+from django.templatetags.static import static
 from django.urls import reverse
 from django.core.exceptions import PermissionDenied
 from django.conf.urls import url
@@ -20,10 +20,11 @@ from molo.commenting.models import MoloComment, CannedResponse
 from molo.commenting.views import AdminCommentReplyView
 from molo.core.models import ArticlePage
 
-from daterange_filter.filter import DateRangeFilter
+from rangefilter.filter import DateRangeFilter
 
 from wagtail.contrib.modeladmin.options import ModelAdmin \
     as WagtailModelAdmin, ModelAdminGroup
+from wagtail.core.models import Site
 
 
 class MoloCommentAdmin(MPTTModelAdmin, CommentsAdmin):
@@ -237,11 +238,6 @@ admin.site.register(ArticlePage, ModeratedPageAdmin)
 admin.site.register(CannedResponse, CannedResponseModelAdmin)
 
 
-# Below here is for Wagtail Admin
-class MoloCommentsDateRangeFilter(DateRangeFilter):
-    template = 'admin/molo_comments_date_range_filter.html'
-
-
 class MoloCommentsModelAdmin(WagtailModelAdmin, MoloCommentAdmin):
     model = MoloComment
     menu_label = 'Comments'
@@ -254,7 +250,7 @@ class MoloCommentsModelAdmin(WagtailModelAdmin, MoloCommentAdmin):
         '_user', 'is_removed', 'is_reported', 'reported_count',
         'submit_date', 'country')
 
-    list_filter = (('submit_date', MoloCommentsDateRangeFilter), 'site',
+    list_filter = (('submit_date', DateRangeFilter), 'site',
                    'is_removed', 'user__is_staff')
 
     search_fields = ('comment',)
@@ -303,7 +299,8 @@ class MoloCommentsModelAdmin(WagtailModelAdmin, MoloCommentAdmin):
     parent_comment.allow_tags = True
 
     def get_queryset(self, request):
-        return MoloComment.objects.filter(wagtail_site=request.site.pk)
+        site = Site.find_for_request(request)
+        return MoloComment.objects.filter(wagtail_site=site.pk)
 
 
 class MoloCannedResponsesModelAdmin(WagtailModelAdmin,

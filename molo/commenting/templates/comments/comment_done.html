@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% load wagtailcore_tags wagtailimages_tags comments mptt_tags molo_commenting_tags i18n %}
+{% wagtail_site as current_site %}
 
 {% block content %}
 <div class="comments comments{{article.get_parent_section.get_effective_extra_style_hints}}">
@@ -7,7 +8,7 @@
     <h1 class="heading heading--comment">{% trans "Thanks!" %}</h1>
     <div class="comments__list comments__list--item">
      <h6 class="comment__description">{% trans "Your comment has been successfully posted" %}</h6>
-     <a href="{% if request.GET.next %}{{ request.GET.next }}#comments-list{% else %}{{request.site.root_page.url}}{% endif %}"class="call-to-action__nav-item call-to-action__nav-item--back">
+     <a href="{% if request.GET.next %}{{ request.GET.next }}#comments-list{% else %}{{current_site.root_page.url}}{% endif %}"class="call-to-action__nav-item call-to-action__nav-item--back">
       {% trans "Back to article" %}
      </a>
     </div>
