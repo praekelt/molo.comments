@@ -1,11 +1,11 @@
 from .tasks import send_export_email
 
 from django.contrib import messages
+from django.conf import settings
 from django.shortcuts import redirect
 from django.views.generic import FormView
 from molo.commenting.forms import AdminMoloCommentReplyForm
 from wagtail.contrib.modeladmin.views import IndexView
-from wagtail.core.models import Site
 
 
 class MoloCommentsAdminView(IndexView):
@@ -32,8 +32,7 @@ class MoloCommentsAdminView(IndexView):
             'is_removed': is_removed__exact,
             'user__is_staff': is_staff
         }
-        site = Site.find_for_request(request)
-        arguments = {'wagtail_site': site.pk}
+        arguments = {'wagtail_site': settings.site.pk}
 
         for key, value in filter_list.items():
             if value:

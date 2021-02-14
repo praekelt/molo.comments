@@ -8,6 +8,7 @@ from django.templatetags.static import static
 from django.urls import reverse
 from django.core.exceptions import PermissionDenied
 from django.conf.urls import url
+from django.conf import settings
 from django.contrib.admin.views.main import ChangeList
 from django.shortcuts import get_object_or_404
 from django.contrib.admin.utils import unquote
@@ -24,7 +25,6 @@ from rangefilter.filter import DateRangeFilter
 
 from wagtail.contrib.modeladmin.options import ModelAdmin \
     as WagtailModelAdmin, ModelAdminGroup
-from wagtail.core.models import Site
 
 
 class MoloCommentAdmin(MPTTModelAdmin, CommentsAdmin):
@@ -299,8 +299,7 @@ class MoloCommentsModelAdmin(WagtailModelAdmin, MoloCommentAdmin):
     parent_comment.allow_tags = True
 
     def get_queryset(self, request):
-        site = Site.find_for_request(request)
-        return MoloComment.objects.filter(wagtail_site=site.pk)
+        return MoloComment.objects.filter(wagtail_site=settings.site.pk)
 
 
 class MoloCannedResponsesModelAdmin(WagtailModelAdmin,
