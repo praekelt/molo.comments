@@ -1,7 +1,6 @@
 from .tasks import send_export_email
 
 from django.contrib import messages
-from django.conf import settings
 from django.shortcuts import redirect
 from django.views.generic import FormView
 from molo.commenting.forms import AdminMoloCommentReplyForm
