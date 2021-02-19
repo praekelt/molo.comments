@@ -3,7 +3,6 @@ molo.core>=11.0.5,<12.0.0
 # added this to add form kwargs, upgrade with care
 django-contrib-comments==2.0.0
 django-import-export
-django-daterange-filter
 django-notifications-hq
 wagtail-personalisation-molo==3.0.3
 Unidecode==0.04.16

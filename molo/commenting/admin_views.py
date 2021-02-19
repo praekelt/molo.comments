@@ -32,7 +32,7 @@ class MoloCommentsAdminView(IndexView):
             'is_removed': is_removed__exact,
             'user__is_staff': is_staff
         }
-        arguments = {'wagtail_site': settings.site.pk}
+        arguments = {'wagtail_site': request._wagtail_site.pk}
 
         for key, value in filter_list.items():
             if value:
