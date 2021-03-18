@@ -1,6 +1,10 @@
 CHANGELOG
 =========
 
+11.1.2
+~~~~~~
+- Use github actions not travis
+
 11.1.0
 ~~~~~~
 - Get site from wagtail cache
