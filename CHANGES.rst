@@ -1,6 +1,10 @@
 CHANGELOG
 =========
 
+11.2.0
+~~~~~~
+- add date range filter
+
 11.1.2
 ~~~~~~
 - Use github actions not travis
