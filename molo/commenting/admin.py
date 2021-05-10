@@ -20,7 +20,7 @@ from molo.commenting.models import MoloComment, CannedResponse
 from molo.commenting.views import AdminCommentReplyView
 from molo.core.models import ArticlePage
 
-from rangefilter.filter import DateRangeFilter
+from rangefilter.filters import DateRangeFilter, DateTimeRangeFilter
 
 from wagtail.contrib.modeladmin.options import ModelAdmin \
     as WagtailModelAdmin, ModelAdminGroup

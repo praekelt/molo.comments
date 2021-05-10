@@ -6,3 +6,4 @@ django-import-export
 django-notifications-hq
 wagtail-personalisation-molo==3.0.3
 Unidecode==0.04.16
+django-admin-rangefilter==0.8.1
