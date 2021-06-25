@@ -1,5 +1,8 @@
 CHANGELOG
 =========
+11.2.1
+~~~~~~
+- update and loosen restrictions for wagtail-personalisation
 
 11.2.0
 ~~~~~~
