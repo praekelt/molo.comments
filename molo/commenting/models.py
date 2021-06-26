@@ -60,7 +60,7 @@ class MoloComment(MPTTModel, Comment):
             ReadOnlyPanel('submit_date', classname='editable_fields',),
             FieldRowPanel([
                 ReadOnlyPanel('is_removed', classname='readonly_fields',),
-                ReadOnlyPanel('is_public', classname='readonly_fields',),
+                FieldPanel('is_public', classname='readonly_fields',),
             ]),
         ]),
         ReadOnlyPanel('wagtail_site', classname='readonly_fields',),
@@ -75,6 +75,13 @@ def add_wagtail_site(sender, instance, *args, **kwargs):
 
     if article:
         instance.wagtail_site = article.get_site()
+
+
+@receiver(pre_save, sender=MoloComment)
+def set_comment_is_public(sender, instance, *args, **kwargs):
+    # check to see instance
+    if instance._state.adding:
+        instance.is_public = False
 
 
 @receiver(comment_was_flagged, sender=MoloComment)

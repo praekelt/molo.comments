@@ -72,6 +72,7 @@ class MoloCommentTest(TestCase, MoloTestCaseMixin):
         )
         altered_comment = MoloComment.objects.get(pk=comment.pk)
         self.assertFalse(altered_comment.is_removed)
+        self.assertFalse(altered_comment.is_public)
 
     def test_auto_remove_on(self):
         comment = self.mk_comment('first comment')
@@ -88,6 +89,7 @@ class MoloCommentTest(TestCase, MoloTestCaseMixin):
             )
         altered_comment = MoloComment.objects.get(pk=comment.pk)
         self.assertTrue(altered_comment.is_removed)
+        self.assertFalse(altered_comment.is_public)
 
     def test_delete_comment_is_removed(self):
         '''test that the comment delete does

@@ -34,7 +34,7 @@ class GetMoloCommentsTest(TestCase, MoloTestCaseMixin):
             title='article 1', slug='article-1', parent=self.yourmind)
 
         for i in range(10):
-            MoloComment.objects.create(
+            comment = MoloComment.objects.create(
                 content_type=self.content_type,
                 object_pk=self.article1.pk,
                 content_object=self.user,
@@ -42,6 +42,8 @@ class GetMoloCommentsTest(TestCase, MoloTestCaseMixin):
                 user=self.user,
                 comment='comment %s' % (i,),
                 submit_date=timezone.now())
+            comment.is_public = True
+            comment.save()
 
     def test_template_tags_default(self):
         template = Template("""

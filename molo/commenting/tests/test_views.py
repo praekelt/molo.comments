@@ -470,18 +470,28 @@ class TestThreadedComments(TestCase, MoloTestCaseMixin):
 
     def test_restrict_article_comment_count(self):
         for i in range(3):
-            self.create_comment('comment %d' % i)
+            comment = self.create_comment('comment %d' % i)
+            comment.is_public = True
+            comment.save()
+        self.create_comment('comment not verified')
 
         response = self.client.get(self.article.url)
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "comment 2")
         self.assertContains(response, "comment 1")
         self.assertNotContains(response, "comment 0")
+        self.assertNotContains(response, "comment not verified")
 
     def test_restrict_article_comment_reply_count(self):
         comment = self.create_comment('Original Comment')
+        comment.is_public = True
+        comment.save()
+
         for i in range(3):
-            self.create_comment('reply %d' % i, parent=comment)
+            c_comment = self.create_comment('reply %d' % i, parent=comment)
+            c_comment.is_public = True
+            c_comment.save()
+
         response = self.client.get(self.article.url)
         self.assertEqual(response.status_code, 200)
 
@@ -492,13 +502,19 @@ class TestThreadedComments(TestCase, MoloTestCaseMixin):
 
     def test_restrict_article_comment_reply_truncation(self):
         comment = self.create_comment('Original Comment')
+        comment.is_public = True
+        comment.save()
+
         comment_text = "Lorem ipsum dolor sit amet, consectetur adipisicing \
             tempor incididunt ut labore et dolore magna aliqua. Ut enim ad \
             quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea \
             consequat. Duis aute irure dolor in reprehenderit in voluptate \
             cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat \
             proident, sunt in culpa qui officia deserunt mollit anim id est"
-        self.create_comment(comment_text, parent=comment)
+
+        c_comment = self.create_comment(comment_text, parent=comment)
+        c_comment.is_public = True
+        c_comment.save()
 
         response = self.client.get(self.article.url)
         self.assertEqual(response.status_code, 200)
@@ -510,9 +526,13 @@ class TestThreadedComments(TestCase, MoloTestCaseMixin):
 
     def test_comment_reply_list(self):
         comment = self.create_comment('Original Comment')
+        comment.is_public = True
+        comment.save()
 
         for i in range(3):
-            self.create_comment('Reply %d' % i, parent=comment)
+            c_comment = self.create_comment('Reply %d' % i, parent=comment)
+            c_comment.is_public = True
+            c_comment.save()
 
         response = self.client.get(
             reverse('molo.commenting:molo-comments-reply',
@@ -526,8 +546,13 @@ class TestThreadedComments(TestCase, MoloTestCaseMixin):
 
     def test_reply_pagination(self):
         comment = self.create_comment('Original Comment')
+        comment.is_public = True
+        comment.save()
+
         for i in range(15):
-            self.create_comment('Reply %d' % i, parent=comment)
+            c_comment = self.create_comment('Reply %d' % i, parent=comment)
+            c_comment.is_public = True
+            c_comment.save()
 
         response = self.client.get(
             reverse('molo.commenting:molo-comments-reply',
